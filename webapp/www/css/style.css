@@ -1,0 +1,29 @@
+div.scroll {
+  height: 80vh;
+  overflow-y: scroll;
+}
+
+.pad-horiz {
+  padding-left: 5pt;
+  padding-right: 5pt;
+}
+
+span.help {
+  border-bottom: none;
+}
+
+span.good {
+  color: green;
+}
+
+span.amber {
+  color: orange;
+}
+
+span.bad {
+  color: red;
+}
+
+div.no-bottom-margin {
+  margin-bottom: 0;
+}

@@ -1,0 +1,34 @@
+# For running the API and webapp demos
+
+version: '2.3'
+
+services:
+
+  nginx:
+    image: linuxserver/nginx:latest
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    ports:
+      - "8080:80"
+    volumes:
+      - "./webapp/:/config/"
+
+  api:
+    build:
+      context: ./webservice
+    runtime: nvidia
+    environment:
+      - PUID=1000
+      - PGID=1000
+    volumes:
+      - "./webservice:/webservice"
+      # Set to something sensible for you
+      - "/media/data/testing/:/data"
+
+  dataserver:
+    image: dannixon/dawn-dataserver:latest
+    volumes:
+      # Set to something sensible for you
+      - "/media/data/testing/:/data"

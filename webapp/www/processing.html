@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+
+    <title>Savu</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.5.1/dist/css/foundation.min.css" integrity="sha256-1mcRjtAxlSjp6XJBgrBeeCORfBp/ppyX4tsvpQVCcpA= sha384-b5S5X654rX3Wo6z5/hnQ4GBmKuIJKMPwrJXn52ypjztlnDK2w9+9hSMBz/asy9Gw sha512-M1VveR2JGzpgWHb0elGqPTltHK3xbvu3Brgjfg4cg5ZNtyyApxw/45yHYsZ/rCVbfoO5MSZxB241wWq642jLtA==" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/processing.css" />
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.5.1/dist/js/foundation.min.js" integrity="sha256-WUKHnLrIrx8dew//IpSEmPN/NT3DGAEmIePQYIEJLLs= sha384-53StQWuVbn6figscdDC3xV00aYCPEz3srBdV/QGSXw3f19og3Tq2wTRe0vJqRTEO sha512-X9O+2f1ty1rzBJOC8AXBnuNUdyJg0m8xMKmbt9I3Vu/UOWmSg5zG+dtnje4wAZrKtkopz/PEDClHZ1LXx5IeOw==" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.3.5/socket.io.min.js"></script>
+    <script src="js/api_common.js"></script>
+    <script src="js/api_dawn.js"></script>
+    <script src="js/api_savu.js"></script>
+    <script src="js/dataset_preview.js"></script>
+    <script src="js/file_finder.js"></script>
+    <script src="js/job_widget.js"></script>
+    <script src="js/plugin_editor.js"></script>
+    <script src="js/processing.js"></script>
+    <script src="js/utils.js"></script>
+  </head>
+
+  <body>
+    <h1>Processing</h1>
+
+    <div class="grid-x">
+
+      <!-- Left (sidebar) pane -->
+      <div class="cell small-4">
+        <!-- Tabs -->
+        <ul class="tabs" data-tabs id="left-pane-tabs">
+          <li class="tabs-title is-active"><a href="#left-pane-data" aria-selected="true">Data</a></li>
+          <li class="tabs-title"><a href="#left-pane-process-list">Process Lists</a></li>
+          <li class="tabs-title"><a href="#left-pane-job-submit">Job</a></li>
+        </ul>
+
+        <div class="tabs-content" data-tabs-content="left-pane-tabs">
+          <!-- Data tab -->
+          <div class="tabs-panel is-active" id="left-pane-data">
+            <div id="data-preview">
+              <!-- Dynamically populated -->
+            </div>
+            <div id="data-finder">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Process list tab -->
+          <div class="tabs-panel" id="left-pane-process-list">
+            <div id="process-list-finder">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Job submission tab -->
+          <div class="tabs-panel" id="left-pane-job-submit">
+            <div id="job">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Right (main/wide) pane -->
+      <div class="cell small-8 pad-horiz">
+        <!-- Tabs -->
+        <ul class="tabs" data-tabs id="right-pane-tabs">
+          <li class="tabs-title is-active"><a href="#right-pane-process-list" aria-selected="true">Process List</a></li>
+          <li class="tabs-title"><a href="#right-pane-preview">Preview</a></li>
+        </ul>
+
+        <div class="tabs-content" data-tabs-content="right-pane-tabs">
+          <!-- Process list tab -->
+          <div class="tabs-panel is-active" id="right-pane-process-list">
+            <div id="process-list-editor">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- Preview tab -->
+          <div class="tabs-panel" id="right-pane-preview">
+            <div id="processing-preview">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </body>
+</html>

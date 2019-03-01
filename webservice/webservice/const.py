@@ -1,0 +1,23 @@
+CONFIG_NAMESPACE_SAVU = 'SAVU'
+CONFIG_KEY_JOB_RUNNERS = 'job_runners'
+CONFIG_KEY_RUNNER_INSTANCE = 'instance'
+CONFIG_KEY_RUNNER_MODULE = 'module'
+CONFIG_KEY_RUNNER_CLASS = 'class'
+
+KEY_DATASET = 'dataset'
+KEY_FILENAME = 'filename'
+KEY_FILES = 'files'
+KEY_OUTPUT_PATH = 'output'
+KEY_PATH = 'path'
+KEY_JOB_ID = 'job'
+KEY_PROCESS_LIST_FILE = 'process_list'
+KEY_PLUGINS = 'plugins'
+KEY_QUERY = 'q'
+KEY_QUEUE_ID = 'queue'
+
+WS_NAMESPACE_JOB_STATUS = '/job_status'
+
+EVENT_JOB_STATUS = 'status'
+
+PLUGIN_ENABLED = 'ON'
+PLUGIN_DISABLED = 'OFF'

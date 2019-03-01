@@ -1,0 +1,30 @@
+server {
+	listen 80 default_server;
+
+	root /config/www;
+	index index.html;
+
+	server_name _;
+
+	client_max_body_size 0;
+
+	location / {
+		try_files $uri $uri/ /index.html /index.php?$args =404;
+	}
+
+	location /api/ {
+		proxy_pass http://api:5000/;
+	}
+
+	location /data/ {
+		proxy_pass http://dataserver:8080/;
+	}
+
+  location /socket.io {
+    proxy_http_version 1.1;
+    proxy_buffering off;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+    proxy_pass http://api:5000/socket.io;
+  }
+}

@@ -1,0 +1,23 @@
+input.parameter-value {
+  margin: 0 !important;
+}
+
+.action {
+  margin: 5px;
+}
+
+h3.plugin-title > span {
+  padding-right: 0.5em;
+}
+
+img.preview {
+  width: 100%;
+}
+
+td.parameter-name > span.help {
+  margin-left: 10px;
+}
+
+#data-preview {
+  margin-bottom: 16px;
+}

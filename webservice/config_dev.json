@@ -1,0 +1,23 @@
+{
+    "SAVU": {
+        "data_location": {
+            "default": "/data/data"
+        },
+        "process_list_location": {
+            "default": "/data"
+        },
+        "output_location": {
+            "default": "/data/output"
+        },
+        "job_runners": {
+            "preview": {
+                "module": "webservice.execution.local_process",
+                "class": "LocalProcessJobRunner"
+            },
+            "full": {
+                "module": "webservice.execution.local_process",
+                "class": "LocalProcessJobRunner"
+            }
+        }
+    }
+}

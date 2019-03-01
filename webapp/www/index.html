@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
+
+    <title>Savu</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.5.1/dist/css/foundation.min.css" integrity="sha256-1mcRjtAxlSjp6XJBgrBeeCORfBp/ppyX4tsvpQVCcpA= sha384-b5S5X654rX3Wo6z5/hnQ4GBmKuIJKMPwrJXn52ypjztlnDK2w9+9hSMBz/asy9Gw sha512-M1VveR2JGzpgWHb0elGqPTltHK3xbvu3Brgjfg4cg5ZNtyyApxw/45yHYsZ/rCVbfoO5MSZxB241wWq642jLtA==" crossorigin="anonymous">
+    <link rel="stylesheet" href="css/style.css" />
+
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.5.1/dist/js/foundation.min.js" integrity="sha256-WUKHnLrIrx8dew//IpSEmPN/NT3DGAEmIePQYIEJLLs= sha384-53StQWuVbn6figscdDC3xV00aYCPEz3srBdV/QGSXw3f19og3Tq2wTRe0vJqRTEO sha512-X9O+2f1ty1rzBJOC8AXBnuNUdyJg0m8xMKmbt9I3Vu/UOWmSg5zG+dtnje4wAZrKtkopz/PEDClHZ1LXx5IeOw==" crossorigin="anonymous"></script>
+
+    <!-- These script files are here for testing in the browser console -->
+    <script src="js/api_common.js"></script>
+    <script src="js/api_dawn.js"></script>
+    <script src="js/api_savu.js"></script>
+  </head>
+
+  <body>
+    <h1>Savu API Demos</h1>
+    <ul>
+      <li><a href="/plugins.html">Plugins</a></li>
+      <li><a href="/processing.html">Processing</a></li>
+    </ul>
+
+    <h2>API endpoints</h2>
+    <ul>
+      <li>
+        <a href="/api/plugin">/api/plugin</a>
+
+        <dl>
+          <dd>List all plugins</dd>
+          <dt><a href="/api/plugin">GET /api/plugin</a></dt>
+
+          <dd>Search plugins by name</dd>
+          <dt><a href="/api/plugin?q=tomo">GET /api/plugin?q=tomo</a></dt>
+
+          <dd>List plugin details</dd>
+          <dt><a href="/api/plugin/TomopyRecon">GET /api/plugin/TomopyRecon</a></dt>
+        </dl>
+      </li>
+
+      <li>
+        <a href="/api/process_list">/api/process_list</a>
+
+        <dl>
+          <dd>List process lists in directory</dd>
+          <dt><a href="/api/process_list?path=/some/path">GET /api/process_list?path=/some/path</a></dt>
+
+          <dd>Show process list details</dd>
+          <dt><a href="/api/process_list?filename=/process_list.nxs">GET /api/process_list?filename=/process_list.nxs</a></dt>
+
+          <dd>Upload a new process list</dd>
+          <dt>POST /api/process_list?filename=/process_list.nxs</dt>
+
+          <dd>Overwrite/update an existing process list</dd>
+          <dt>PUT /api/process_list?filename=/process_list.nxs</dt>
+
+          <dd>Delete a process list</dd>
+          <dt>DELETE /api/process_list?filename=/process_list.nxs</dt>
+
+          <dd>Download a process list as a NeXus file</dd>
+          <dt><a href="/api/process_list/download?filename=/process_list.nxs">GET /api/process_list/download?filename=/process_list.nxs</a></dt>
+        </dl>
+      </li>
+
+      <li>
+        <a href="/api/data/find">/api/data/find</a>
+
+        <dl>
+          <dd>Find data files in a given path</dd>
+          <dt><a href="/api/data/find?path=/data/tomography">GET /api/data/find?path=/some/path</a></dt>
+        </dl>
+      </li>
+
+      <li>
+        <a href="/api/jobs">/api/jobs</a>
+
+        <dl>
+          <dd>Run a process list</dd>
+          <dt>GET /api/jobs/[queue]/submit?process_list=/process_list.nxs&amp;dataset=/data.nxs&amp;output=/some/path</dt>
+
+          <dd>Query the status of a job</dd>
+          <dt>GET /api/jobs/[queue]/[id]</dt>
+        </dl>
+      </li>
+
+      <li>
+        <a href="/api/default_paths">/api/default_paths</a>
+
+        <dl>
+          <dd>Gets a list of defautl paths for things (data, process lists and output)</dd>
+          <dt><a href="/api/default_paths">GET /api/default_paths</a></dt>
+        </dl>
+      </li>
+    </ul>
+
+    <h2>DAWN data server endpoints</h2>
+    <ul>
+      <li><a href="/data/info">/data/info</a></li>
+      <li><a href="/data/tree">/data/tree</a></li>
+      <li><a href="/data/slice">/data/slice</a></li>
+    </ul>
+  </body>
+</html>
