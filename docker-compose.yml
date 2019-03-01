@@ -16,8 +16,7 @@ services:
       - "./webapp/:/config/"
 
   api:
-    build:
-      context: ./webservice
+    image: dannixon/savu-webservice:latest
     runtime: nvidia
     environment:
       - PUID=1000
