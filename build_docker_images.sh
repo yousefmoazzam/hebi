@@ -2,8 +2,8 @@
 
 docker build \
   --tag dannixon/hebi-web \
-  webapp
+  web
 
 docker build \
   --tag dannixon/hebi-api \
-  webservice
+  api
