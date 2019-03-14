@@ -1,28 +1,25 @@
-# For running the API and webapp demos
-
 version: '2.3'
 
 services:
 
   nginx:
-    image: linuxserver/nginx:latest
+    build: ./webapp/
+    image: dannixon/hebi-web
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/London
     ports:
       - "8080:80"
-    volumes:
-      - "./webapp/:/config/"
 
   api:
-    image: dannixon/savu-webservice:latest
+    build: ./webservice/
+    image: dannixon/hebi-api
     runtime: nvidia
     environment:
       - PUID=1000
       - PGID=1000
     volumes:
-      - "./webservice:/webservice"
       # Set to something sensible for you
       - "/media/data/testing/:/data"
 
