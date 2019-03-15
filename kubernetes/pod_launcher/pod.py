@@ -11,7 +11,7 @@ def user_pod_name(uid, gid):
     return "pod-for-uid{}-gid{}".format(uid, gid)
 
 
-def user_pod_manifest(uid, gid, savu_image_tag):
+def user_pod_manifest(uid, gid):
     return {
         "apiVersion": "v1",
         "kind": "Pod",
@@ -87,9 +87,9 @@ def user_pod_manifest(uid, gid, savu_image_tag):
     }
 
 
-def start_user_pod(uid, gid, savu_image_tag="latest"):
+def start_user_pod(uid, gid):
     rv = kube.create_namespaced_pod(
-        body=user_pod_manifest(uid, gid, savu_image_tag), namespace=savu_ws_namespace)
+        body=user_pod_manifest(uid, gid), namespace=savu_ws_namespace)
     return rv
 
 
