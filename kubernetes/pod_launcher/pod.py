@@ -1,14 +1,9 @@
-from kubernetes import config, client
+from kubernetes import client
 from kubernetes.client.rest import ApiException
 
-savu_ws_namespace = "tux"
 
-config.load_kube_config()
-kube = client.CoreV1Api()
-
-
-def user_pod_name(uid, gid):
-    return "pod-for-uid{}-gid{}".format(uid, gid)
+def user_pod_name(uid):
+    return "uid{}".format(uid)
 
 
 def user_pod_manifest(uid, gid):
@@ -16,9 +11,10 @@ def user_pod_manifest(uid, gid):
         "apiVersion": "v1",
         "kind": "Pod",
         "metadata": {
-            "name": user_pod_name(uid, gid),
+            "name": user_pod_name(uid),
             "labels": {
                 "hebi-role": "user-pod",
+                "hebi-user": str(uid),
             },
         },
         "spec": {
@@ -87,15 +83,48 @@ def user_pod_manifest(uid, gid):
     }
 
 
-def start_user_pod(uid, gid):
-    rv = kube.create_namespaced_pod(
-        body=user_pod_manifest(uid, gid), namespace=savu_ws_namespace)
-    return rv
+def user_pod_service_manifest(uid):
+    return {
+        "apiVersion": "v1",
+        "kind": "Service",
+        "metadata": {
+            "name": user_pod_name(uid),
+            "labels": {
+                "hebi-role": "user-pod-expose",
+                "hebi-user": str(uid),
+            },
+        },
+        "spec": {
+            "type": "NodePort",
+            "selector": {
+                "hebi-role": "user-pod",
+                "hebi-user": str(uid),
+            },
+            "ports": [
+                {
+                    "port": 80,
+                    "targetPort": 80,
+                },
+            ],
+        },
+    }
 
 
-def stop_user_pod(uid, gid):
-    rv = kube.delete_namespaced_pod(
-        name=user_pod_name(uid, gid),
+def start_user_pod(kube, namespace, uid, gid):
+    kube.create_namespaced_pod(
+        body=user_pod_manifest(uid, gid), namespace=namespace)
+
+    kube.create_namespaced_service(
+        body=user_pod_service_manifest(uid), namespace=namespace)
+
+
+def stop_user_pod(kube, namespace, uid, gid):
+    kube.delete_namespaced_pod(
+        name=user_pod_name(uid),
         body=client.V1DeleteOptions(),
-        namespace=savu_ws_namespace)
-    return rv
+        namespace=namespace)
+
+    kube.delete_namespaced_service(
+            name=user_pod_name(uid),
+        body=client.V1DeleteOptions(),
+        namespace=namespace)
