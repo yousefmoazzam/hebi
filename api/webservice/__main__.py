@@ -13,7 +13,5 @@ server.setup_runners()
 
 server.socketio.run(
     server.app,
-    host='0.0.0.0',
-    port=5000,
-    debug=True
+    port=5000
 )
