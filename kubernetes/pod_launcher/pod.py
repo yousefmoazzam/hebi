@@ -125,6 +125,6 @@ def stop_user_pod(kube, namespace, uid, gid):
         namespace=namespace)
 
     kube.delete_namespaced_service(
-            name=user_pod_name(uid),
+        name=user_pod_name(uid),
         body=client.V1DeleteOptions(),
         namespace=namespace)
