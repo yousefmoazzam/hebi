@@ -6,7 +6,6 @@ from utils import populate_plugins
 
 
 class ServerTest(unittest.TestCase):
-
     def setUp(self):
         populate_plugins()
 
@@ -53,6 +52,7 @@ class ServerTest(unittest.TestCase):
         self.assertEqual('/path/to/data', data['data'])
         self.assertEqual('/path/to/process_lists', data['process_list'])
         self.assertEqual('/path/to/output', data['output'])
+
 
 if __name__ == '__main__':
     unittest.main()

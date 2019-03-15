@@ -17,6 +17,7 @@ def populate_plugins():
 
     Almost identical to the function in scripts.config_generator
     """
+
     def _add_module(loader, module_name):
         if module_name not in sys.modules:
             try:
@@ -39,6 +40,7 @@ def populate_plugins():
         if module_name.split('savu.plugins')[0] == '':
             _add_module(loader, module_name)
 
+
 def citation_information_to_dict(ci):
     """
     Return a dictrionary representation of citation information.
@@ -49,6 +51,7 @@ def citation_information_to_dict(ci):
         'endnote': ci.endnote,
         'bibtex': ci.bibtex
     }
+
 
 def plugin_to_dict(name, p):
     """
@@ -81,6 +84,7 @@ def plugin_to_dict(name, p):
         'parameters': parameters,
     }
 
+
 def plugin_list_entry_to_dict(p):
     # Get plugin details
     pl = pu.plugins[p['name']]()
@@ -106,6 +110,7 @@ def plugin_list_entry_to_dict(p):
 
     return data
 
+
 def check_hdf5_file(filename, hdf5_paths):
     """
     Checks if a file is a valid HDF5 file and contains a set of paths.
@@ -129,6 +134,7 @@ def check_hdf5_file(filename, hdf5_paths):
         # couldn't use this file anyway)
         return False
 
+
 def is_file_a_data_file(filename):
     """
     Checks if a file is valid raw tomography data.
@@ -140,6 +146,7 @@ def is_file_a_data_file(filename):
     # TODO: can this check be improved? (e.g. checking for specific entries)
     return check_hdf5_file(filename, [])
 
+
 def is_file_a_process_list(filename):
     """
     Checks if a file is a process list.
@@ -150,6 +157,7 @@ def is_file_a_process_list(filename):
         - HDF5 path /entry/plugin is present in file
     """
     return check_hdf5_file(filename, ['/entry/plugin'])
+
 
 def validate_file(filename, pred):
     """
@@ -163,6 +171,7 @@ def validate_file(filename, pred):
 
     return pred(filename)
 
+
 def to_bool(val, default=False):
     """
     Attempts to convert something to a boolean in a sensible way.
@@ -175,6 +184,7 @@ def to_bool(val, default=False):
 
     from distutils.util import strtobool
     return bool(strtobool(val))
+
 
 def create_process_list_from_user_data(data):
     """
@@ -192,8 +202,7 @@ def create_process_list_from_user_data(data):
         # Set plugin enable state
         process_list.on_and_off(
             pos,
-            const.PLUGIN_ENABLED if pl['active'] else const.PLUGIN_DISABLED
-        )
+            const.PLUGIN_ENABLED if pl['active'] else const.PLUGIN_DISABLED)
 
         # Set parameter values
         for param in pl['parameters']:
@@ -201,12 +210,14 @@ def create_process_list_from_user_data(data):
 
     return process_list
 
+
 def find_files_recursive(path, pred):
     for dirpath, dirnames, filenames in os.walk(path, followlinks=False):
         for fn in filenames:
             ffn = os.path.join(dirpath, fn)
             if pred(ffn):
                 yield ffn
+
 
 def stringify_parameter_value(value):
     """

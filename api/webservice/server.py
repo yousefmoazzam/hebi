@@ -2,14 +2,7 @@ import glob
 import os
 import os.path
 
-from flask import (
-    Flask,
-    jsonify,
-    request,
-    abort,
-    make_response,
-    send_file
-)
+from flask import (Flask, jsonify, request, abort, make_response, send_file)
 from flask.json import JSONEncoder
 from flask_api import status
 from flask_cors import CORS
@@ -21,16 +14,10 @@ import voluptuous
 import savu.plugins.utils as pu
 from scripts.config_generator.content import Content
 
-from utils import (
-    plugin_to_dict,
-    plugin_list_entry_to_dict,
-    is_file_a_data_file,
-    is_file_a_process_list,
-    validate_file,
-    to_bool,
-    create_process_list_from_user_data,
-    find_files_recursive
-)
+from utils import (plugin_to_dict, plugin_list_entry_to_dict,
+                   is_file_a_data_file, is_file_a_process_list, validate_file,
+                   to_bool, create_process_list_from_user_data,
+                   find_files_recursive)
 from execution import NoSuchJobError
 import const
 import validation
@@ -49,7 +36,8 @@ CORS(app)
 
 def setup_runners():
     import importlib
-    for queue_name, runner in app.config[const.CONFIG_NAMESPACE_SAVU][const.CONFIG_KEY_JOB_RUNNERS].iteritems():
+    for queue_name, runner in app.config[const.CONFIG_NAMESPACE_SAVU][
+            const.CONFIG_KEY_JOB_RUNNERS].iteritems():
         # Create an instance of the job runner
         m = importlib.import_module(runner[const.CONFIG_KEY_RUNNER_MODULE])
         c = getattr(m, runner[const.CONFIG_KEY_RUNNER_CLASS])
@@ -64,10 +52,15 @@ def setup_runners():
                 for job_id, job in runner._jobs.items():
                     ws_send_job_status(qn, job_id)
                 socketio.sleep(2)
-        socketio.start_background_task(send_updates_thread_fun, queue_name, runner[const.CONFIG_KEY_RUNNER_INSTANCE])
+
+        socketio.start_background_task(send_updates_thread_fun, queue_name,
+                                       runner[const.CONFIG_KEY_RUNNER_INSTANCE])
+
 
 def validate_config():
-    validation.server_configuration_schema(app.config[const.CONFIG_NAMESPACE_SAVU])
+    validation.server_configuration_schema(
+        app.config[const.CONFIG_NAMESPACE_SAVU])
+
 
 @app.route('/plugin')
 def query_plugin_list():
@@ -83,6 +76,7 @@ def query_plugin_list():
     validation.query_plugin_list_schema(plugin_names)
     return jsonify(plugin_names)
 
+
 @app.route('/plugin/<name>')
 def get_plugin_info(name):
     if name not in pu.plugins:
@@ -97,6 +91,7 @@ def get_plugin_info(name):
     validation.get_plugin_info_schema(data)
     return jsonify(data)
 
+
 @app.route('/process_list')
 def process_list_list():
     # Listing process list files in a given search directory
@@ -107,7 +102,8 @@ def process_list_list():
 
         data = {
             const.KEY_PATH: abs_path,
-            const.KEY_FILES: list(find_files_recursive(abs_path, is_file_a_process_list)),
+            const.KEY_FILES: list(
+                find_files_recursive(abs_path, is_file_a_process_list)),
         }
 
         validation.filename_listing_schema(data)
@@ -129,16 +125,14 @@ def process_list_list():
         plugins = [plugin_list_entry_to_dict(p) for \
                    p in process_list.plugin_list.plugin_list]
 
-        data = {
-            const.KEY_FILENAME: fname,
-            const.KEY_PLUGINS: plugins
-        }
+        data = {const.KEY_FILENAME: fname, const.KEY_PLUGINS: plugins}
 
         validation.process_list_list_filename_schema(data)
         return jsonify(data)
 
     else:
         abort(status.HTTP_400_BAD_REQUEST)
+
 
 @app.route('/process_list', methods=['POST'])
 def process_list_create():
@@ -164,6 +158,7 @@ def process_list_create():
     # Handle process list view
     return process_list_list()
 
+
 @app.route('/process_list', methods=['PUT'])
 def process_list_update():
     fname = request.args.get(const.KEY_FILENAME)
@@ -187,6 +182,7 @@ def process_list_update():
     # Handle process list view
     return process_list_list()
 
+
 @app.route('/process_list', methods=['DELETE'])
 def process_list_delete():
     fname = request.args.get(const.KEY_FILENAME)
@@ -205,6 +201,7 @@ def process_list_delete():
     validation.process_list_delete_schema(data)
     return jsonify(data)
 
+
 @app.route('/process_list/download')
 def process_list_download():
     fname = request.args.get(const.KEY_FILENAME)
@@ -214,6 +211,7 @@ def process_list_download():
         abort(status.HTTP_404_NOT_FOUND)
 
     return send_file(fname)
+
 
 @app.route('/data/find')
 def data_find():
@@ -226,11 +224,13 @@ def data_find():
 
     data = {
         const.KEY_PATH: abs_path,
-        const.KEY_FILES: list(find_files_recursive(abs_path, is_file_a_data_file)),
+        const.KEY_FILES: list(
+            find_files_recursive(abs_path, is_file_a_data_file)),
     }
 
     validation.filename_listing_schema(data)
     return jsonify(data)
+
 
 @app.route('/jobs/<queue>/submit')
 def jobs_queue_submit(queue):
@@ -247,21 +247,26 @@ def jobs_queue_submit(queue):
         abort(status.HTTP_404_NOT_FOUND)
 
     # Start job
-    job = app.config[const.CONFIG_NAMESPACE_SAVU][const.CONFIG_KEY_JOB_RUNNERS][queue][const.CONFIG_KEY_RUNNER_INSTANCE].start_job(
-            dataset, process_list, output)
+    job = app.config[const.CONFIG_NAMESPACE_SAVU][
+        const.CONFIG_KEY_JOB_RUNNERS][queue][
+            const.CONFIG_KEY_RUNNER_INSTANCE].start_job(dataset, process_list,
+                                                        output)
 
     return jobs_queue_info(queue, job)
 
+
 @app.route('/jobs/<queue_name>/<job_id>')
 def jobs_queue_info(queue_name, job_id):
-    queue = app.config[const.CONFIG_NAMESPACE_SAVU][const.CONFIG_KEY_JOB_RUNNERS].get(queue_name)
+    queue = app.config[const.CONFIG_NAMESPACE_SAVU][
+        const.CONFIG_KEY_JOB_RUNNERS].get(queue_name)
     if queue is None:
         abort(status.HTTP_404_NOT_FOUND)
 
     try:
         data = {
             const.KEY_QUEUE_ID: queue_name,
-            const.KEY_JOB_ID: queue[const.CONFIG_KEY_RUNNER_INSTANCE].job(job_id).to_dict(),
+            const.KEY_JOB_ID: queue[const.CONFIG_KEY_RUNNER_INSTANCE].job(
+                job_id).to_dict(),
         }
 
         validation.jobs_queue_info_schema(data)
@@ -269,6 +274,7 @@ def jobs_queue_info(queue_name, job_id):
 
     except NoSuchJobError:
         abort(status.HTTP_404_NOT_FOUND)
+
 
 @app.route('/default_paths')
 def data_default_path():
@@ -283,8 +289,10 @@ def data_default_path():
 
     return jsonify(data)
 
+
 def ws_send_job_status(queue_name, job_id):
-    queue = app.config[const.CONFIG_NAMESPACE_SAVU]['job_runners'].get(queue_name)
+    queue = app.config[const.CONFIG_NAMESPACE_SAVU]['job_runners'].get(
+        queue_name)
     data = {
         const.KEY_QUEUE_ID: queue_name,
         const.KEY_JOB_ID: queue['instance'].job(job_id).to_dict(),
@@ -293,7 +301,12 @@ def ws_send_job_status(queue_name, job_id):
     validation.jobs_queue_info_schema(data)
 
     room = queue_name + '/' + job_id
-    socketio.emit(const.EVENT_JOB_STATUS, data, room=room, namespace=const.WS_NAMESPACE_JOB_STATUS)
+    socketio.emit(
+        const.EVENT_JOB_STATUS,
+        data,
+        room=room,
+        namespace=const.WS_NAMESPACE_JOB_STATUS)
+
 
 @socketio.on('join', namespace=const.WS_NAMESPACE_JOB_STATUS)
 def ws_on_join_job_status(data):
@@ -301,6 +314,7 @@ def ws_on_join_job_status(data):
     join_room(room)
     # Send an update now to ensure client is up to date
     ws_send_job_status(data[const.KEY_QUEUE_ID], data[const.KEY_JOB_ID])
+
 
 @socketio.on('leave', namespace=const.WS_NAMESPACE_JOB_STATUS)
 def ws_on_leave_job_status(data):

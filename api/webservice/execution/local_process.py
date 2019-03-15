@@ -8,7 +8,6 @@ from webservice.execution import Job, JobRunner
 
 
 class LocalProcessJob(Job):
-
     def __init__(self, data_path, process_list, output_path):
         # We get the name of the directory as per running savu without the
         # --folder argument.
@@ -53,7 +52,7 @@ class LocalProcessJob(Job):
 
     def output_dataset(self):
         candidate_files = glob.glob(
-                os.path.join(self._full_output_path, "*_processed.nxs"))
+            os.path.join(self._full_output_path, "*_processed.nxs"))
         return None if len(candidate_files) == 0 else candidate_files[0]
 
 
@@ -64,4 +63,4 @@ class LocalProcessJobRunner(JobRunner):
 
     def start_job(self, data_path, process_list, output_path):
         return self._add_job(
-                LocalProcessJob(data_path, process_list, output_path))
+            LocalProcessJob(data_path, process_list, output_path))

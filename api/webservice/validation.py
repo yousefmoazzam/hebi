@@ -1,6 +1,5 @@
 from voluptuous import Schema, Required, Optional, All, Any, Length, Number, Extra
 
-
 _string = Any(str, unicode)
 
 _non_empty_string = All(_string, Length(min=1))
@@ -26,7 +25,6 @@ _parameter_full.update({
     Required('is_user'): bool,
     Required('is_hidden'): bool,
 })
-
 
 _plugin_basic = {
     Required('name'): _non_empty_string,
@@ -63,9 +61,7 @@ server_configuration_schema = Schema({
     }
 })
 
-query_plugin_list_schema = Schema(
-    [_non_empty_string]
-)
+query_plugin_list_schema = Schema([_non_empty_string])
 
 get_plugin_info_schema = Schema({
     Required('name'): _non_empty_string,
