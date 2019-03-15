@@ -28,16 +28,14 @@ def cli(ctx, uid, gid, namespace):
 @click.pass_context
 def start(ctx):
     uid, gid, ns = ctx.obj["uid"], ctx.obj["gid"], ctx.obj["namespace"]
-    rv = pod.start_user_pod(kube, ns, uid, gid)
-    click.echo(rv)
+    pod.start_user_pod(kube, ns, uid, gid)
 
 
 @cli.command()
 @click.pass_context
 def stop(ctx):
     uid, gid, ns = ctx.obj["uid"], ctx.obj["gid"], ctx.obj["namespace"]
-    rv = pod.stop_user_pod(kube, ns, uid, gid)
-    click.echo(rv)
+    pod.stop_user_pod(kube, ns, uid, gid)
 
 
 if __name__ == "__main__":
