@@ -1,3 +1,4 @@
+// Provides user controls for finding files.
 class FileFinder {
   constructor(container, findFunc, actions) {
     this.findFunc = findFunc;
@@ -33,6 +34,7 @@ class FileFinder {
     this.tableBody = newElement("tbody", resultsTable);
   }
 
+  // Updates the listed files with those found at a given path.
   updateListing = (searchPath) => {
     if (searchPath == null) {
       // Get search path from input field

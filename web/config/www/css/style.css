@@ -8,18 +8,22 @@ div.scroll {
   padding-right: 5pt;
 }
 
+/* Removes underline from help links */
 span.help {
   border-bottom: none;
 }
 
+/* Text representing good outcome (e.g. job completed) */
 span.good {
   color: green;
 }
 
+/* Text representing indifferent/undefined outcome (e.g. job in progress) */
 span.amber {
   color: orange;
 }
 
+/* Text representing bad outcome (e.g. job failed) */
 span.bad {
   color: red;
 }

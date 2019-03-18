@@ -1,3 +1,4 @@
+// Used to display dataset previews with user defined slice parameters.
 class DatasetPreview {
   constructor(container, alwaysResetSliceParameters) {
     this.alwaysResetSliceParameters = alwaysResetSliceParameters;
@@ -5,10 +6,13 @@ class DatasetPreview {
     this.dataFile = null;
     this.shape = null;
 
-    // Slice controls
+    // Slice controls: text box and "Apply" button
     var slice = newElementOfClass("div", "input-group no-bottom-margin", container);
+    // Slice parameters must be supplied as a string by the user and manually
+    // applied.
     foundationInputLabel("Slice", slice);
     this.sliceInput = foundationTextInput(slice);
+    // Image is updated when the user clicks on the "Apply" button
     var sliceButton = foundationButton("Apply", "", slice);
     sliceButton.addEventListener("click", () => {
       this.updateImage();
@@ -18,6 +22,7 @@ class DatasetPreview {
     this.image = newElementOfClass("img", "preview", container);
   }
 
+  // Sets the currently displayed data file.
   setDataFile = (filename) => {
     // Record filename
     this.dataFile = filename;
@@ -45,6 +50,7 @@ class DatasetPreview {
     });
   }
 
+  // Updates the image URL triggering the image to be reloaded in the browser.
   updateImage = () => {
     var url = jpegSliceUrl(this.dataFile, this.sliceInput.value);
     this.image.setAttribute("src", url);
