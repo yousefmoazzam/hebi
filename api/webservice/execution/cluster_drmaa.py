@@ -3,6 +3,7 @@ import os
 
 import drmaa
 
+# TODO
 # from savu.tomo_recon import __get_folder_name as get_folder_name
 def get_folder_name(a):
     return a
@@ -22,21 +23,20 @@ class DRMAAJob(Job):
 
         self._full_output_path = os.path.join(output_path, output_subdir)
 
-        jt = self._cluster.createJobTemplate()
+        job = self._cluster.createJobTemplate()
         # TODO
-        # self._process = subprocess.Popen([
-        #     "savu",
-        #     data_path,
-        #     process_list,
-        #     output_path,
-        #     "--folder",
-        #     output_subdir,
-        # ])
-        jt.remoteCommand = '/dls/tmp/ibn32760/test_sleep.sh'
+        # job.workingDirectory = output_path
+        job.remoteCommand = '/dls/tmp/ibn32760/test_sleep.sh'
+        job.args = [
+            data_path,
+            process_list,
+            output_path,
+            "--folder",
+            output_subdir,
+        ]
 
-        self._job_id = self._cluster.runJob(jt)
-
-        self._cluster.deleteJobTemplate(jt)
+        self._job_id = self._cluster.runJob(job)
+        self._cluster.deleteJobTemplate(job)
 
     def id(self):
         return str(self._job_id)
