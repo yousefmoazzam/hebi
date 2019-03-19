@@ -57,6 +57,12 @@ def setup_runners():
                                        runner[const.CONFIG_KEY_RUNNER_INSTANCE])
 
 
+def teardown_runners():
+    for _, v in app.config[const.CONFIG_NAMESPACE_SAVU][
+            const.CONFIG_KEY_JOB_RUNNERS]:
+        v[const.CONFIG_KEY_RUNNER_INSTANCE].close()
+
+
 def validate_config():
     validation.server_configuration_schema(
         app.config[const.CONFIG_NAMESPACE_SAVU])

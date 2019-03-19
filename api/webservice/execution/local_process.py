@@ -33,9 +33,6 @@ class LocalProcessJob(Job):
     def terminate(self):
         self._process.terminate()
 
-    def wait(self):
-        self._process.wait()
-
     def running(self):
         status = self._process.poll()
         return status is None

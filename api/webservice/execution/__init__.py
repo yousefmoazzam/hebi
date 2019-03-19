@@ -25,9 +25,6 @@ class Job(object):
     def terminate(self):
         raise NotImplementedError()
 
-    def wait(self):
-        raise NotImplementedError()
-
     def running(self):
         raise NotImplementedError()
 
@@ -48,6 +45,9 @@ class JobRunner(object):
 
     def __init__(self):
         self._jobs = {}
+
+    def close(self):
+        pass
 
     def _add_job(self, job):
         identifier = job.id()

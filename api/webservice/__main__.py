@@ -11,3 +11,4 @@ server.validate_config()
 server.setup_runners()
 
 server.socketio.run(server.app, port=5000)
+server.teardown_runners()
