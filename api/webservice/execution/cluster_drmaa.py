@@ -6,7 +6,7 @@ import drmaa
 # TODO
 # from savu.tomo_recon import __get_folder_name as get_folder_name
 def get_folder_name(a):
-    return a
+    return '_output'
 
 from webservice.execution import Job, JobRunner
 
@@ -24,9 +24,9 @@ class DRMAAJob(Job):
         self._full_output_path = os.path.join(output_path, output_subdir)
 
         job = self._cluster.createJobTemplate()
-        # TODO
-        # job.workingDirectory = output_path
-        job.remoteCommand = '/dls/tmp/ibn32760/test_sleep.sh'
+        job.nativeSpecification = "-q high.q@@com14 -P tomography -l exclusive -l gpu=2 -l gpu_arch=Pascal"
+        job.remoteCommand = '/dls/tmp/ibn32760/hebi_cluster_submit.sh'
+        job.workingDirectory = output_path
         job.args = [
             data_path,
             process_list,
