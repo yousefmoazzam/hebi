@@ -1,6 +1,7 @@
 FROM dannixon/savu:latest
 
 RUN /miniconda/bin/pip install \
+  drmaa \
   flask \
   flask_api \
   flask_cors \

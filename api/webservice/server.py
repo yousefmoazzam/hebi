@@ -41,7 +41,8 @@ def setup_runners():
         # Create an instance of the job runner
         m = importlib.import_module(runner[const.CONFIG_KEY_RUNNER_MODULE])
         c = getattr(m, runner[const.CONFIG_KEY_RUNNER_CLASS])
-        runner[const.CONFIG_KEY_RUNNER_INSTANCE] = c()
+        params = runner[const.CONFIG_KEY_RUNNER_PARAMETERS]
+        runner[const.CONFIG_KEY_RUNNER_INSTANCE] = c(**params)
 
         def send_updates_thread_fun(qn, runner):
             """

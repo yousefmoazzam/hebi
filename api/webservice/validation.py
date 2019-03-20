@@ -57,6 +57,7 @@ server_configuration_schema = Schema({
         Extra: {
             Required("module"): _non_empty_string,
             Required("class"): _non_empty_string,
+            Required("parameters"): dict,
         }
     }
 })

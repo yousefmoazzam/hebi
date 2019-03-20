@@ -3,6 +3,7 @@ CONFIG_KEY_JOB_RUNNERS = 'job_runners'
 CONFIG_KEY_RUNNER_INSTANCE = 'instance'
 CONFIG_KEY_RUNNER_MODULE = 'module'
 CONFIG_KEY_RUNNER_CLASS = 'class'
+CONFIG_KEY_RUNNER_PARAMETERS = 'parameters'
 
 KEY_DATASET = 'dataset'
 KEY_FILENAME = 'filename'
