@@ -12,7 +12,7 @@ from webservice.execution import Job, JobRunner
 
 
 class DRMAAJob(Job):
-    def __init__(self, cluster, data_path, process_list, output_path):
+    def __init__(self, cluster, template, data_path, process_list, output_path):
         self._cluster = cluster
 
         # We get the name of the directory as per running savu without the
@@ -23,11 +23,8 @@ class DRMAAJob(Job):
 
         self._full_output_path = os.path.join(output_path, output_subdir)
 
-        job = self._cluster.createJobTemplate()
-        job.nativeSpecification = "-q high.q@@com14 -P tomography -l exclusive -l gpu=2 -l gpu_arch=Pascal"
-        job.remoteCommand = '/dls/tmp/ibn32760/hebi_cluster_submit.sh'
-        job.workingDirectory = output_path
-        job.args = [
+        template.workingDirectory = output_path
+        template.args = [
             data_path,
             process_list,
             output_path,
@@ -35,8 +32,7 @@ class DRMAAJob(Job):
             output_subdir,
         ]
 
-        self._job_id = self._cluster.runJob(job)
-        self._cluster.deleteJobTemplate(job)
+        self._job_id = self._cluster.runJob(template)
 
     def id(self):
         return str(self._job_id)
@@ -82,6 +78,10 @@ class DRMAAJobRunner(JobRunner):
     def __init__(self):
         super(DRMAAJobRunner, self).__init__()
 
+        # TODO: make these parametes to the constructor
+        self._submit_command = '/dls/tmp/ibn32760/hebi_cluster_submit.sh'
+        self._native_specifications = "-q high.q@@com14 -P tomography -l exclusive -l gpu=2 -l gpu_arch=Pascal"
+
         self._drmaa = drmaa.Session()
         self._drmaa.initialize()
 
@@ -89,5 +89,15 @@ class DRMAAJobRunner(JobRunner):
         self._drmaa.exit()
 
     def start_job(self, data_path, process_list, output_path):
-        return self._add_job(
-            DRMAAJob(self._drmaa, data_path, process_list, output_path))
+        template = self._job_template()
+        job = self._add_job(
+            DRMAAJob(self._drmaa, template, data_path, process_list, output_path))
+        self._drmaa.deleteJobTemplate(template)
+        return job
+
+    def _job_template(self):
+        job = self._drmaa.createJobTemplate()
+        job.remoteCommand = self._submit_command
+        job.nativeSpecification = self._native_specifications
+        job.joinFiles = True
+        return job
