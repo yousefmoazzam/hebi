@@ -12,11 +12,13 @@
         "job_runners": {
             "preview": {
                 "module": "webservice.execution.local_process",
-                "class": "LocalProcessJobRunner"
+                "class": "LocalProcessJobRunner",
+                "parameters": {}
             },
             "full": {
                 "module": "webservice.execution.local_process",
-                "class": "LocalProcessJobRunner"
+                "class": "LocalProcessJobRunner",
+                "parameters": {}
             }
         }
     }

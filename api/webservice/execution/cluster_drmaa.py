@@ -80,7 +80,7 @@ class DRMAAJobRunner(JobRunner):
 
         # TODO: make these parametes to the constructor
         self._submit_command = '/dls/tmp/ibn32760/hebi_cluster_submit.sh'
-        self._native_specifications = "-q high.q@@com14 -P tomography -l exclusive -l gpu=2 -l gpu_arch=Pascal"
+        self._native_specification = "-q high.q@@com14 -P tomography -l exclusive -l gpu=2 -l gpu_arch=Pascal"
 
         self._drmaa = drmaa.Session()
         self._drmaa.initialize()
@@ -98,6 +98,6 @@ class DRMAAJobRunner(JobRunner):
     def _job_template(self):
         job = self._drmaa.createJobTemplate()
         job.remoteCommand = self._submit_command
-        job.nativeSpecification = self._native_specifications
+        job.nativeSpecification = self._native_specification
         job.joinFiles = True
         return job
