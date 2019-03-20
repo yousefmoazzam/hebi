@@ -10,6 +10,7 @@ RUN /miniconda/bin/pip install \
   voluptuous
 
 ADD . /webservice
+ADD ./config/dev.json /hebi_config.json
 
 # Expose API port
 EXPOSE 5000
