@@ -1,13 +1,13 @@
 {
     "SAVU": {
         "data_location": {
-            "default": "/data/data"
+            "default": ""
         },
         "process_list_location": {
-            "default": "/data"
+            "default": ""
         },
         "output_location": {
-            "default": "/data/output"
+            "default": ""
         },
         "job_runners": {
             "preview": {

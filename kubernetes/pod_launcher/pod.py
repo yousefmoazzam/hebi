@@ -24,10 +24,9 @@ def user_pod_manifest(uid, gid):
                     "image": "dannixon/dawn-dataserver:latest",
                     "volumeMounts": [
                         {
-                            "mountPath": "/data",
+                            "mountPath": "/dls/tmp",
                             "name": "vol-dlstmp",
                             "readonly": True,
-                            "subPath": "ibn32760",
                         },
                     ],
                 },
@@ -46,9 +45,8 @@ def user_pod_manifest(uid, gid):
                     ],
                     "volumeMounts": [
                         {
-                            "mountPath": "/data",
+                            "mountPath": "/dls/tmp",
                             "name": "vol-dlstmp",
-                            "subPath": "ibn32760",
                         },
                     ],
                 },
