@@ -1,14 +1,9 @@
 FROM dannixon/savu:latest
 
-RUN /miniconda/bin/pip install \
-  drmaa \
-  flask \
-  flask_api \
-  flask_cors \
-  flask-socketio \
-  fuzzywuzzy \
-  json_tricks \
-  voluptuous
+ADD requirements.txt \
+    /requirements.txt
+RUN /miniconda/bin/pip install -r /requirements.txt && \
+    rm /requirements.txt
 
 ADD . /webservice
 ADD ./config/dev.json /hebi_config.json

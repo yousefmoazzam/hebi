@@ -1,0 +1,8 @@
+drmaa
+flask
+flask_api
+flask_cors
+flask-socketio
+fuzzywuzzy
+json_tricks
+voluptuous
