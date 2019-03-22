@@ -4,7 +4,12 @@ A simple RESTful API on top of Savu that provides the core functionality of
 `savu-config` and an abstract job queue interface.
 
 This is deployed via a Docker image that extends an existing [Savu
-image](https://github.com/DanNixon/dockerfiles/tree/master/savu).
+image](https://github.com/DanNixon/dockerfiles/tree/master/savu). The base Savu
+image defines what version of Savu the webapp will "appear as" (i.e. what
+plugins are available, etc.).
+
+If versioning is impelmented it is bets to do so via multiple API images created
+from each version of the Savu image that is desired.
 
 ## API reference
 
