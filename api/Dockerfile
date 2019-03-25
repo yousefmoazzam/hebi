@@ -1,12 +1,17 @@
 FROM dannixon/savu:latest
 
+# Install additional Python dependencies
 ADD requirements.txt \
     /requirements.txt
 RUN /miniconda/bin/pip install -r /requirements.txt && \
     rm /requirements.txt
 
+# Add Python application
 ADD . /webservice
-ADD ./config/dev.json /hebi_config.json
+
+# Copy API application configuration
+ADD ./config/dls.json \
+    /hebi_config.json
 
 # Expose API port
 EXPOSE 5000

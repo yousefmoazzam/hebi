@@ -41,6 +41,9 @@ class FileFinder {
       searchPath = this.searchPathInput.value;
     }
 
+    // Set search box to path to query
+    this.searchPathInput.value = searchPath;
+
     // Get search results
     this.findFunc(searchPath, (data) => {
       // Update search path field with actual query path

@@ -11,20 +11,14 @@
         },
         "job_runners": {
             "preview": {
-                "module": "webservice.execution.cluster_drmaa",
-                "class": "DRMAAJobRunner",
-                "parameters": {
-                  "submit_command": "/dls/tmp/ibn32760/hebi_cluster_submit.sh",
-                  "native_specification": "-q high.q@@com14 -P tomography -l exclusive -l gpu=2 -l gpu_arch=Pascal"
-                }
+                "module": "webservice.execution.local_process",
+                "class": "LocalProcessJobRunner",
+                "parameters": {}
             },
             "full": {
-                "module": "webservice.execution.cluster_drmaa",
-                "class": "DRMAAJobRunner",
-                "parameters": {
-                  "submit_command": "/dls/tmp/ibn32760/hebi_cluster_submit.sh",
-                  "native_specification": "-q high.q@@com14 -P tomography -l exclusive -l gpu=2 -l gpu_arch=Pascal"
-                }
+                "module": "webservice.execution.local_process",
+                "class": "LocalProcessJobRunner",
+                "parameters": {}
             }
         }
     }
