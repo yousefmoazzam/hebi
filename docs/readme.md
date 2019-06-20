@@ -224,9 +224,13 @@ Start:
   - Push the built images (`hebi-api` and `hebi-web`)
   - Start a user pod
     - `cd kubernetes/pod_launcher/`
-      - `./main.py -u [your user id] start`
+      - Ensure dependencies for this tool are installed
+        - `pip install --user -r requirements.txt`
+      - `./main.py -u [your UNIX user id] start`
+  - Wait for the pod to be fully available
+    - Query status using: `kubectl get pod/uid[your UNIX user id]`
   - Determine the node port
-    - `kubectl get service/uid[your user id]`
+    - `kubectl get service/uid[your UNIX user id]`
   - Access the demo at the URL: `http://[node ip]:[node port]`
 
 Stop:
