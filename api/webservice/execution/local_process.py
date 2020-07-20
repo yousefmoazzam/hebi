@@ -52,6 +52,15 @@ class LocalProcessJob(Job):
             os.path.join(self._full_output_path, "*_processed.nxs"))
         return None if len(candidate_files) == 0 else candidate_files[0]
 
+    def logfile_contents(self):
+        job_logfile = os.path.join(self._full_output_path, 'user.log')
+        if os.path.exists(job_logfile):
+            with open(job_logfile, 'rb') as log:
+                logfile_contents = log.read().split('\n')
+        else:
+            logfile_contents = ['']
+        return logfile_contents
+
 
 class LocalProcessJobRunner(JobRunner):
     """

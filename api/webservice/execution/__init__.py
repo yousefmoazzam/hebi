@@ -17,6 +17,7 @@ class Job(object):
             "successful": self.successful(),
             "status": self.status(),
             "output_dataset": self.output_dataset(),
+            "logfile": self.logfile_contents(),
         }
 
     def id(self):
@@ -35,6 +36,9 @@ class Job(object):
         raise NotImplementedError()
 
     def output_dataset(self):
+        raise NotImplementedError()
+
+    def logfile_contents():
         raise NotImplementedError()
 
 

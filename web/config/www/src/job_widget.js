@@ -71,6 +71,11 @@ class JobWidget {
     var statusLine = newElement("p", statusLineContainer);
     statusLine.innerText = "Status: ";
     this.statusText = newElement("span", statusLine);
+
+    // simple display of user.log output using a div to contain the text
+    var logContainer = newElementOfClass("div", "cell", grid);
+    var logLine = newElement("div", logContainer);
+    this.logText = newElement("span", logLine);
   }
 
   setStatusText = (text, textClass) => {
@@ -98,6 +103,7 @@ class JobWidget {
     }
 
     this.setStatusText(text, style);
+    this.logText.innerText = data.job.logfile.join("\n");
 
     // Check for available results
     if (data.job.successful) {

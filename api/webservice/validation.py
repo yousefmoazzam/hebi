@@ -99,5 +99,6 @@ jobs_queue_info_schema = Schema({
         Required('successful'): bool,
         Required('status'): _non_empty_string,
         Required('output_dataset'): Any(None, _non_empty_string),
+        Required('logfile'): [_string],
     },
 })

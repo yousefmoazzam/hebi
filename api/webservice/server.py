@@ -30,7 +30,7 @@ class BetterJsonEncoder(JSONEncoder):
 
 app = Flask('savu')
 app.json_encoder = BetterJsonEncoder
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode='threading', cors_allowed_origins='*')
 CORS(app)
 
 
