@@ -2,7 +2,7 @@ import glob
 import os
 import subprocess
 
-from savu.tomo_recon import __get_folder_name as get_folder_name
+from savu.tomo_recon import __create_folder_name as create_folder_name
 
 from webservice.execution import Job, JobRunner
 
@@ -13,7 +13,7 @@ class LocalProcessJob(Job):
         # --folder argument.
         # This allows us to know what the actual output directory will be so we
         # can determine the output data filename.
-        output_subdir = get_folder_name(data_path)
+        output_subdir = create_folder_name(data_path).split('.')[0]
 
         self._full_output_path = os.path.join(output_path, output_subdir)
 
