@@ -79,7 +79,7 @@ def plugin_to_dict(name, p):
         'name': name,
         'info': p.docstring_info.get('info'),
         'synopsis': p.docstring_info.get('synopsis'),
-        'warn': p.docstring_info.get('warn'),
+        'warn': str(p.docstring_info.get('warn')),
         'citation': [citation_information_to_dict(c) for c in cite],
         'parameters': parameters,
     }
