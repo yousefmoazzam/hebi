@@ -58,14 +58,17 @@ def plugin_to_dict(name, p):
     Returns a dictionary representation of a plugin in a given state.
     """
     parameters = []
-    for param_name in p.parameters.keys():
+    for param_name in p.tools.param.get_dictionary().keys():
+        description = p.tools.param.get_dictionary()[param_name]['description']
+        if not isinstance(description, str):
+            description = \
+                p.tools.param.get_dictionary()[param_name]['description']['summary']
+
         parameters.append({
             'name': param_name,
             'value': stringify_parameter_value(p.parameters[param_name]),
-            'type': p.parameters_types[param_name].__name__,
-            'description': p.parameters_desc[param_name],
-            'is_user': param_name in p.parameters_user,
-            'is_hidden': param_name in p.parameters_hide,
+            'type': p.tools.param.get_dictionary()[param_name]['dtype'],
+            'description': description,
         })
 
     cite = p.get_citation_information()
@@ -94,12 +97,14 @@ def plugin_list_entry_to_dict(p):
     # Format parameters
     parameters = []
     for pn in p['data'].keys():
+        description = p['param'][pn]['description']
+        if not isinstance(description, str):
+            description = p['param'][pn]['description']['summary']
+
         parameters.append({
             'name': pn,
             'value': stringify_parameter_value(p['data'][pn]),
-            'description': p['desc'][pn],
-            'is_user': pn in p['user'],
-            'is_hidden': pn in p['hide'],
+            'description': description,
         })
 
     data.update({
