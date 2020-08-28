@@ -22,6 +22,7 @@ _parameter_full = _parameter_basic.copy()
 _parameter_full.update({
     Required('description'): _non_empty_string,
     Optional('type'): _non_empty_string,
+    Optional('visibility'): _non_empty_string,
 })
 
 _plugin_basic = {

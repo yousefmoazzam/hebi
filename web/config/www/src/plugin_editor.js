@@ -152,25 +152,27 @@ class PluginEditor {
 
     // Add parameters
     for (var parameterIdx in plugin.parameters) {
-      var parameter = plugin.parameters[parameterIdx];
-      var tableRow = newElement("tr", tableBody);
+      if (plugin.parameters[parameterIdx]["visibility"] !== "hidden") {
+        var parameter = plugin.parameters[parameterIdx];
+        var tableRow = newElement("tr", tableBody);
 
-      // Parameter label
-      var labelTd = newElementOfClass("td", "parameter-name", tableRow);
-      labelTd.innerText = parameter.name;
-      helpIcon(parameter.description, labelTd);
+        // Parameter label
+        var labelTd = newElementOfClass("td", "parameter-name", tableRow);
+        labelTd.innerText = parameter.name;
+        helpIcon(parameter.description, labelTd);
 
-      // Parameter value
-      var valueTd = newElement("td", tableRow);
-      var valueEdit = newElementOfClass("input", "parameter-value", valueTd);
-      valueEdit.setAttribute("type", "text");
-      valueEdit.value = parameter.value;
+        // Parameter value
+        var valueTd = newElement("td", tableRow);
+        var valueEdit = newElementOfClass("input", "parameter-value", valueTd);
+        valueEdit.setAttribute("type", "text");
+        valueEdit.value = parameter.value;
 
-      // Record UI elements
-      elements.parameters.push({
-        "name": parameter.name,
-        "field": valueEdit,
-      });
+        // Record UI elements
+        elements.parameters.push({
+          "name": parameter.name,
+          "field": valueEdit,
+        });
+      }
     }
 
     // Record UI elements

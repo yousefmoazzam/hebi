@@ -18,11 +18,13 @@ function selectPlugin(name) {
     // Add new parameters
     var parameterTable = document.getElementById("selected_plugin_parameter_table_body");
     for (var param of plugin.parameters) {
-      var row = newElement("tr", parameterTable);
-      addTableItem(row, param.name);
-      addTableItem(row, param.description);
-      addTableItem(row, param.type);
-      addTableItem(row, param.value);
+      if (param["visibility"] !== "hidden") {
+        var row = newElement("tr", parameterTable);
+        addTableItem(row, param.name);
+        addTableItem(row, param.description);
+        addTableItem(row, param.type);
+        addTableItem(row, param.value);
+      }
     }
 
     // Citation

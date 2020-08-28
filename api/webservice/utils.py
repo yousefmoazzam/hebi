@@ -69,6 +69,7 @@ def plugin_to_dict(name, p):
             'value': stringify_parameter_value(p.parameters[param_name]),
             'type': p.tools.param.get_dictionary()[param_name]['dtype'],
             'description': description,
+            'visibility': p.tools.param.get_dictionary()[param_name]['visibility'],
         })
 
     cite = p.get_citation_information()
@@ -105,6 +106,7 @@ def plugin_list_entry_to_dict(p):
             'name': pn,
             'value': stringify_parameter_value(p['data'][pn]),
             'description': description,
+            'visibility': p['param'][pn]['visibility'],
         })
 
     data.update({
