@@ -102,12 +102,17 @@ def plugin_list_entry_to_dict(p):
         if not isinstance(description, str):
             description = p['param'][pn]['description']['summary']
 
-        parameters.append({
+        parameter_info = {
             'name': pn,
             'value': stringify_parameter_value(p['data'][pn]),
             'description': description,
             'visibility': p['param'][pn]['visibility'],
-        })
+        }
+
+        if 'options' in p['param'][pn]:
+            parameter_info['options'] = p['param'][pn]['options']
+
+        parameters.append(parameter_info)
 
     data.update({
         'parameters': parameters,

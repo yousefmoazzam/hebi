@@ -2,6 +2,10 @@ input.parameter-value {
   margin: 0 !important;
 }
 
+select.parameter-value {
+  margin: 0 !important;
+}
+
 .action {
   margin: 5px;
 }

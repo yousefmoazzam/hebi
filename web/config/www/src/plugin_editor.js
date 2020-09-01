@@ -162,10 +162,26 @@ class PluginEditor {
         helpIcon(parameter.description, labelTd);
 
         // Parameter value
+        // create a text input field or a dropdown menu based on if the
+        // parameter has a fixed set of input options or not
         var valueTd = newElement("td", tableRow);
-        var valueEdit = newElementOfClass("input", "parameter-value", valueTd);
-        valueEdit.setAttribute("type", "text");
-        valueEdit.value = parameter.value;
+        if ("options" in parameter) {
+          // create dropdown menu
+          var valueEdit = newElementOfClass("select", "parameter-value", valueTd);
+          for (var optionIdx in parameter.options) {
+            var optionElement = document.createElement("option");
+            var option = parameter.options[optionIdx];
+            optionElement.value = option;
+            optionElement.textContent = option;
+            valueEdit.appendChild(optionElement);
+          }
+          valueEdit.value = parameter.value;
+        } else {
+          // create text input field
+          var valueEdit = newElementOfClass("input", "parameter-value", valueTd);
+          valueEdit.setAttribute("type", "text");
+          valueEdit.value = parameter.value;
+        }
 
         // Record UI elements
         elements.parameters.push({
