@@ -152,7 +152,8 @@ class PluginEditor {
 
     // Add parameters
     for (var parameterIdx in plugin.parameters) {
-      if (plugin.parameters[parameterIdx]["visibility"] !== "hidden") {
+      if (plugin.parameters[parameterIdx]["visibility"] !== "hidden" &&
+          plugin.parameters[parameterIdx]["display"] !== "off") {
         var parameter = plugin.parameters[parameterIdx];
         var tableRow = newElement("tr", tableBody);
 
@@ -174,13 +175,21 @@ class PluginEditor {
             optionElement.value = option;
             optionElement.textContent = option;
             valueEdit.appendChild(optionElement);
+            valueEdit.onchange = this.paramValListener;
           }
           valueEdit.value = parameter.value;
+          valueEdit.onfocusin = function () {
+            $(this).data("oldParamVal", $(this).val());
+          };
         } else {
           // create text input field
           var valueEdit = newElementOfClass("input", "parameter-value", valueTd);
           valueEdit.setAttribute("type", "text");
           valueEdit.value = parameter.value;
+          valueEdit.onchange = this.paramValListener;
+          valueEdit.onfocusin = function () {
+            $(this).data("oldParamVal", $(this).val());
+          };
         }
 
         // Record UI elements
@@ -284,5 +293,36 @@ class PluginEditor {
       activeSwitch.getElementsByTagName("input")[0].setAttribute("id", activeId);
       activeSwitch.getElementsByTagName("label")[0].setAttribute("for", activeId);
     }
+  }
+
+  paramValListener = (e) => {
+    var paramName = e.target.parentNode.previousSibling.innerText;
+    var paramValue = e.target.value;
+    var pluginParent = e.target.closest(".plugin");
+    var pluginTitle = pluginParent.firstChild.querySelector(".grid-x")
+      .firstChild.querySelector(".plugin-title");
+    var pluginIndex = parseInt(pluginTitle.children[0].innerText);
+    var pluginName = pluginTitle.children[1].innerText;
+    var processList = this.generateProcessListObject();
+
+    var data = {
+      "processList": processList,
+      "pluginIndex": pluginIndex,
+      "paramName": paramName,
+      "newParamVal": paramValue,
+      "oldParamVal": $(e.target).data("oldParamVal")
+    }
+
+    modifyParamVal(data, (pluginData) => {
+      // replace the plugin with the modified version that has any param
+      // display changes
+      this.deletePluginByIndex(pluginIndex);
+      this.addPlugin(pluginData);
+      this.updatePluginIndices();
+      this.movePluginByIndex(this.pluginElements.length - 1,
+        -(this.pluginElements.length - 1 - pluginIndex));
+    }, () => {
+      alert("Failed to modify plugin parameter value");
+    })
   }
 }

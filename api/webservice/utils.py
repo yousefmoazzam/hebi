@@ -70,6 +70,7 @@ def plugin_to_dict(name, p):
             'type': p.tools.param.get_dictionary()[param_name]['dtype'],
             'description': description,
             'visibility': p.tools.param.get_dictionary()[param_name]['visibility'],
+            'display': p.tools.param.get_dictionary()[param_name]['display'],
         })
 
     cite = p.get_citation_information()
@@ -107,6 +108,7 @@ def plugin_list_entry_to_dict(p):
             'value': stringify_parameter_value(p['data'][pn]),
             'description': description,
             'visibility': p['param'][pn]['visibility'],
+            'display': p['param'][pn]['display'],
         }
 
         if 'options' in p['param'][pn]:

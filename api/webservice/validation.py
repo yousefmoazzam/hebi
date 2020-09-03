@@ -23,6 +23,7 @@ _parameter_full.update({
     Required('description'): _non_empty_string,
     Optional('type'): _non_empty_string,
     Optional('visibility'): _non_empty_string,
+    Optional('display'): _non_empty_string,
     Optional('options'): [_non_empty_string],
 })
 
@@ -63,6 +64,8 @@ server_configuration_schema = Schema({
 })
 
 query_plugin_list_schema = Schema([_non_empty_string])
+
+process_list_entry_schema = Schema(_plugin_full)
 
 get_plugin_info_schema = Schema({
     Required('name'): _non_empty_string,

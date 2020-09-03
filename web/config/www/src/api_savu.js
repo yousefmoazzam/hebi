@@ -49,3 +49,7 @@ function getDefaultPaths(callback, error) {
 function getProcessListDownloadUrl(filename) {
   return "/api/process_list/download?filename=" + filename;
 }
+
+function modifyParamVal(data, callback, error) {
+  jsonPut("/api/plugin/modify_param_val", data, callback, error);
+}
