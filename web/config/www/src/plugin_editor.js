@@ -313,14 +313,34 @@ class PluginEditor {
       "oldParamVal": $(e.target).data("oldParamVal")
     }
 
-    modifyParamVal(data, (pluginData) => {
-      // replace the plugin with the modified version that has any param
-      // display changes
-      this.deletePluginByIndex(pluginIndex);
-      this.addPlugin(pluginData);
-      this.updatePluginIndices();
-      this.movePluginByIndex(this.pluginElements.length - 1,
-        -(this.pluginElements.length - 1 - pluginIndex));
+    modifyParamVal(data, (response) => {
+      // check if param type error text exists
+      var errorNode = e.target.parentNode.querySelector(".param-type-error");
+      if (errorNode !== null) {
+        errorNode.remove();
+      }
+
+      // check if the newest value of the param passed the type check
+      if (response.is_valid){
+        if (e.target.nodeName.toLowerCase() === "input"){
+          e.target.style.border = "1px solid #cacaca";
+        }
+        // replace the plugin with the modified version that has any param
+        // display changes
+        this.deletePluginByIndex(pluginIndex);
+        this.addPlugin(response.plugin_data);
+        this.updatePluginIndices();
+        this.movePluginByIndex(this.pluginElements.length - 1,
+          -(this.pluginElements.length - 1 - pluginIndex));
+      } else {
+        if (e.target.nodeName.toLowerCase() === "input"){
+          e.target.style.border = "medium solid red";
+        }
+        var paramValTypeErrorText = document.createElement("p");
+        paramValTypeErrorText.classList.add("param-type-error");
+        paramValTypeErrorText.innerText = "Type error, must match the type: " + response.dtype;
+        e.target.parentNode.appendChild(paramValTypeErrorText);
+      }
     }, () => {
       alert("Failed to modify plugin parameter value");
     })

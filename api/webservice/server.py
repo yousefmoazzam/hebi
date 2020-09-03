@@ -105,7 +105,7 @@ def modify_param_val():
     user_pl_data = data["processList"]
     plugin_index = int(data["pluginIndex"])
     param_name = data["paramName"]
-    param_value = data["newParamVal"]
+    param_value = str(data["newParamVal"])
 
     plugin_data = user_pl_data['plugins'][plugin_index]
     for i, param in enumerate(plugin_data['parameters']):
@@ -118,15 +118,32 @@ def modify_param_val():
 
     process_list = create_process_list_from_user_data(user_pl_data)
 
-    # modify the plugin param value to be the new value submitted in the UI
-    process_list.modify(str(plugin_index + 1), param_name, param_value)
+    # check if the type of the given param value is the same as the required
+    # type for the param
+    plugin = process_list.plugin_list.plugin_list[plugin_index]
+    cast_param_value = process_list.value(param_value)
+    param_valid = plugin['tools']._is_valid(cast_param_value, param_name)
 
-    # get the new state of the plugin with any changes to param display
-    modified_plugin = process_list.plugin_list.plugin_list[plugin_index]
-    modified_plugin_data = plugin_list_entry_to_dict(modified_plugin)
-    validation.process_list_entry_schema(modified_plugin_data)
+    if param_valid:
+        # modify the plugin param value to be the new value submitted in the UI
+        process_list.modify(str(plugin_index + 1), param_name, param_value)
 
-    return jsonify(modified_plugin_data)
+        # get the new state of the plugin with any changes to param display
+        modified_plugin = process_list.plugin_list.plugin_list[plugin_index]
+        modified_plugin_data = plugin_list_entry_to_dict(modified_plugin)
+        validation.process_list_entry_schema(modified_plugin_data)
+
+        return jsonify({
+            'is_valid': param_valid,
+            'plugin_data': modified_plugin_data
+        })
+    else:
+        required_type = plugin['param'][param_name]['dtype']
+
+        return jsonify({
+            'is_valid': param_valid,
+            'dtype': required_type
+        })
 
 
 @app.route('/process_list')
