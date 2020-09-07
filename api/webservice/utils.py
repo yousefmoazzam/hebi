@@ -58,7 +58,8 @@ def plugin_to_dict(name, p):
     Returns a dictionary representation of a plugin in a given state.
     """
     parameters = []
-    for param_name in p.tools.param.get_dictionary().keys():
+    keys = order_plugin_params(p)
+    for param_name in keys:
         description = p.tools.param.get_dictionary()[param_name]['description']
         if not isinstance(description, str):
             description = \
@@ -96,9 +97,11 @@ def plugin_list_entry_to_dict(p):
     pl._populate_default_parameters()
     data = plugin_to_dict(p['name'], pl)
 
+
     # Format parameters
     parameters = []
-    for pn in p['data'].keys():
+    keys = order_plugin_params(pl)
+    for pn in keys:
         description = p['param'][pn]['description']
         if not isinstance(description, str):
             description = p['param'][pn]['description']['summary']
@@ -238,3 +241,31 @@ def stringify_parameter_value(value):
     See display_formatter.py
     """
     return str(value).replace("'", "")
+
+
+def order_plugin_params(plugin):
+    """
+    Group and order the plugin parameters by their visibility.
+    """
+    # note that this is copying part of the
+    # DisplayFormatter._get_param_details() function from the configurator
+
+    data_keys = []
+    basic_keys = []
+    interm_keys = []
+    adv_keys = []
+
+    for k, v in plugin.tools.param.get_dictionary().items():
+        if v['display'] == 'on':
+            if v['visibility'] == 'datasets':
+                data_keys.append(k)
+            elif v['visibility'] == 'basic':
+                basic_keys.append(k)
+            elif v['visibility'] == 'intermediate':
+                interm_keys.append(k)
+            elif v['visibility'] == 'advanced':
+                adv_keys.append(k)
+
+    # show parameters of all levels of visibility in the UI, and order them in
+    # the following way
+    return basic_keys + interm_keys + adv_keys + data_keys
