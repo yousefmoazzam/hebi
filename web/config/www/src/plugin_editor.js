@@ -148,6 +148,7 @@ class PluginEditor {
       "name": plugin.name,
       "active": activeSwitch,
       "parameters": [],
+      "paramErrors": {}
     };
 
     // Add parameters
@@ -304,6 +305,7 @@ class PluginEditor {
     var pluginIndex = parseInt(pluginTitle.children[0].innerText);
     var pluginName = pluginTitle.children[1].innerText;
     var processList = this.generateProcessListObject();
+    var pluginTable = e.target.closest("tbody");
 
     var data = {
       "processList": processList,
@@ -314,35 +316,106 @@ class PluginEditor {
     }
 
     modifyParamVal(data, (response) => {
-      // check if param type error text exists
-      var errorNode = e.target.parentNode.querySelector(".param-type-error");
-      if (errorNode !== null) {
-        errorNode.remove();
-      }
-
-      // check if the newest value of the param passed the type check
       if (response.is_valid){
-        if (e.target.nodeName.toLowerCase() === "input"){
-          e.target.style.border = "1px solid #cacaca";
+        // Currently when a type check comes back as successful, the entire
+        // plugin element in the html is deleted and recreated. As such, there
+        // is no need to reset the border colour of the input field or remove
+        // the error text since they will get deleted and replaced with fresh
+        // html elements whose styling will be for the non-error state anyway.
+
+        if (paramName in this.pluginElements[pluginIndex]["paramErrors"]) {
+          delete this.pluginElements[pluginIndex]["paramErrors"][paramName];
         }
+
+        // check this.pluginElements[]["paramErrors"] to see if other type
+        // errors exist in the UI that shouldn't be replaced by the response
+        // data
+        for (var errParamName in this.pluginElements[pluginIndex]["paramErrors"]) {
+          for (var paramObjIdx in response.plugin_data.parameters) {
+            if (response.plugin_data.parameters[paramObjIdx]["name"] === errParamName) {
+              response.plugin_data.parameters[paramObjIdx]["value"] =
+                this.pluginElements[pluginIndex]["paramErrors"][errParamName]["errorValue"];
+              break;
+            }
+          }
+        }
+
         // replace the plugin with the modified version that has any param
         // display changes
+        var paramErrors = Object.assign({}, this.pluginElements[pluginIndex]["paramErrors"]);
         this.deletePluginByIndex(pluginIndex);
         this.addPlugin(response.plugin_data);
         this.updatePluginIndices();
         this.movePluginByIndex(this.pluginElements.length - 1,
           -(this.pluginElements.length - 1 - pluginIndex));
+        this.pluginElements[pluginIndex]["paramErrors"] = Object.assign({}, paramErrors);
+        this.addAllPluginParamTypeErrors(pluginIndex);
       } else {
-        if (e.target.nodeName.toLowerCase() === "input"){
-          e.target.style.border = "medium solid red";
-        }
-        var paramValTypeErrorText = document.createElement("p");
-        paramValTypeErrorText.classList.add("param-type-error");
-        paramValTypeErrorText.innerText = "Type error, must match the type: " + response.dtype;
-        e.target.parentNode.appendChild(paramValTypeErrorText);
+        // When a type check comes back as a failure, the plugin element in the
+        // html is not deleted, nor is there updated plugin info in the
+        // response (since a parameter modification didn't occur on the server
+        // side due to the failed type check).
+        // The plugin's type error object is updated, and the UI is updated to
+        // reflect this new type error
+        this.pluginElements[pluginIndex]["paramErrors"][paramName] = {
+          "errorValue": paramValue,
+          "desiredType": response.dtype
+        };
+
+        this.addParamTypeError(e.target, paramName, pluginIndex);
       }
     }, () => {
       alert("Failed to modify plugin parameter value");
     })
+  }
+
+  addAllPluginParamTypeErrors = pluginIndex => {
+    var pluginHTML = this.pluginContainer.getElementsByClassName("plugin")[pluginIndex];
+    var pluginTable = pluginHTML.getElementsByTagName("table")[0];
+
+    for (var errParamName in this.pluginElements[pluginIndex]["paramErrors"]) {
+      for (var i = 0; i < pluginTable.rows.length; i++) {
+        var paramNameElement = pluginTable.rows[i].getElementsByClassName("parameter-name")[0];
+        if (paramNameElement.innerText === errParamName) {
+          break;
+        }
+      }
+
+      if (i < pluginTable.rows.length) {
+        // the parameter with the type error still has its display attribute as
+        // "on" after the most recent parameter modification, so continue to
+        // add the type error info to the UI
+        var paramRow = pluginTable.rows[i];
+        var paramValElement = paramRow.getElementsByClassName("parameter-value")[0];
+        this.addParamTypeError(paramValElement, errParamName, pluginIndex);
+      } else {
+        // the parameter with the type error is no longer displayed in the UI
+        // after the most recent parameter modification, so remove the
+        // parameter from the plugin parameter type error object
+        delete this.pluginElements[pluginIndex]["paramErrors"][errParamName];
+      }
+    }
+  }
+
+  addParamTypeError = (paramValElement, paramName, pluginIndex) => {
+    // check if error text already exists for this param type error
+    var paramParent = paramValElement.parentNode;
+    var errorNode = paramParent.querySelector(".param-type-error");
+    if (errorNode !== null) {
+      errorNode.remove();
+    }
+
+    // check if the html element associated to this parameter is an input
+    // field, and if so, change the border colour to red
+    if (paramValElement.nodeName.toLowerCase() === "input"){
+      paramValElement.style.border = "medium solid red";
+    }
+
+    // add a new error text element to the UI
+    var paramValTypeErrorText = document.createElement("p");
+    paramValTypeErrorText.classList.add("param-type-error");
+    paramValTypeErrorText.innerText = "Type error, must match the type: " +
+      this.pluginElements[pluginIndex]["paramErrors"][paramName]["desiredType"];
+    paramParent.appendChild(paramValTypeErrorText);
   }
 }
