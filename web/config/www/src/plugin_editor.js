@@ -181,15 +181,18 @@ class PluginEditor {
           valueEdit.value = parameter.value;
           valueEdit.onfocusin = function () {
             $(this).data("oldParamVal", $(this).val());
+            $(this).data("lastEditedParamVal", $(this).val());
           };
         } else {
           // create text input field
           var valueEdit = newElementOfClass("input", "parameter-value", valueTd);
           valueEdit.setAttribute("type", "text");
           valueEdit.value = parameter.value;
+          valueEdit.oninput = this.paramInputListener;
           valueEdit.onchange = this.paramValListener;
           valueEdit.onfocusin = function () {
             $(this).data("oldParamVal", $(this).val());
+            $(this).data("lastEditedParamVal", $(this).val());
           };
         }
 
@@ -297,6 +300,9 @@ class PluginEditor {
   }
 
   paramValListener = (e) => {
+    $(e.target).data("lastEditedParamVal", $(e.target).val());
+    e.target.style.fontStyle = "normal";
+    e.target.style.color = "black";
     var paramName = e.target.parentNode.previousSibling.innerText;
     var paramValue = e.target.value;
     var pluginParent = e.target.closest(".plugin");
@@ -417,5 +423,15 @@ class PluginEditor {
     paramValTypeErrorText.innerText = "Type error, must match the type: " +
       this.pluginElements[pluginIndex]["paramErrors"][paramName]["desiredType"];
     paramParent.appendChild(paramValTypeErrorText);
+  }
+
+  paramInputListener = e => {
+    if (e.target.value !== $(e.target).data("lastEditedParamVal")) {
+      e.target.style.fontStyle = "italic";
+      e.target.style.color = "grey";
+    } else {
+      e.target.style.fontStyle = "normal";
+      e.target.style.color = "black";
+    }
   }
 }
