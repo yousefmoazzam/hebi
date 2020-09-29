@@ -6,71 +6,26 @@
 
     <title>Savu: Plugins</title>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/foundation-sites@6.5.1/dist/css/foundation.min.css" integrity="sha256-1mcRjtAxlSjp6XJBgrBeeCORfBp/ppyX4tsvpQVCcpA= sha384-b5S5X654rX3Wo6z5/hnQ4GBmKuIJKMPwrJXn52ypjztlnDK2w9+9hSMBz/asy9Gw sha512-M1VveR2JGzpgWHb0elGqPTltHK3xbvu3Brgjfg4cg5ZNtyyApxw/45yHYsZ/rCVbfoO5MSZxB241wWq642jLtA==" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css" />
     <link rel="stylesheet" href="css/plugins.css" />
 
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@300;500&display=swap" rel="stylesheet">
+    <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vuex"></script>
+
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/foundation-sites@6.5.1/dist/js/foundation.min.js" integrity="sha256-WUKHnLrIrx8dew//IpSEmPN/NT3DGAEmIePQYIEJLLs= sha384-53StQWuVbn6figscdDC3xV00aYCPEz3srBdV/QGSXw3f19og3Tq2wTRe0vJqRTEO sha512-X9O+2f1ty1rzBJOC8AXBnuNUdyJg0m8xMKmbt9I3Vu/UOWmSg5zG+dtnje4wAZrKtkopz/PEDClHZ1LXx5IeOw==" crossorigin="anonymous"></script>
     <script src="js/api_common.js"></script>
     <script src="js/api_savu.js"></script>
     <script src="js/utils.js"></script>
-    <script src="js/plugins.js"></script>
   </head>
 
   <body>
-    <h1>Plugins</h1>
-
-    <div class="grid-x">
-      <div class="cell small-4">
-        <input id="search_field" type="text" placeholder="Search" />
-
-        <div class="scroll">
-          <table id="plugin_table">
-            <tbody id="plugin_table_body">
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="plugin-pane" class="pad-horiz cell small-8">
-        <h2 id="selected_plugin_name"></h2>
-        <p id="selected_plugin_synopsis"></p>
-
-        <div class="scroll">
-          <h3>Information</h3>
-          <p id="selected_plugin_info"></p>
-          <h3>Parameters</h3>
-          <table id="selected_plugin_parameter_table">
-            <thead>
-              <tr>
-                <th>Parameter</th>
-                <th>Description</th>
-                <th>Type</th>
-                <th>Default</th>
-              </tr>
-            </thead>
-            <tbody id="selected_plugin_parameter_table_body">
-            </tbody>
-          </table>
-          <div id="citation">
-            <h3>Citations</h3>
-            <table id="selected_plugin_citation_table">
-              <thead>
-                <tr>
-                  <th>Description</th>
-                  <th>DOI</th>
-                  <th>BibTeX</th>
-                  <th>Endnote</th>
-                </tr>
-              </thead>
-              <tbody id="selected_plugin_citation_table_body">
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-
+    <div id="vapp">
+        <plugin-page />
     </div>
+    <script src="src/plugins.js" type="module"></script>
   </body>
 </html>
