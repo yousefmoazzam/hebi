@@ -107,15 +107,6 @@ def modify_param_val():
     param_name = data["paramName"]
     param_value = str(data["newParamVal"])
 
-    plugin_data = user_pl_data['plugins'][plugin_index]
-    for i, param in enumerate(plugin_data['parameters']):
-        if param['name'] == param_name:
-            # change process list data to have the old value of the param, so
-            # then the state of the process list from the UI prior to the param
-            # modification is recreated before properly attempting to modify
-            # the param value
-            plugin_data['parameters'][i]['value'] = data['oldParamVal']
-
     process_list = create_process_list_from_user_data(user_pl_data)
 
     # check if the type of the given param value is the same as the required
@@ -135,14 +126,18 @@ def modify_param_val():
 
         return jsonify({
             'is_valid': param_valid,
-            'plugin_data': modified_plugin_data
+            'plugin_data': modified_plugin_data,
+            'plugin_index': plugin_index,
+            'param_name': param_name
         })
     else:
         required_type = plugin['param'][param_name]['dtype']
 
         return jsonify({
             'is_valid': param_valid,
-            'dtype': required_type
+            'dtype': required_type,
+            'plugin_index': plugin_index,
+            'param_name': param_name
         })
 
 

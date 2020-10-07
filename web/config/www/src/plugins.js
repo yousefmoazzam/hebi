@@ -1,7 +1,7 @@
 import { store } from './store.js'
 
 
-var pageTitle = {
+export const pageTitle = {
   props: ['text'],
   template: `
     <h1 class="mb-2">{{ text }}</h1>
