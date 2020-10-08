@@ -144,6 +144,10 @@ export const store = new Vuex.Store({
         'newPosition': newPosition
       })
 
+    },
+
+    togglePluginActiveState(context, pluginIndex) {
+      context.commit('togglePluginActiveState', pluginIndex)
     }
 
   },
@@ -230,6 +234,10 @@ export const store = new Vuex.Store({
       // Reorder cached elements
       var cache = state.plPluginElements.splice(payload.pluginIndex, 1)[0];
       state.plPluginElements.splice(payload.newPosition, 0, cache);
+    },
+
+    togglePluginActiveState(state, pluginIndex) {
+      state.plPluginElements[pluginIndex].active = !state.plPluginElements[pluginIndex].active
     }
 
   },

@@ -278,9 +278,35 @@ var pluginParamEditorTable = {
   `
 }
 
+var toggleSwitch = {
+  props: {
+    pluginIndex: Number,
+    active: Boolean
+  },
+  methods: {
+    clickListener: function () {
+      this.$store.dispatch('togglePluginActiveState', this.pluginIndex)
+    }
+  },
+  template: `
+    <div class="flex justify-center items-center">
+      <div class="relative rounded-full w-12 h-6 transition duration-200 ease-linear"
+           :class="[active ? 'bg-blue-500' : 'bg-gray-400']">
+        <label :for="pluginIndex"
+          class="absolute left-0 bg-white border-2 mb-2 w-6 h-6 rounded-full transition transform duration-100 ease-linear cursor-pointer"
+          :class="[active ? 'translate-x-full border-blue-500' : 'translate-x-0 border-gray-400']" />
+        <input type="checkbox" :id="pluginIndex"
+          class="appearance-none w-full h-full active:outline-none focus:outline-none cursor-pointer"
+          v-on:click="clickListener"/>
+      </div>
+    </div>
+  `
+}
+
 var plEditorPluginEntry = {
   components: {
-    'plugin-param-editor-table': pluginParamEditorTable
+    'plugin-param-editor-table': pluginParamEditorTable,
+    'toggle-switch': toggleSwitch
   },
   methods: {
     trashIconListener: function () {
@@ -320,8 +346,7 @@ var plEditorPluginEntry = {
             </span>
           </h3>
         </div>
-        <div class="toggle-switch">
-        </div>
+        <toggle-switch :pluginIndex="pluginIndex" :active="plugin.active"/>
         <div class="icons">
           <i class="fas action fa-lg fa-trash" v-on:click="trashIconListener">
           </i>
