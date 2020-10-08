@@ -121,6 +121,29 @@ export const store = new Vuex.Store({
 
     removePluginFromPl(context, pluginIndex) {
       context.commit('removePlugin', pluginIndex)
+    },
+
+    movePluginIndex(context, payload) {
+
+      // Nothing to do in this case
+      if (payload.direction == 0) {
+        return
+      }
+
+      // Calculate new position (plugin to swap position with)
+      var newPosition = payload.pluginIndex + payload.direction;
+
+      // Check the new position is within the valid plugin indices
+      if (newPosition < 0 || newPosition > this.state.plPluginElements.length - 1) {
+        console.log("New position (" + newPosition + ") not valid");
+        return
+      }
+
+      context.commit('movePluginIndex', {
+        'pluginIndex': payload.pluginIndex,
+        'newPosition': newPosition
+      })
+
     }
 
   },
@@ -201,6 +224,12 @@ export const store = new Vuex.Store({
 
     removePlugin(state, pluginIndex) {
       state.plPluginElements.splice(pluginIndex, 1)
+    },
+
+    movePluginIndex(state, payload) {
+      // Reorder cached elements
+      var cache = state.plPluginElements.splice(payload.pluginIndex, 1)[0];
+      state.plPluginElements.splice(payload.newPosition, 0, cache);
     }
 
   },

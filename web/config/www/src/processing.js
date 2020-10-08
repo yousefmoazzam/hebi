@@ -285,7 +285,22 @@ var plEditorPluginEntry = {
   methods: {
     trashIconListener: function () {
       this.$store.dispatch('removePluginFromPl', this.pluginIndex)
+    },
+
+    upArrowIconListener: function () {
+      this.$store.dispatch('movePluginIndex', {
+        'pluginIndex': this.pluginIndex,
+        'direction': -1
+      })
+    },
+
+    downArrowIconListener: function () {
+      this.$store.dispatch('movePluginIndex', {
+        'pluginIndex': this.pluginIndex,
+        'direction': 1
+      })
     }
+
   },
   props: {
     pluginIndex: Number,
@@ -310,9 +325,9 @@ var plEditorPluginEntry = {
         <div class="icons">
           <i class="fas action fa-lg fa-trash" v-on:click="trashIconListener">
           </i>
-          <i class="fas action fa-lg fa-arrow-up">
+          <i class="fas action fa-lg fa-arrow-up" v-on:click="upArrowIconListener">
           </i>
-          <i class="fas action fa-lg fa-arrow-down">
+          <i class="fas action fa-lg fa-arrow-down" v-on:click="downArrowIconListener">
           </i>
         </div>
       </div>
