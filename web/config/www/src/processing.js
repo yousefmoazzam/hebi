@@ -282,6 +282,11 @@ var plEditorPluginEntry = {
   components: {
     'plugin-param-editor-table': pluginParamEditorTable
   },
+  methods: {
+    trashIconListener: function () {
+      this.$store.dispatch('removePluginFromPl', this.pluginIndex)
+    }
+  },
   props: {
     pluginIndex: Number,
     pluginName: String,
@@ -303,7 +308,7 @@ var plEditorPluginEntry = {
         <div class="toggle-switch">
         </div>
         <div class="icons">
-          <i class="fas action fa-lg fa-trash">
+          <i class="fas action fa-lg fa-trash" v-on:click="trashIconListener">
           </i>
           <i class="fas action fa-lg fa-arrow-up">
           </i>

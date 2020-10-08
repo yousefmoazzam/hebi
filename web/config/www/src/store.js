@@ -117,6 +117,10 @@ export const store = new Vuex.Store({
           console.log("Failed to add plugin to process list")
         }
       )
+    },
+
+    removePluginFromPl(context, pluginIndex) {
+      context.commit('removePlugin', pluginIndex)
     }
 
   },
@@ -193,6 +197,10 @@ export const store = new Vuex.Store({
     addPluginToPlPluginElements(state, plugin) {
       plugin.active = true
       addPluginHelper(plugin, this.state.plPluginElements)
+    },
+
+    removePlugin(state, pluginIndex) {
+      state.plPluginElements.splice(pluginIndex, 1)
     }
 
   },
