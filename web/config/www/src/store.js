@@ -105,6 +105,18 @@ export const store = new Vuex.Store({
           console.log("Failed to save process list: " + filename)
         }
       )
+    },
+
+    addPluginToPl(context, pluginName) {
+      getPluginDetails(
+        pluginName,
+        function (plugin) {
+          context.commit('addPluginToPlPluginElements', plugin)
+        },
+        function () {
+          console.log("Failed to add plugin to process list")
+        }
+      )
     }
 
   },
@@ -171,6 +183,11 @@ export const store = new Vuex.Store({
       // saved to the nexus file on the filesystem, perhaps the action/mutation
       // pattern isn't the best fit for the process of saving a process list to
       // a file?
+    },
+
+    addPluginToPlPluginElements(state, plugin) {
+      plugin.active = true
+      addPluginHelper(plugin, this.state.plPluginElements)
     }
 
   },
@@ -214,6 +231,39 @@ var generateProcessListObjectHelper = function (pluginElements) {
   return {"plugins": plugins}
 }
 
+var addPluginHelper = function (plugin, plPluginElements) {
+
+  var elements = {
+    "name": plugin.name,
+    "active": plugin.active,
+    "parameters": []
+  };
+
+  for (var parameterIdx in plugin.parameters) {
+    var parameter = plugin.parameters[parameterIdx];
+
+    var paramInfo = {
+      "name": parameter.name,
+      "value": parameter.value,
+      "display": parameter.display,
+      "visibility": parameter.visibility,
+      "typeError": {
+        "hasError": false,
+        "errorString": ""
+      }
+    }
+
+    if ("options" in parameter) {
+      paramInfo["options"] = parameter.options
+    }
+
+    elements.parameters.push(paramInfo)
+  }
+
+  plPluginElements.push(elements)
+
+}
+
 var generatePlPluginElementsHelper = function (data) {
   // copy of code in plugin_editor.addPlugin(), without all the parts that
   // create and insert html elements
@@ -221,36 +271,7 @@ var generatePlPluginElementsHelper = function (data) {
   var newPlPluginElements = []
 
   for (var plugin of data.plugins) {
-
-    var elements = {
-      "name": plugin.name,
-      "active": plugin.active,
-      "parameters": []
-    };
-
-    for (var parameterIdx in plugin.parameters) {
-      var parameter = plugin.parameters[parameterIdx];
-
-      var paramInfo = {
-        "name": parameter.name,
-        "value": parameter.value,
-        "display": parameter.display,
-        "visibility": parameter.visibility,
-        "typeError": {
-          "hasError": false,
-          "errorString": ""
-        }
-      }
-
-      if ("options" in parameter) {
-        paramInfo["options"] = parameter.options
-      }
-
-      elements.parameters.push(paramInfo)
-    }
-
-    newPlPluginElements.push(elements)
-
+    addPluginHelper(plugin, newPlPluginElements)
   }
 
   return newPlPluginElements

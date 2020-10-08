@@ -317,6 +317,50 @@ var plEditorPluginEntry = {
   `
 }
 
+var addPluginSearchInput = {
+  data: function () {
+    return {
+      allPlugins: [],
+      inputFieldText: ''
+    }
+  },
+  created: function () {
+    // fetch the list of all available plugins for the list used for
+    // plugin name autocompletion
+    var comp = this
+    searchAvailablePlugins(
+      '',
+      function (plugins) {
+        comp.allPlugins = plugins
+      },
+      function () {
+        console.log("Failed to fetch available plugins for autocompletion list")
+      }
+    )
+  },
+  methods: {
+    buttonClickListener: function () {
+      this.$store.dispatch('addPluginToPl', this.inputFieldText)
+    }
+  },
+  template: `
+    <div>
+      <datalist id="available_plugins">
+        <option v-for="plugin in allPlugins">{{ plugin }}</option>
+      </datalist>
+      <div class="flex">
+        <input class="border border-2 px-4 py-2 w-full"
+          type="search"
+          list="available_plugins"
+          placeholder="Search plugins"
+          v-model="inputFieldText" />
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
+          v-on:click="buttonClickListener">Add Plugin</button>
+      </div>
+    </div>
+  `
+}
+
 var plEditorTabContent = {
   mounted: function () {
     // hardcode a specific process list to load when the app first loads for
@@ -328,7 +372,8 @@ var plEditorTabContent = {
   }),
   components: {
     'pl-editor-plugin-entry': plEditorPluginEntry,
-    'labelled-input-field-and-button': labelledInputFieldAndButton
+    'labelled-input-field-and-button': labelledInputFieldAndButton,
+    'add-plugin-search-input': addPluginSearchInput
   },
   template: `
     <div>
@@ -343,6 +388,7 @@ var plEditorTabContent = {
         :plugin="plugin"
         :pluginName="plugin.name"
         :pluginIndex="index" />
+      <add-plugin-search-input />
     </div>
   `
 }
