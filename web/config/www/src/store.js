@@ -135,8 +135,13 @@ export const store = new Vuex.Store({
     },
 
     updateOpenPl(state, data) {
-      var pl = generatePlPluginElementsHelper(data)
-      state.plPluginElements = pl
+      var newPlPluginElements = []
+
+      for (var plugin of data.plugins) {
+        addPluginHelper(plugin, newPlPluginElements)
+      }
+
+      state.plPluginElements = newPlPluginElements
     },
 
     updatePlPluginElements(state, response) {
@@ -262,17 +267,4 @@ var addPluginHelper = function (plugin, plPluginElements) {
 
   plPluginElements.push(elements)
 
-}
-
-var generatePlPluginElementsHelper = function (data) {
-  // copy of code in plugin_editor.addPlugin(), without all the parts that
-  // create and insert html elements
-
-  var newPlPluginElements = []
-
-  for (var plugin of data.plugins) {
-    addPluginHelper(plugin, newPlPluginElements)
-  }
-
-  return newPlPluginElements
 }
