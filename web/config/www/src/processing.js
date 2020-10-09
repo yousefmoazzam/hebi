@@ -233,13 +233,33 @@ var pluginParamEditorTableRow = {
     'plugin-param-input-field': pluginParamInputField,
     'plugin-param-dropdown-menu': pluginParamDropdownMenu
   },
+  data: function () {
+    return {
+      tooltipOptions: {
+        content: this.param.description,
+        placement: 'top-center',
+        offset: 10,
+        trigger: 'hover',
+        delay: {
+          show: 100,
+          hide: 0
+        }
+      }
+    }
+  },
   props: {
     pluginIndex: Number,
     param: Object
   },
   template: `
     <tr>
-      <td>{{ param.name }}</td>
+      <td>
+        {{ param.name }}
+        <span>
+          <i class="fas fa-question" v-tooltip="tooltipOptions">
+          </i>
+        </span>
+      </td>
       <td>
         <plugin-param-dropdown-menu v-if="'options' in param"
           :name="param.name"

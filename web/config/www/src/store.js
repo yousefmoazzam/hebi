@@ -294,6 +294,7 @@ var addPluginHelper = function (plugin, plPluginElements) {
 
     var paramInfo = {
       "name": parameter.name,
+      "description": parameter.description,
       "value": parameter.value,
       "display": parameter.display,
       "visibility": parameter.visibility,
