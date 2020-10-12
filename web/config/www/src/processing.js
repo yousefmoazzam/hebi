@@ -98,6 +98,11 @@ var labelledInputFieldAndButton = {
 }
 
 var plTabContentsTableRow = {
+  methods: {
+    folderIconListener: function () {
+      this.$store.dispatch('loadPl', this.filepath)
+    }
+  },
   props: {
     filepath: String
   },
@@ -105,6 +110,9 @@ var plTabContentsTableRow = {
     <tr>
       <td class="px-2 py-2">
         {{ filepath }}
+      </td>
+      <td>
+        <i class="fas fa-folder-open" v-on:click="folderIconListener" />
       </td>
     </tr>
   `
@@ -427,11 +435,6 @@ var addPluginSearchInput = {
 }
 
 var plEditorTabContent = {
-  mounted: function () {
-    // hardcode a specific process list to load when the app first loads for
-    // now, just to make development easier
-    this.$store.dispatch('loadPl', '/data/process_lists/simple_tomo_pipeline_cpu_param.nxs')
-  },
   computed: Vuex.mapState({
     plPluginElements: state => state.plPluginElements
   }),
@@ -447,7 +450,7 @@ var plEditorTabContent = {
         placeholder="process_list.nxs"
         buttonText="Save Changes"
         action="savePl"
-        initialInputFieldText="/data/process_lists/simple_tomo_pipeline_cpu_param.nxs" />
+        initialInputFieldText="" />
       <pl-editor-plugin-entry v-for="(plugin, index) in plPluginElements"
         :key="index + plugin.name"
         :plugin="plugin"
