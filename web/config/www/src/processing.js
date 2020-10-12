@@ -434,23 +434,55 @@ var addPluginSearchInput = {
   `
 }
 
+var plEditorFilepathInput = {
+  computed: Vuex.mapState({
+    plEditorFilepath: state => state.plEditorFilepath
+  }),
+  props: {
+    'label': String,
+    'placeholder': String,
+    'buttonText': String
+  },
+  methods: {
+    buttonClickListener () {
+      this.$store.dispatch('savePl', this.plEditorFilepath)
+    },
+    inputFieldListener (e) {
+      this.$store.dispatch('changePlEditorFilepath', e.target.value)
+    }
+  },
+  template: `
+    <div class="flex">
+      <span class="text-sm border border-2 rounded-l px-4 py-2 bg-gray-300 whitespace-no-wrap">
+        {{ label }}
+      </span>
+      <input class="border border-2 px-4 py-2 w-full" type="text"
+        v-bind:placeholder="placeholder"
+        v-on:input="inputFieldListener"
+        :value="plEditorFilepath" />
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
+        v-on:click="buttonClickListener">
+        {{ buttonText }}
+      </button>
+    </div>
+  `
+}
+
 var plEditorTabContent = {
   computed: Vuex.mapState({
     plPluginElements: state => state.plPluginElements
   }),
   components: {
     'pl-editor-plugin-entry': plEditorPluginEntry,
-    'labelled-input-field-and-button': labelledInputFieldAndButton,
+    'pl-editor-filepath-input': plEditorFilepathInput,
     'add-plugin-search-input': addPluginSearchInput
   },
   template: `
     <div>
-      <labelled-input-field-and-button
+      <pl-editor-filepath-input
         label="File"
         placeholder="process_list.nxs"
-        buttonText="Save Changes"
-        action="savePl"
-        initialInputFieldText="" />
+        buttonText="Save Changes" />
       <pl-editor-plugin-entry v-for="(plugin, index) in plPluginElements"
         :key="index + plugin.name"
         :plugin="plugin"

@@ -18,7 +18,8 @@ export const store = new Vuex.Store({
       citation: {}
     },
     plFilepathSearchResults: {},
-    plPluginElements: []
+    plPluginElements: [],
+    plEditorFilepath: ''
   },
 
   actions: {
@@ -66,6 +67,7 @@ export const store = new Vuex.Store({
         filename,
         function (data) {
           context.commit('updateOpenPl', data)
+          context.dispatch('changePlEditorFilepath', filename)
         }    ,
         function () {
           console.log("Failed to open process list: " + filename)
@@ -148,6 +150,10 @@ export const store = new Vuex.Store({
 
     togglePluginActiveState(context, pluginIndex) {
       context.commit('togglePluginActiveState', pluginIndex)
+    },
+
+    changePlEditorFilepath(context, filepath) {
+      context.commit('changePlEditorFilepath', filepath)
     }
 
   },
@@ -238,6 +244,10 @@ export const store = new Vuex.Store({
 
     togglePluginActiveState(state, pluginIndex) {
       state.plPluginElements[pluginIndex].active = !state.plPluginElements[pluginIndex].active
+    },
+
+    changePlEditorFilepath(state, filepath) {
+      state.plEditorFilepath = filepath
     }
 
   },
@@ -245,7 +255,8 @@ export const store = new Vuex.Store({
   getters: {
     pluginSearchResults: state => state.pluginSearchResults,
     displayedPluginInfo: state => state.displayedPluginInfo,
-    plFilepathSearchResults: state => state.plFilepathSearchResults
+    plFilepathSearchResults: state => state.plFilepathSearchResults,
+    plEditorFilepath: state => state.plEditorFilepath
   }
 })
 
