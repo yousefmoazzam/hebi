@@ -64,54 +64,18 @@ var tabbedDisplay = {
 }
 
 var labelledInputFieldAndButton = {
-  data: function () {
-    return {
-      inputFieldText: this.initialInputFieldText
-    }
-  },
   props: {
     'label': String,
     'placeholder': String,
     'buttonText': String,
-    'action': String,
-    'initialInputFieldText': String
-  },
-  methods: {
-    buttonClickListener (e) {
-      this.$store.dispatch(this.action, this.inputFieldText)
-    }
-  },
-  template: `
-    <div class="flex">
-      <span class="text-sm border border-2 rounded-l px-4 py-2 bg-gray-300 whitespace-no-wrap">
-        {{ label }}
-      </span>
-      <input class="border border-2 px-4 py-2 w-full" type="text"
-        v-bind:placeholder="placeholder"
-        v-model="inputFieldText" />
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
-        v-on:click="buttonClickListener">
-        {{ buttonText }}
-      </button>
-    </div>
-  `
-}
-
-var plTabSearchInput = {
-  computed: Vuex.mapState({
-    plFilepathSearchText: state => state.plFilepathSearchText
-  }),
-  props: {
-    'label': String,
-    'placeholder': String,
-    'buttonText': String
+    'inputFieldText': String
   },
   methods: {
     buttonClickListener () {
-      this.$store.dispatch('loadPlFilepathSearchResults', this.plFilepathSearchText)
+      this.$emit('button-clicked')
     },
     inputFieldListener (e) {
-      this.$store.dispatch('updatePlFilepathSearchText', e.target.value)
+      this.$emit('changed-input-field-text', e)
     }
   },
   template: `
@@ -121,8 +85,8 @@ var plTabSearchInput = {
       </span>
       <input class="border border-2 px-4 py-2 w-full" type="text"
         v-bind:placeholder="placeholder"
-        v-on:input="inputFieldListener"
-        :value="plFilepathSearchText" />
+        v-on:input="inputFieldListener($event)"
+        :value="inputFieldText" />
       <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
         v-on:click="buttonClickListener">
         {{ buttonText }}
@@ -210,16 +174,30 @@ var plTabContentsTable = {
 }
 
 var lhsProcessListsTabContent = {
+  computed: Vuex.mapState({
+    plFilepathSearchText: state => state.plFilepathSearchText
+  }),
   components: {
-    'pl-tab-search-input': plTabSearchInput,
+    'labelled-input-field-button': labelledInputFieldAndButton,
     'pl-tab-contents-table': plTabContentsTable
+  },
+  methods: {
+    buttonListener: function () {
+      this.$store.dispatch('loadPlFilepathSearchResults', this.plFilepathSearchText)
+    },
+    inputListener: function (e) {
+      this.$store.dispatch('updatePlFilepathSearchText', e.target.value)
+    }
   },
   template: `
     <div>
-      <pl-tab-search-input
+      <labelled-input-field-button
         label="Search Path"
         placeholder="Path"
-        buttonText="Refresh" />
+        buttonText="Refresh"
+        :inputFieldText="plFilepathSearchText"
+        v-on:button-clicked="buttonListener"
+        v-on:changed-input-field-text="inputListener($event)" />
       <pl-tab-contents-table />
     </div>
   `
@@ -494,55 +472,33 @@ var addPluginSearchInput = {
   `
 }
 
-var plEditorFilepathInput = {
+var plEditorTabContent = {
   computed: Vuex.mapState({
+    plPluginElements: state => state.plPluginElements,
     plEditorFilepath: state => state.plEditorFilepath
   }),
-  props: {
-    'label': String,
-    'placeholder': String,
-    'buttonText': String
-  },
   methods: {
-    buttonClickListener () {
+    buttonListener: function () {
       this.$store.dispatch('savePl', this.plEditorFilepath)
     },
-    inputFieldListener (e) {
+    inputListener: function (e) {
       this.$store.dispatch('changePlEditorFilepath', e.target.value)
     }
   },
-  template: `
-    <div class="flex">
-      <span class="text-sm border border-2 rounded-l px-4 py-2 bg-gray-300 whitespace-no-wrap">
-        {{ label }}
-      </span>
-      <input class="border border-2 px-4 py-2 w-full" type="text"
-        v-bind:placeholder="placeholder"
-        v-on:input="inputFieldListener"
-        :value="plEditorFilepath" />
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
-        v-on:click="buttonClickListener">
-        {{ buttonText }}
-      </button>
-    </div>
-  `
-}
-
-var plEditorTabContent = {
-  computed: Vuex.mapState({
-    plPluginElements: state => state.plPluginElements
-  }),
   components: {
     'pl-editor-plugin-entry': plEditorPluginEntry,
-    'pl-editor-filepath-input': plEditorFilepathInput,
+    'labelled-input-field-button': labelledInputFieldAndButton,
     'add-plugin-search-input': addPluginSearchInput
   },
   template: `
     <div>
-      <pl-editor-filepath-input
+      <labelled-input-field-button
         label="File"
         placeholder="process_list.nxs"
-        buttonText="Save Changes" />
+        buttonText="Save Changes"
+        :inputFieldText="plEditorFilepath"
+        v-on:button-clicked="buttonListener"
+        v-on:changed-input-field-text="inputListener($event)" />
       <pl-editor-plugin-entry v-for="(plugin, index) in plPluginElements"
         :key="index + plugin.name"
         :plugin="plugin"
