@@ -101,6 +101,11 @@ var plTabContentsTableRow = {
   methods: {
     folderIconListener: function () {
       this.$store.dispatch('loadPl', this.filepath)
+    },
+
+    downloadIconListener: function () {
+      var url = getProcessListDownloadUrl(this.filepath)
+      window.open(url, "_blank")
     }
   },
   props: {
@@ -113,6 +118,9 @@ var plTabContentsTableRow = {
       </td>
       <td>
         <i class="fas fa-folder-open" v-on:click="folderIconListener" />
+      </td>
+      <td>
+        <i class="fas fa-download" v-on:click="downloadIconListener" />
       </td>
     </tr>
   `
