@@ -17,6 +17,7 @@ export const store = new Vuex.Store({
       // https://vuejs.org/v2/guide/instance.html#Instance-Lifecycle-Hooks
       citation: {}
     },
+    plFilepathSearchText: '/data/process_lists',
     plFilepathSearchResults: {},
     plPluginElements: [],
     plEditorFilepath: ''
@@ -154,6 +155,10 @@ export const store = new Vuex.Store({
 
     changePlEditorFilepath(context, filepath) {
       context.commit('changePlEditorFilepath', filepath)
+    },
+
+    updatePlFilepathSearchText(context, filepath) {
+      context.commit('updatePlFilepathSearchText', filepath)
     }
 
   },
@@ -248,6 +253,10 @@ export const store = new Vuex.Store({
 
     changePlEditorFilepath(state, filepath) {
       state.plEditorFilepath = filepath
+    },
+
+    updatePlFilepathSearchText(state, filepath) {
+      state.plFilepathSearchText = filepath
     }
 
   },
@@ -256,7 +265,8 @@ export const store = new Vuex.Store({
     pluginSearchResults: state => state.pluginSearchResults,
     displayedPluginInfo: state => state.displayedPluginInfo,
     plFilepathSearchResults: state => state.plFilepathSearchResults,
-    plEditorFilepath: state => state.plEditorFilepath
+    plEditorFilepath: state => state.plEditorFilepath,
+    plFilepathSearchText: state => state.plFilepathSearchText
   }
 })
 

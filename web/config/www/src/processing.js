@@ -97,7 +97,44 @@ var labelledInputFieldAndButton = {
   `
 }
 
+var plTabSearchInput = {
+  computed: Vuex.mapState({
+    plFilepathSearchText: state => state.plFilepathSearchText
+  }),
+  props: {
+    'label': String,
+    'placeholder': String,
+    'buttonText': String
+  },
+  methods: {
+    buttonClickListener () {
+      this.$store.dispatch('loadPlFilepathSearchResults', this.plFilepathSearchText)
+    },
+    inputFieldListener (e) {
+      this.$store.dispatch('updatePlFilepathSearchText', e.target.value)
+    }
+  },
+  template: `
+    <div class="flex">
+      <span class="text-sm border border-2 rounded-l px-4 py-2 bg-gray-300 whitespace-no-wrap">
+        {{ label }}
+      </span>
+      <input class="border border-2 px-4 py-2 w-full" type="text"
+        v-bind:placeholder="placeholder"
+        v-on:input="inputFieldListener"
+        :value="plFilepathSearchText" />
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
+        v-on:click="buttonClickListener">
+        {{ buttonText }}
+      </button>
+    </div>
+  `
+}
+
 var plTabContentsTableRow = {
+  computed: Vuex.mapState({
+    plFilepathSearchText: state => state.plFilepathSearchText
+  }),
   methods: {
     folderIconListener: function () {
       this.$store.dispatch('loadPl', this.filepath)
@@ -114,8 +151,7 @@ var plTabContentsTableRow = {
         this.filepath,
         function () {
           console.log('Deleting process list: ' + comp.filepath)
-          // after deletion of the process list, need to trigger update of the
-          // search results for process lists using the text in the input field
+          comp.$store.dispatch('loadPlFilepathSearchResults', comp.plFilepathSearchText)
         },
         function () {
           console.log("Failed to delete process list")
@@ -175,17 +211,15 @@ var plTabContentsTable = {
 
 var lhsProcessListsTabContent = {
   components: {
-    'labelled-input-field-and-button': labelledInputFieldAndButton,
+    'pl-tab-search-input': plTabSearchInput,
     'pl-tab-contents-table': plTabContentsTable
   },
   template: `
     <div>
-      <labelled-input-field-and-button
+      <pl-tab-search-input
         label="Search Path"
         placeholder="Path"
-        buttonText="Refresh"
-        action="loadPlFilepathSearchResults"
-        initialInputFieldText="/data/process_lists"/>
+        buttonText="Refresh" />
       <pl-tab-contents-table />
     </div>
   `
