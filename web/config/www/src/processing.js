@@ -106,6 +106,21 @@ var plTabContentsTableRow = {
     downloadIconListener: function () {
       var url = getProcessListDownloadUrl(this.filepath)
       window.open(url, "_blank")
+    },
+
+    trashIconListener: function () {
+      var comp = this
+      deleteProcessList(
+        this.filepath,
+        function () {
+          console.log('Deleting process list: ' + comp.filepath)
+          // after deletion of the process list, need to trigger update of the
+          // search results for process lists using the text in the input field
+        },
+        function () {
+          console.log("Failed to delete process list")
+        }
+      )
     }
   },
   props: {
@@ -121,6 +136,9 @@ var plTabContentsTableRow = {
       </td>
       <td>
         <i class="fas fa-download" v-on:click="downloadIconListener" />
+      </td>
+      <td>
+        <i class="fas fa-trash" v-on:click="trashIconListener" />
       </td>
     </tr>
   `
