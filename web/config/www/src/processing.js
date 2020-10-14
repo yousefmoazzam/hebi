@@ -267,8 +267,17 @@ var pluginParamDropdownMenu = {
     value: null,
     options: Array
   },
+  methods: {
+    valueChangeListener: function (e) {
+      this.$store.dispatch('loadPlPluginElements', {
+        'pluginIndex': this.pluginIndex,
+        'paramName': this.name,
+        'paramValue': e.target.value
+      })
+    }
+  },
   template: `
-    <select :value="value">
+    <select :value="value" v-on:change="valueChangeListener">
       <option v-for="option in options">{{ option }}</option>
     </select>
   `
