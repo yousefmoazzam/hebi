@@ -203,6 +203,97 @@ var lhsProcessListsTabContent = {
   `
 }
 
+var labelledInput = {
+  props: {
+    'label': String,
+    'placeholder': String,
+    'inputFieldText': String
+  },
+  methods: {
+    inputFieldListener (e) {
+      this.$emit('changed-input-field-text', e)
+    }
+  },
+  template: `
+    <div class="w-full flex mb-4">
+      <span class="text-sm border border-2 rounded-l px-4 py-2 bg-gray-300 whitespace-no-wrap">
+        {{ label }}
+      </span>
+      <input class="border border-2 px-4 py-2 w-full" type="text"
+        v-bind:placeholder="placeholder"
+        v-on:input="inputFieldListener($event)"
+        :value="inputFieldText" />
+    </div>
+  `
+}
+
+var jobTabStatusDisplay = {
+  props: {
+    statusText: String
+  },
+  template: `
+    <div class="w-full flex flex-wrap">
+      <p class="w-full">Status:</p>
+      <span class="w-full">{{ statusText }}</span>
+    </div>
+  `
+}
+
+var lhsJobTabContent = {
+  computed: Vuex.mapState({
+    jobTabDataText: state => state.jobTabDataText,
+    jobTabPlText: state => state.jobTabPlText,
+    jobTabOutputText: state => state.jobTabOutputText,
+    jobStatusText: state => state.jobStatusText
+  }),
+  components: {
+    'labelled-input': labelledInput,
+    'job-status-display': jobTabStatusDisplay
+  },
+  methods: {
+    dataInputListener: function (e) {
+    },
+    plInputListener: function (e) {
+    },
+    outputInputListener: function (e) {
+    },
+    previewJobButtonListener: function (e) {
+    },
+    fullJobButtonListener: function (e) {
+    }
+  },
+  template: `
+    <div class="flex flex-wrap" >
+      <labelled-input
+        label="Data"
+        placeholder="data.nxs"
+        :inputFieldText="jobTabDataText"
+        v-on:changed-input-field-text="dataInputListener($event)" />
+      <labelled-input
+        label="Process List"
+        placeholder="process_list.nxs"
+        :inputFieldText="jobTabPlText"
+        v-on:changed-input-field-text="plInputListener($event)" />
+      <labelled-input
+        label="Ouput"
+        placeholder="/path/to/output"
+        :inputFieldText="jobTabOutputText"
+        v-on:changed-input-field-text="outputInputListener($event)" />
+      <div class="w-full flex mb-2">
+        <button class="w-1/2 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 mr-1"
+          v-on:click="previewJobButtonListener">
+          Preview
+        </button>
+        <button class="w-1/2 bg-orange-400 hover:bg-orange-600 text-black font-bold py-2 px-4"
+          v-on:click="fullJobButtonListener">
+          Full
+        </button>
+      </div>
+      <job-status-display :statusText="jobStatusText" />
+    </div>
+  `
+}
+
 var leftPane = {
   components: {
     'tabbed-display': tabbedDisplay
@@ -228,7 +319,10 @@ var leftPane = {
         {
           name: 'Job',
           component: {
-            template: `<p>Job</p>`
+            components: {
+              'lhs-job-tab-content': lhsJobTabContent
+            },
+            template: `<lhs-job-tab-content />`
           }
         }
       ]

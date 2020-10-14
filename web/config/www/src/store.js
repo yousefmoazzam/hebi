@@ -20,7 +20,11 @@ export const store = new Vuex.Store({
     plFilepathSearchText: '/data/process_lists',
     plFilepathSearchResults: {},
     plPluginElements: [],
-    plEditorFilepath: ''
+    plEditorFilepath: '',
+    jobTabDataText: '',
+    jobTabPlText: '',
+    jobTabOutputText: '/data',
+    jobStatusText: ''
   },
 
   actions: {
