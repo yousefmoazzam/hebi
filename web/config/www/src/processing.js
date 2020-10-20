@@ -67,13 +67,10 @@ var labelledInputFieldAndButton = {
   props: {
     'label': String,
     'placeholder': String,
-    'buttonText': String,
-    'inputFieldText': String
+    'inputFieldText': String,
+    'buttons': Array
   },
   methods: {
-    buttonClickListener () {
-      this.$emit('button-clicked')
-    },
     inputFieldListener (e) {
       this.$emit('changed-input-field-text', e)
     }
@@ -87,9 +84,10 @@ var labelledInputFieldAndButton = {
         v-bind:placeholder="placeholder"
         v-on:input="inputFieldListener($event)"
         :value="inputFieldText" />
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
-        v-on:click="buttonClickListener">
-        {{ buttonText }}
+      <button v-for="button in buttons"
+        :class="button.bgColour + ' hover:' + button.bgHoverColour + ' text-white font-bold py-2 px-4'"
+        v-on:click="button.listener">
+        {{ button.text }}
       </button>
     </div>
   `
@@ -177,14 +175,25 @@ var lhsProcessListsTabContent = {
   computed: Vuex.mapState({
     plFilepathSearchText: state => state.plFilepathSearchText
   }),
+  data: function () {
+    return {
+      inputFieldButtons: [
+        {
+          'text': 'Refresh',
+          'bgColour': 'bg-blue-500',
+          'bgHoverColour': 'bg-blue-700',
+          'listener': () => {
+            this.$store.dispatch('loadPlFilepathSearchResults', this.plFilepathSearchText)
+          }
+        }
+      ]
+    }
+  },
   components: {
     'labelled-input-field-button': labelledInputFieldAndButton,
     'pl-tab-contents-table': plTabContentsTable
   },
   methods: {
-    buttonListener: function () {
-      this.$store.dispatch('loadPlFilepathSearchResults', this.plFilepathSearchText)
-    },
     inputListener: function (e) {
       this.$store.dispatch('updatePlFilepathSearchText', e.target.value)
     }
@@ -194,9 +203,8 @@ var lhsProcessListsTabContent = {
       <labelled-input-field-button
         label="Search Path"
         placeholder="Path"
-        buttonText="Refresh"
         :inputFieldText="plFilepathSearchText"
-        v-on:button-clicked="buttonListener"
+        :buttons="inputFieldButtons"
         v-on:changed-input-field-text="inputListener($event)" />
       <pl-tab-contents-table />
     </div>
@@ -580,6 +588,28 @@ var plEditorTabContent = {
     plPluginElements: state => state.plPluginElements,
     plEditorFilepath: state => state.plEditorFilepath
   }),
+  data: function () {
+    return {
+      inputFieldButtons: [
+        {
+          'text': 'Save Changes',
+          'bgColour': 'bg-blue-500',
+          'bgHoverColour': 'bg-blue-700',
+          'listener': () => {
+            this.$store.dispatch('savePl', this.plEditorFilepath)
+          }
+        },
+        {
+          'text': 'Save As New',
+          'bgColour': 'bg-gray-500',
+          'bgHoverColour': 'bg-gray-600',
+          'listener': () => {
+            this.$store.dispatch('saveNewPl', this.plEditorFilepath)
+          }
+        }
+      ]
+    }
+  },
   methods: {
     buttonListener: function () {
       this.$store.dispatch('savePl', this.plEditorFilepath)
@@ -598,9 +628,8 @@ var plEditorTabContent = {
       <labelled-input-field-button
         label="File"
         placeholder="process_list.nxs"
-        buttonText="Save Changes"
         :inputFieldText="plEditorFilepath"
-        v-on:button-clicked="buttonListener"
+        :buttons="inputFieldButtons"
         v-on:changed-input-field-text="inputListener($event)" />
       <pl-editor-plugin-entry v-for="(plugin, index) in plPluginElements"
         :key="index + plugin.name"

@@ -114,6 +114,21 @@ export const store = new Vuex.Store({
       )
     },
 
+    saveNewPl(context, filename) {
+      var store = this
+      newProcessList(
+        filename,
+        generateProcessListObjectHelper(this.state.plPluginElements),
+        function (data) {
+          context.commit('saveOpenPl', data)
+          context.dispatch('loadPlFilepathSearchResults', store.state.plFilepathSearchText)
+        },
+        function () {
+          console.log("Failed to save new process list: " + filename)
+        }
+      )
+    },
+
     addPluginToPl(context, pluginName) {
       getPluginDetails(
         pluginName,
