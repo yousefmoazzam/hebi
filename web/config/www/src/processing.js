@@ -58,7 +58,9 @@ var tabbedDisplay = {
           :key="tab.name"
           :tabTitle="tab.name" />
       </ul>
-      <component v-bind:is="openTab.component" />
+      <div class="p-4">
+        <component v-bind:is="openTab.component" />
+      </div>
     </div>
   `
 }
@@ -76,7 +78,7 @@ var labelledInputFieldAndButton = {
     }
   },
   template: `
-    <div class="flex">
+    <div class="flex mb-4">
       <span class="text-sm border border-2 rounded-l px-4 py-2 bg-gray-300 whitespace-no-wrap">
         {{ label }}
       </span>
@@ -151,10 +153,10 @@ var plTabContentsTable = {
   },
   template: `
     <div class="scroll">
-      <table class="w-full border-collapse">
-        <thead>
+      <table class="w-full border-collapse border border-gray-300">
+        <thead class="bg-gray-100 border-2 border border-gray-300">
           <tr class="text-left">
-            <th>Filename</th>
+            <th class="px-2 py-2">Filename</th>
             <th></th>
             <th></th>
             <th></th>
@@ -410,14 +412,14 @@ var pluginParamEditorTableRow = {
   },
   template: `
     <tr>
-      <td>
+      <td class="px-2 py-2">
         {{ param.name }}
         <span>
           <i class="fas fa-question" v-tooltip="tooltipOptions">
           </i>
         </span>
       </td>
-      <td>
+      <td class="px-2 py-2">
         <plugin-param-dropdown-menu v-if="'options' in param"
           :name="param.name"
           :value="param.value"
@@ -443,7 +445,7 @@ var pluginParamEditorTable = {
     'plugin-param-editor-table-row': pluginParamEditorTableRow
   },
   template: `
-    <table>
+    <table class="w-full border-collapse border border-gray-300 mb-4">
       <tbody>
         <plugin-param-editor-table-row v-for="(param, paramIndex) in plugin.parameters"
           v-if="param.visibility !== 'hidden' && param.display !== 'off'"
@@ -512,24 +514,25 @@ var plEditorPluginEntry = {
   },
   template: `
     <div>
-      <div class="flex flex-wrap">
+      <div class="flex flex-wrap mb-2">
         <div>
           <h3>
-            <span>{{ pluginIndex }}</span>
-            <span>{{ pluginName }}</span>
-            <span>
+            <span class="pr-2">{{ pluginIndex }}</span>
+            <span class="pr-2">{{ pluginName }}</span>
+            <span class="pr-2">
               <i class="fas fa-question">
               </i>
             </span>
           </h3>
         </div>
         <toggle-switch :pluginIndex="pluginIndex" :active="plugin.active"/>
+        <div class="flex-1"></div>
         <div class="icons">
-          <i class="fas action fa-lg fa-trash" v-on:click="trashIconListener">
+          <i class="fas action fa-lg fa-trash m-1" v-on:click="trashIconListener">
           </i>
-          <i class="fas action fa-lg fa-arrow-up" v-on:click="upArrowIconListener">
+          <i class="fas action fa-lg fa-arrow-up m-1" v-on:click="upArrowIconListener">
           </i>
-          <i class="fas action fa-lg fa-arrow-down" v-on:click="downArrowIconListener">
+          <i class="fas action fa-lg fa-arrow-down m-1" v-on:click="downArrowIconListener">
           </i>
         </div>
       </div>

@@ -31,3 +31,7 @@ span.bad {
 div.no-bottom-margin {
   margin-bottom: 0;
 }
+
+tbody tr:nth-child(even) {
+    background-color: #f1f1f1;
+}
