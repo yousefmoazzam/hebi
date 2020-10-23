@@ -131,13 +131,13 @@ var plTabContentsTableRow = {
       <td class="px-2 py-2">
         {{ filepath }}
       </td>
-      <td>
+      <td class="px-2 py-2">
         <i class="fas fa-folder-open" v-on:click="folderIconListener" />
       </td>
-      <td>
+      <td class="px-2 py-2">
         <i class="fas fa-download" v-on:click="downloadIconListener" />
       </td>
-      <td>
+      <td class="px-2 py-2">
         <i class="fas fa-trash" v-on:click="trashIconListener" />
       </td>
     </tr>
@@ -445,7 +445,9 @@ var pluginParamEditorTableRow = {
           :value="param.value"
           :key="param.name + param.value"
           :pluginIndex="pluginIndex" />
-        <p v-if="param.typeError.hasError">{{ param.typeError.errorString }}</p>
+        <p v-if="param.typeError.hasError" class="pt-2">
+          {{ param.typeError.errorString }}
+        </p>
       </td>
     </tr>
   `
