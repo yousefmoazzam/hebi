@@ -235,6 +235,7 @@ export const store = new Vuex.Store({
         for (var parameterIdx in this.state.plPluginElements[response.plugin_index].parameters) {
           var parameter = this.state.plPluginElements[response.plugin_index].parameters[parameterIdx];
           if (parameter.name === response.param_name) {
+            parameter["value"] = response.errored_param_value;
             // add a type error
             parameter["typeError"]["hasError"] = true;
             parameter["typeError"]["errorString"] = "Type error, must match the type: " +

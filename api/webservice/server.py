@@ -137,7 +137,8 @@ def modify_param_val():
             'is_valid': param_valid,
             'dtype': required_type,
             'plugin_index': plugin_index,
-            'param_name': param_name
+            'param_name': param_name,
+            'errored_param_value': cast_param_value
         })
 
 

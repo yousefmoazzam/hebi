@@ -344,10 +344,20 @@ var leftPane = {
 }
 
 var pluginParamInputField = {
+  data: function () {
+    return {
+      latestInputValue: this.value
+    }
+  },
   props: {
     name: String,
     pluginIndex: Number,
     value: null
+  },
+  computed: {
+    hasInputBeenChanged: function () {
+      return this.latestInputValue !== String(this.value)
+    }
   },
   methods: {
     valueChangeListener: function (e) {
@@ -356,11 +366,15 @@ var pluginParamInputField = {
         'paramName': this.name,
         'paramValue': e.target.value
       })
+    },
+    valueInputListener: function (e) {
+      this.latestInputValue = e.target.value
     }
   },
   template: `
-    <input type="text" :value="value" class="w-full shadow rounded px-2 py-2"
-      v-on:change="valueChangeListener">
+    <input type="text" :value="latestInputValue" :class="[ hasInputBeenChanged ? 'italic text-gray-500' : '', 'w-full shadow rounded px-2 py-2' ]"
+      v-on:change="valueChangeListener"
+      v-on:input="valueInputListener">
   `
 }
 
@@ -429,6 +443,7 @@ var pluginParamEditorTableRow = {
           v-bind:class="{ 'border-2 border-red-500': param.typeError.hasError }"
           :name="param.name"
           :value="param.value"
+          :key="param.name + param.value"
           :pluginIndex="pluginIndex" />
         <p v-if="param.typeError.hasError">{{ param.typeError.errorString }}</p>
       </td>
