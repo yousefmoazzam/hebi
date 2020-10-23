@@ -221,6 +221,12 @@ export const store = new Vuex.Store({
         // Modify parameter
         for (var parameterIdx in this.state.plPluginElements[response.plugin_index].parameters) {
           var parameter = this.state.plPluginElements[response.plugin_index].parameters[parameterIdx];
+
+          // update the "display" attribute, in case this parameter value
+          // modification changed whether any of the other parameters should be
+          // displayed or not
+          parameter["display"] = response.plugin_data.parameters[parameterIdx].display;
+
           if (parameter.name === response.param_name) {
             parameter["value"] = response.plugin_data.parameters[parameterIdx].value;
             // reset type error
