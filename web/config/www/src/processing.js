@@ -346,24 +346,37 @@ var leftPane = {
 var pluginParamInputField = {
   data: function () {
     return {
-      latestInputValue: this.value
+      latestInputValue: this.param.value
     }
   },
   props: {
-    name: String,
     pluginIndex: Number,
-    value: null
+    param: Object
   },
   computed: {
     hasInputBeenChanged: function () {
-      return this.latestInputValue !== String(this.value)
+      return this.latestInputValue !== String(this.param.value)
+    },
+
+    inputFieldClass: function () {
+      var classString = 'w-full shadow rounded px-2 py-2 '
+
+      if (this.hasInputBeenChanged) {
+        classString += 'italic text-gray-500 '
+      }
+
+      if (this.param.typeError.hasError) {
+        classString += 'border-2 border-red-500'
+      }
+
+      return classString
     }
   },
   methods: {
     valueChangeListener: function (e) {
       this.$store.dispatch('loadPlPluginElements', {
         'pluginIndex': this.pluginIndex,
-        'paramName': this.name,
+        'paramName': this.param.name,
         'paramValue': e.target.value
       })
     },
@@ -372,32 +385,77 @@ var pluginParamInputField = {
     }
   },
   template: `
-    <input type="text" :value="latestInputValue" :class="[ hasInputBeenChanged ? 'italic text-gray-500' : '', 'w-full shadow rounded px-2 py-2' ]"
-      v-on:change="valueChangeListener"
-      v-on:input="valueInputListener">
+    <div>
+      <td class="px-2 py-2">
+      </td>
+      <td class="px-2 py-2 w-full">
+        <input type="text" :value="latestInputValue" :class="inputFieldClass"
+          v-on:change="valueChangeListener"
+          v-on:input="valueInputListener">
+        <p v-if="param.typeError.hasError" class="pt-2">
+          {{ param.typeError.errorString }}
+        </p>
+      </td>
+    </div>
   `
 }
 
 var pluginParamDropdownMenu = {
+  data: function () {
+    return {
+      optionIndex: this.getChosenOptionIndex(this.param.value)
+    }
+  },
   props: {
-    name: String,
     pluginIndex: Number,
-    value: null,
-    options: Array
+    param: Object
+  },
+  computed: {
+    tooltipOptions: function () {
+      return {
+        content: this.param['options'][this.optionIndex][1],
+        placement: 'top-center',
+        offset: 10,
+        trigger: 'hover',
+        delay: {
+          show: 100,
+          hide: 0
+        }
+      }
+    }
   },
   methods: {
     valueChangeListener: function (e) {
       this.$store.dispatch('loadPlPluginElements', {
         'pluginIndex': this.pluginIndex,
-        'paramName': this.name,
+        'paramName': this.param.name,
         'paramValue': e.target.value
       })
+      this.optionIndex = this.getChosenOptionIndex(e.target.value)
+    },
+
+    getChosenOptionIndex: function (optionName) {
+      for (var optionIndex in this.param['options']) {
+        if (this.param['options'][optionIndex][0] === optionName) {
+          return optionIndex
+        }
+      }
     }
   },
   template: `
-    <select :value="value" v-on:change="valueChangeListener">
-      <option v-for="option in options">{{ option }}</option>
-    </select>
+    <div>
+      <td class="px-2 py-2">
+        <span>
+          <i class="fas fa-question" v-tooltip="tooltipOptions">
+          </i>
+        </span>
+      </td>
+      <td class="mx-2 my-2 w-full">
+        <select :value="param.value" v-on:change="valueChangeListener">
+          <option v-for="option in param.options">{{ option[0] }}</option>
+        </select>
+      </td>
+    </div>
   `
 }
 
@@ -433,22 +491,14 @@ var pluginParamEditorTableRow = {
           </i>
         </span>
       </td>
-      <td class="px-2 py-2">
-        <plugin-param-dropdown-menu v-if="'options' in param"
-          :name="param.name"
-          :value="param.value"
-          :options="param.options"
-          :pluginIndex="pluginIndex" />
-        <plugin-param-input-field v-else
-          v-bind:class="{ 'border-2 border-red-500': param.typeError.hasError }"
-          :name="param.name"
-          :value="param.value"
-          :key="param.name + param.value"
-          :pluginIndex="pluginIndex" />
-        <p v-if="param.typeError.hasError" class="pt-2">
-          {{ param.typeError.errorString }}
-        </p>
-      </td>
+      <plugin-param-dropdown-menu v-if="'options' in param"
+        :param="param"
+        :key="param.name + param.value"
+        :pluginIndex="pluginIndex" />
+      <plugin-param-input-field v-else
+        :param="param"
+        :key="param.name + param.value"
+        :pluginIndex="pluginIndex" />
     </tr>
   `
 }

@@ -24,7 +24,7 @@ _parameter_full.update({
     Optional('type'): _non_empty_string,
     Optional('visibility'): _non_empty_string,
     Optional('display'): _non_empty_string,
-    Optional('options'): [_non_empty_string],
+    Optional('options'): [(_non_empty_string, _non_empty_string)],
 })
 
 _plugin_basic = {

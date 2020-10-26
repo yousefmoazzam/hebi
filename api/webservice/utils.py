@@ -104,7 +104,22 @@ def plugin_list_entry_to_dict(p):
     for pn in keys:
         description = p['param'][pn]['description']
         if not isinstance(description, str):
+            # the description is a dict containing more info about the param,
+            # and the param description is in the summary key of this dict
             description = p['param'][pn]['description']['summary']
+            if 'options' in p['param'][pn]:
+                options = pl.tools.param.get_dictionary()[pn]['description']['options'].items()
+                for i, (param, desc) in enumerate(options):
+                    if desc is None:
+                        options[i] = (param, str(desc))
+        else:
+            # the description is just a string
+            if 'options' in p['param'][pn]:
+                # If the options had descriptions as well, then the param
+                # description would be a dict and not a string. Therefore,
+                # since the param description is just a string, it can be
+                # assumed that the options have no descriptions either
+                options = [(option, 'None') for option in pl.tools.param.get_dictionary()[pn]['options']]
 
         parameter_info = {
             'name': pn,
@@ -115,7 +130,7 @@ def plugin_list_entry_to_dict(p):
         }
 
         if 'options' in p['param'][pn]:
-            parameter_info['options'] = p['param'][pn]['options']
+            parameter_info['options'] = options
 
         parameters.append(parameter_info)
 
