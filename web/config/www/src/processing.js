@@ -574,6 +574,11 @@ var plEditorPluginEntry = {
     }
 
   },
+  data: function () {
+    return {
+      collapsed: true
+    }
+  },
   props: {
     pluginIndex: Number,
     pluginName: String,
@@ -582,6 +587,18 @@ var plEditorPluginEntry = {
   template: `
     <div>
       <div class="flex flex-wrap mb-2">
+        <div class="pr-2">
+          <div v-if="collapsed" v-on:click="collapsed = !collapsed" class="cursor-pointer rounded-full border border-grey-500 w-7 h-7 hover:bg-gray-200">
+            <svg aria-hidden="true" class="" data-reactid="266" fill="none" height="24" stroke="#606F7B" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+          </div>
+          <div v-else v-on:click="collapsed = !collapsed" class="cursor-pointer rounded-full border w-7 h-7 bg-blue-500 hover:bg-blue-700">
+            <svg aria-hidden="true" data-reactid="281" fill="none" height="24" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+        </div>
         <div>
           <h3>
             <span class="pr-2">{{ pluginIndex }}</span>
@@ -603,7 +620,7 @@ var plEditorPluginEntry = {
           </i>
         </div>
       </div>
-      <plugin-param-editor-table :plugin="plugin"
+      <plugin-param-editor-table v-show="!collapsed" :plugin="plugin"
         :pluginIndex="pluginIndex" />
     </div>
   `
@@ -686,6 +703,13 @@ var plEditorTabContent = {
     },
     inputListener: function (e) {
       this.$store.dispatch('changePlEditorFilepath', e.target.value)
+    },
+    changeAllPluginsCollapsedState: function (e, collapseAll) {
+      for (var pluginEntry in this.$refs) {
+        if (this.$refs[pluginEntry].length !== 0) {
+          this.$refs[pluginEntry][0]._data.collapsed = collapseAll
+        }
+      }
     }
   },
   components: {
@@ -701,8 +725,19 @@ var plEditorTabContent = {
         :inputFieldText="plEditorFilepath"
         :buttons="inputFieldButtons"
         v-on:changed-input-field-text="inputListener($event)" />
+      <div class="pb-4">
+        <button class="bg-gray-400 hover:bg-gray-600 text-white font-bold py-2 px-4"
+          v-on:click="changeAllPluginsCollapsedState($event, true)" >
+          Collapse All
+        </button>
+        <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
+          v-on:click="changeAllPluginsCollapsedState($event, false)" >
+          Expand All
+        </button>
+      </div>
       <pl-editor-plugin-entry v-for="(plugin, index) in plPluginElements"
-        :key="index + plugin.name"
+        :key="plugin.name"
+        :ref="plugin.name"
         :plugin="plugin"
         :pluginName="plugin.name"
         :pluginIndex="index" />
