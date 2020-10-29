@@ -41,18 +41,6 @@ def populate_plugins():
             _add_module(loader, module_name)
 
 
-def citation_information_to_dict(ci):
-    """
-    Return a dictrionary representation of citation information.
-    """
-    return {
-        'description': ci.description,
-        'doi': ci.doi,
-        'endnote': ci.endnote,
-        'bibtex': ci.bibtex
-    }
-
-
 def plugin_to_dict(name, p):
     """
     Returns a dictionary representation of a plugin in a given state.
@@ -74,19 +62,11 @@ def plugin_to_dict(name, p):
             'display': p.tools.param.get_dictionary()[param_name]['display'],
         })
 
-    cite = p.get_citation_information()
-    # We want a list, even if it just a single or no citation
-    if not cite:
-        cite = []
-    elif isinstance(cite, CitationInformation):
-        cite = [cite]
-
     return {
         'name': name,
         'info': p.docstring_info.get('info'),
         'synopsis': p.docstring_info.get('synopsis'),
         'warn': str(p.docstring_info.get('warn')),
-        'citation': [citation_information_to_dict(c) for c in cite],
         'parameters': parameters,
     }
 

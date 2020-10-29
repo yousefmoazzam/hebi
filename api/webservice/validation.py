@@ -6,13 +6,6 @@ _non_empty_string = All(_string, Length(min=1))
 
 _parameter_value = _string
 
-_citation = {
-    Required('bibtex'): _string,
-    Required('description'): _string,
-    Required('endnote'): _string,
-    Required('doi'): _string,
-}
-
 _parameter_basic = {
     Required('name'): _non_empty_string,
     Required('value'): _parameter_value,
@@ -39,7 +32,6 @@ _plugin_full = {
     Required('info'): _string,
     Required('synopsis'): _string,
     Required('warn'): _string,
-    Required('citation'): [_citation],
     Required('id'): _non_empty_string,
     Required('parameters'): [_parameter_full],
 }
@@ -72,7 +64,6 @@ get_plugin_info_schema = Schema({
     Required('info'): _string,
     Required('synopsis'): _string,
     Required('warn'): _string,
-    Required('citation'): [_citation],
     Required('parameters'): [_parameter_full],
 })
 

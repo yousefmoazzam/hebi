@@ -70,32 +70,6 @@ var pluginTable = {
   `
 }
 
-var pluginCitationsTable = {
-  computed: Vuex.mapState({
-    pluginInfo: state => state.displayedPluginInfo
-  }),
-  template: `
-    <table class="w-full border-collapse">
-      <thead>
-        <tr class="text-left">
-          <th class="px-2 py-2">Description</th>
-          <th class="px-2 py-2">DOI</th>
-          <th class="px-2 py-2">BibTeX</th>
-          <th class="px-2 py-2">Endnote</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="citation in pluginInfo.citation">
-          <td class="px-2 py-2">{{ citation.description }}</td>
-          <td class="px-2 py-2">{{ citation.doi }}</td>
-          <td class="px-2 py-2">{{ citation.bibtex }}</td>
-          <td class="px-2 py-2">{{ citation.endnote }}</td>
-        </tr>
-      </tbody>
-    </table>
-  `
-}
-
 var pluginParamInfoTable = {
   computed: Vuex.mapState({
     pluginInfo: state => state.displayedPluginInfo
@@ -127,8 +101,7 @@ var pluginInfoDisplay = {
     pluginInfo: state => state.displayedPluginInfo
   }),
   components: {
-    'plugin-param-info-table': pluginParamInfoTable,
-    'plugin-citations-table': pluginCitationsTable
+    'plugin-param-info-table': pluginParamInfoTable
   },
   template: `
     <div>
@@ -139,10 +112,6 @@ var pluginInfoDisplay = {
         <p>{{ pluginInfo.info }}</p>
         <h3>Parameters</h3>
         <plugin-param-info-table />
-        <div v-bind:class="{ hidden: pluginInfo.citation.length === 0 }">
-          <h3>Citations</h3>
-          <plugin-citations-table/>
-        </div>
       </div>
     </div>
   `
