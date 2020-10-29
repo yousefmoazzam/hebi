@@ -504,9 +504,60 @@ var pluginParamEditorTableRow = {
 }
 
 var pluginParamEditorTable = {
+  created: function () {
+    const VisibilityOrdering = {
+      'HIDDEN': 0,
+      'BASIC': 1,
+      'INTERMEDIATE': 2,
+      'ADVANCED': 3
+    }
+    this.visibilityOrdering = VisibilityOrdering
+  },
   props: {
     pluginIndex: Number,
-    plugin: Object
+    plugin: Object,
+    chosenParamVisibility: String
+  },
+  methods: {
+    isVisible: function (param) {
+      if (param.visibility === 'datasets') {
+        if (this.chosenParamVisibility === 'datasets' ||
+            this.chosenParamVisibility === 'advanced') {
+          // if the chosen visibility is "datasets" or "advanced", then show
+          // the parameters with a visibility of "datasets"
+          return true
+        } else {
+          // for any other chosen visibility, parameters with a visibility of
+          // "datasets" shouldn't be displayed
+          return false
+        }
+      } else {
+        if (this.chosenParamVisibility === 'datasets') {
+          // the parameter visibility isn't "datasets", so if the chosen
+          // visibility is "datasets" then the parameter shouldn't be displayed
+          return false
+        } else {
+          // the parameter visibility nor the chosen visibility is "datasets",
+          // so they have a value in "hidden", "basic", "intermediate", or
+          // "advanced", and can be compared using the "enum" called
+          // this.visibilityOrdering defined in the created() function of this
+          // component to determine whether or not the parameter should be
+          // displayed
+          var chosenVisibilityUppercase = this.chosenParamVisibility.toUpperCase()
+          var paramVisibilityUppercase = param.visibility.toUpperCase()
+          var visibilityConditionSatisfied = false
+
+          if (this.visibilityOrdering[chosenVisibilityUppercase] >=
+              this.visibilityOrdering[paramVisibilityUppercase]) {
+            visibilityConditionSatisfied = true
+          } else {
+            visibilityConditionSatisfied = false
+          }
+
+          return ((param.display !== 'off') && visibilityConditionSatisfied)
+        }
+      }
+    }
   },
   components: {
     'plugin-param-editor-table-row': pluginParamEditorTableRow
@@ -515,7 +566,7 @@ var pluginParamEditorTable = {
     <table class="w-full border-collapse border border-gray-300 mb-4">
       <tbody>
         <plugin-param-editor-table-row v-for="(param, paramIndex) in plugin.parameters"
-          v-if="param.visibility !== 'hidden' && param.display !== 'off'"
+          v-if="isVisible(param)"
           :key="paramIndex"
           :param="param"
           :pluginIndex="pluginIndex" />
@@ -549,10 +600,37 @@ var toggleSwitch = {
   `
 }
 
+var paramVisibilityDropdown = {
+  data: function () {
+    return {
+      visibilityOptions: [
+        'basic',
+        'intermediate',
+        'advanced',
+        'datasets'
+      ]
+    }
+  },
+  props: {
+    chosenParamVisibility: String
+  },
+  methods: {
+    valueChangeListener: function (e) {
+      this.$emit('change-param-visibility', e)
+    }
+  },
+  template: `
+    <select class="mx-2" :value="chosenParamVisibility" v-on:change="valueChangeListener">
+      <option v-for="option in visibilityOptions">{{ option }}</option>
+    </select>
+  `
+}
+
 var plEditorPluginEntry = {
   components: {
     'plugin-param-editor-table': pluginParamEditorTable,
-    'toggle-switch': toggleSwitch
+    'toggle-switch': toggleSwitch,
+    'param-visibility-dropdown': paramVisibilityDropdown
   },
   methods: {
     trashIconListener: function () {
@@ -571,12 +649,17 @@ var plEditorPluginEntry = {
         'pluginIndex': this.pluginIndex,
         'direction': 1
       })
+    },
+
+    paramVisibilityDropdownListener: function (e) {
+      this.chosenParamVisibility = e.target.value
     }
 
   },
   data: function () {
     return {
-      collapsed: true
+      collapsed: true,
+      chosenParamVisibility: 'advanced'
     }
   },
   props: {
@@ -610,6 +693,9 @@ var plEditorPluginEntry = {
           </h3>
         </div>
         <toggle-switch :pluginIndex="pluginIndex" :active="plugin.active"/>
+        <param-visibility-dropdown
+          v-on:change-param-visibility="paramVisibilityDropdownListener($event)"
+          :chosenParamVisibility="chosenParamVisibility" />
         <div class="flex-1"></div>
         <div class="icons">
           <i class="fas action fa-lg fa-trash m-1" v-on:click="trashIconListener">
@@ -621,6 +707,7 @@ var plEditorPluginEntry = {
         </div>
       </div>
       <plugin-param-editor-table v-show="!collapsed" :plugin="plugin"
+        :chosenParamVisibility="chosenParamVisibility"
         :pluginIndex="pluginIndex" />
     </div>
   `
