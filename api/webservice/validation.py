@@ -14,7 +14,7 @@ _parameter_basic = {
 _parameter_full = _parameter_basic.copy()
 _parameter_full.update({
     Required('description'): _non_empty_string,
-    Optional('type'): _non_empty_string,
+    Optional('type'): Any(_non_empty_string, [_non_empty_string]),
     Optional('visibility'): _non_empty_string,
     Optional('display'): _non_empty_string,
     Optional('options'): [(_non_empty_string, _non_empty_string)],
