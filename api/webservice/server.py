@@ -114,7 +114,7 @@ def modify_param_val():
     # type for the param
     plugin = process_list.plugin_list.plugin_list[plugin_index]
     cast_param_value = process_list.value(param_value)
-    param_valid = param_utils.is_valid(param_name, cast_param_value,
+    param_valid, error_str = param_utils.is_valid(param_name, cast_param_value,
         plugin['tools'].param.get_dictionary()[param_name])
 
     if param_valid:
@@ -140,7 +140,8 @@ def modify_param_val():
             'dtype': required_type,
             'plugin_index': plugin_index,
             'param_name': param_name,
-            'errored_param_value': cast_param_value
+            'errored_param_value': cast_param_value,
+            'error_str': error_str
         })
 
 

@@ -232,8 +232,7 @@ export const store = new Vuex.Store({
             parameter["value"] = response.errored_param_value;
             // add a type error
             parameter["typeError"]["hasError"] = true;
-            parameter["typeError"]["errorString"] = "Type error, must match the type: " +
-              response.dtype;
+            parameter["typeError"]["errorString"] = response.error_str;
           }
         }
       }
