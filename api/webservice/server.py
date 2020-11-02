@@ -173,6 +173,11 @@ def process_list_list():
         process_list = Content()
         process_list.fopen(fname)
 
+        # Refresh all plugins in the process list once it has been opened
+        positions = process_list.get_positions()
+        for pos_str in positions:
+            process_list.refresh(pos_str)
+
         # Format plugin list
         plugins = [plugin_list_entry_to_dict(p) for \
                    p in process_list.plugin_list.plugin_list]
