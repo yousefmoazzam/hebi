@@ -12,6 +12,7 @@ import json_tricks
 import voluptuous
 
 import savu.plugins.utils as pu
+import savu.plugins.parameter_utils as param_utils
 from scripts.config_generator.content import Content
 
 from utils import (plugin_to_dict, plugin_list_entry_to_dict,
@@ -113,7 +114,8 @@ def modify_param_val():
     # type for the param
     plugin = process_list.plugin_list.plugin_list[plugin_index]
     cast_param_value = process_list.value(param_value)
-    param_valid = plugin['tools']._is_valid(cast_param_value, param_name)
+    param_valid = param_utils.is_valid(param_name, cast_param_value,
+        plugin['tools'].param.get_dictionary()[param_name])
 
     if param_valid:
         # modify the plugin param value to be the new value submitted in the UI
