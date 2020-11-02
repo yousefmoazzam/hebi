@@ -320,6 +320,8 @@ var addPluginHelper = function (plugin, plPluginElements) {
 
   var elements = {
     "name": plugin.name,
+    "synopsis": plugin.synopsis,
+    "docLink": plugin.doc_link,
     "active": plugin.active,
     "parameters": []
   };

@@ -115,6 +115,7 @@ def plugin_list_entry_to_dict(p):
         parameters.append(parameter_info)
 
     data.update({
+        'doc_link': str(pl.docstring_info['documentation_link']),
         'parameters': parameters,
         'id': p['id'],
         'active': bool(p['active']),  # Convert from numpy bool

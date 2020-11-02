@@ -653,13 +653,27 @@ var plEditorPluginEntry = {
 
     paramVisibilityDropdownListener: function (e) {
       this.chosenParamVisibility = e.target.value
+    },
+
+    infoIconClickListener: function () {
+      window.open(this.plugin.docLink)
     }
 
   },
   data: function () {
     return {
       collapsed: true,
-      chosenParamVisibility: 'advanced'
+      chosenParamVisibility: 'advanced',
+      tooltipOptions: {
+        content: this.plugin.synopsis,
+        placement: 'top-center',
+        offset: 10,
+        trigger: 'hover',
+        delay: {
+          show: 100,
+          hide: 0
+        }
+      }
     }
   },
   props: {
@@ -687,7 +701,9 @@ var plEditorPluginEntry = {
             <span class="pr-2">{{ pluginIndex }}</span>
             <span class="pr-2">{{ pluginName }}</span>
             <span class="pr-2">
-              <i class="fas fa-question">
+              <i class="fas fa-info-circle cursor-pointer"
+                v-tooltip="tooltipOptions"
+                v-on:click="infoIconClickListener">
               </i>
             </span>
           </h3>
