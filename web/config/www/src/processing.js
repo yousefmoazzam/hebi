@@ -485,11 +485,15 @@ var pluginParamEditorTableRow = {
   template: `
     <tr>
       <td class="px-2 py-2">
-        {{ param.name }}
-        <span>
-          <i class="fas fa-question" v-tooltip="tooltipOptions">
-          </i>
-        </span>
+        <div>
+          <a class="float-left">
+            {{ param.name }}
+          </a>
+          <span>
+            <i class="fas fa-question fa-xs float-left" v-tooltip="tooltipOptions">
+            </i>
+          </span>
+        </div>
       </td>
       <plugin-param-dropdown-menu v-if="'options' in param"
         :param="param"
