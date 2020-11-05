@@ -11,9 +11,12 @@ from fuzzywuzzy import fuzz
 import json_tricks
 import voluptuous
 
+import savu.plugins as savu_plugins
 import savu.plugins.utils as pu
 import savu.plugins.parameter_utils as param_utils
+import scripts.config_generator.config_utils as config_utils
 from scripts.config_generator.content import Content
+from scripts.config_generator.completer import Completer
 
 from utils import (plugin_to_dict, plugin_list_entry_to_dict,
                    is_file_a_data_file, is_file_a_process_list, validate_file,
@@ -83,6 +86,73 @@ def query_plugin_list():
 
     validation.query_plugin_list_schema(plugin_names)
     return jsonify(plugin_names)
+
+
+@app.route('/plugin_collections')
+def get_plugin_collecions():
+
+    # helper functions for creating the data structure containing collections
+    # and the plugins in them
+    def create_collection_dict(coll_name):
+        child = {
+            'collections': {},
+            'plugins': create_collection_plugins_array(coll_name)
+        }
+        return child
+
+    def create_collection_plugins_array(coll_name):
+        # use a similar strategy to the code in savu_config._list() in Savu
+        # that gets all plugins that match a search query:
+        # https://github.com/DiamondLightSource/Savu/blob/0c3d52d6362c6645eed6d77e01eef5a346b7cabe/scripts/config_generator/savu_config.py#L79
+        # to find all plugins in a collection
+        plugins = []
+        list_content = Content()
+        config_utils._populate_plugin_list(list_content, pfilter=coll_name)
+        for plugin in list_content.plugin_list.plugin_list:
+            plugins.append(plugin['name'])
+        return plugins
+
+    def find_parent_collection_dict(colls_dict, collection_path):
+        split_subcollections = collection_path.split('/')
+        innermost_subcollection = split_subcollections[-1]
+
+        if not split_subcollections[0]:
+            # a top level collection
+            return colls_dict['collections']
+        else:
+            # a subcollection: walk through the collections dict to the correct
+            # level
+            subcollection = colls_dict
+            for subcoll in split_subcollections:
+                subcollection = subcollection['collections'][subcoll]
+            return subcollection['collections']
+
+
+    # use a similar strategy to the code in Completer._get_collections() in
+    # Savu to get all the plugin collections
+    path = savu_plugins.__path__[0]
+    exclude_dir = ['driver', 'utils']
+
+    colls = {
+        'collections': {},
+        'plugins': []
+    }
+
+    for root, dirs, files in os.walk(path):
+        depth = root.count(os.path.sep) - path.count(os.path.sep)
+        dirs[:] = [d for d in dirs if d not in exclude_dir]
+
+        if depth == 0:
+            plugin_collection_path = ''
+        else:
+            plugin_collection_path = root.split('plugins/')[1]
+
+        parent_coll = find_parent_collection_dict(colls, plugin_collection_path)
+
+        for coll in dirs:
+            parent_coll[coll] = create_collection_dict(coll)
+
+    return jsonify(colls)
 
 
 @app.route('/plugin/<name>')

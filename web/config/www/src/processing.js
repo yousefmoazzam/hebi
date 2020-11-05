@@ -777,6 +777,40 @@ var addPluginSearchInput = {
   `
 }
 
+var addPluginTreeView = {
+  mounted: function () {
+    this.$store.dispatch('loadPluginCollections')
+  },
+  computed: {
+    ...Vuex.mapGetters([
+      'pluginCollections'
+    ])
+  },
+  data: function () {
+    return {
+      inputFieldText: null
+    }
+  },
+  components: {
+    'tree-view': VueTreeselect.Treeselect
+  },
+  methods: {
+    buttonClickListener: function () {
+      this.$store.dispatch('addPluginToPl', this.inputFieldText)
+    }
+  },
+  template: `
+    <div class="flex mb-2">
+      <tree-view v-model="inputFieldText"
+        placeholder="Search plugins..."
+        :options="pluginCollections"
+        :disable-branch-nodes="true" />
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
+        v-on:click="buttonClickListener">Add Plugin</button>
+    </div>
+  `
+}
+
 var plEditorTabContent = {
   computed: Vuex.mapState({
     plPluginElements: state => state.plPluginElements,

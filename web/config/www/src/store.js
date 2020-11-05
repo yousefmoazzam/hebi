@@ -12,7 +12,8 @@ export const store = new Vuex.Store({
     jobTabDataText: '',
     jobTabPlText: '',
     jobTabOutputText: '/data',
-    jobStatusText: ''
+    jobStatusText: '',
+    pluginCollections: []
   },
 
   actions: {
@@ -166,6 +167,20 @@ export const store = new Vuex.Store({
 
     updatePlFilepathSearchText(context, filepath) {
       context.commit('updatePlFilepathSearchText', filepath)
+    },
+
+    loadPluginCollections(context) {
+      getPluginCollections(
+        (collectionsDict) => {
+          var collectionsTreeView = createCollectionTreeViewBranch(collectionsDict)
+          context.commit('setPluginCollections', collectionsTreeView)
+        },
+        () => {
+          console.log('Failed to get plugin collections')
+        }
+      )
+    }
+
     }
 
   },
@@ -270,6 +285,10 @@ export const store = new Vuex.Store({
 
     updatePlFilepathSearchText(state, filepath) {
       state.plFilepathSearchText = filepath
+    },
+
+    setPluginCollections(state, collectionsDict) {
+      state.pluginCollections = collectionsDict
     }
 
   },
@@ -279,7 +298,8 @@ export const store = new Vuex.Store({
     displayedPluginInfo: state => state.displayedPluginInfo,
     plFilepathSearchResults: state => state.plFilepathSearchResults,
     plEditorFilepath: state => state.plEditorFilepath,
-    plFilepathSearchText: state => state.plFilepathSearchText
+    plFilepathSearchText: state => state.plFilepathSearchText,
+    pluginCollections: state => state.pluginCollections
   }
 })
 
@@ -349,4 +369,28 @@ var addPluginHelper = function (plugin, plPluginElements) {
 
   plPluginElements.push(elements)
 
+}
+
+var createCollectionTreeViewBranch = function (collsAndPluginsDict) {
+
+  var children = []
+
+  for (var pluginIdx in collsAndPluginsDict['plugins']) {
+    var leaf = {
+      'id': collsAndPluginsDict['plugins'][pluginIdx],
+      'label': collsAndPluginsDict['plugins'][pluginIdx]
+    }
+    children.push(leaf)
+  }
+
+  for (var collectionName in collsAndPluginsDict['collections']) {
+    var branch = {
+      'id': collectionName,
+      'label': collectionName,
+      'children': createCollectionTreeViewBranch(collsAndPluginsDict['collections'][collectionName])
+    }
+    children.push(branch)
+  }
+
+  return children
 }

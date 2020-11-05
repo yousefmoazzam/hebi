@@ -2,6 +2,10 @@ function getAvailablePlugins(callback, error) {
   jsonGet("/api/plugin", callback, error);
 }
 
+function getPluginCollections(callback, error) {
+  jsonGet("api/plugin_collections", callback, error)
+}
+
 function searchAvailablePlugins(query, callback, error) {
   jsonGet("/api/plugin?q=" + query, callback, error);
 }
