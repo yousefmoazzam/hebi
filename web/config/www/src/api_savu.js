@@ -57,3 +57,7 @@ function getProcessListDownloadUrl(filename) {
 function modifyParamVal(data, callback, error) {
   jsonPut("/api/plugin/modify_param_val", data, callback, error);
 }
+
+function getDirStructure(callback, error) {
+  jsonGet("/api/dir_structure", callback, error)
+}

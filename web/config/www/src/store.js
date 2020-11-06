@@ -13,7 +13,8 @@ export const store = new Vuex.Store({
     jobTabPlText: '',
     jobTabOutputText: '/data',
     jobStatusText: '',
-    pluginCollections: []
+    pluginCollections: [],
+    dirStructure: []
   },
 
   actions: {
@@ -179,8 +180,18 @@ export const store = new Vuex.Store({
           console.log('Failed to get plugin collections')
         }
       )
-    }
+    },
 
+    loadDirStructure(context) {
+      getDirStructure(
+        (dirDict) => {
+          var filesystemTreeView = createFilesystemTreeViewBranch("/data", dirDict)
+          context.commit('updateDirStructure', filesystemTreeView)
+        },
+        () => {
+          console.log('Failed to get dir structure')
+        }
+      )
     }
 
   },
@@ -289,6 +300,10 @@ export const store = new Vuex.Store({
 
     setPluginCollections(state, collectionsDict) {
       state.pluginCollections = collectionsDict
+    },
+
+    updateDirStructure(state, dirDict) {
+      state.dirStructure = dirDict
     }
 
   },
@@ -299,7 +314,8 @@ export const store = new Vuex.Store({
     plFilepathSearchResults: state => state.plFilepathSearchResults,
     plEditorFilepath: state => state.plEditorFilepath,
     plFilepathSearchText: state => state.plFilepathSearchText,
-    pluginCollections: state => state.pluginCollections
+    pluginCollections: state => state.pluginCollections,
+    dirStructure: state => state.dirStructure
   }
 })
 
@@ -390,6 +406,33 @@ var createCollectionTreeViewBranch = function (collsAndPluginsDict) {
       'children': createCollectionTreeViewBranch(collsAndPluginsDict['collections'][collectionName])
     }
     children.push(branch)
+  }
+
+  return children
+}
+
+var createFilesystemTreeViewBranch = function (parentDirName, filesAndDirsDict) {
+
+  var children = []
+
+  for (var node in filesAndDirsDict) {
+    var child = {}
+
+    // set the 'label' attribute (the string that is displayed in the UI) as
+    // the file or directory name
+    child['label'] = node
+
+    // set the 'id' attribute to be the full path to the file or directory
+    if (node !== parentDirName) {
+      child['id'] = parentDirName + "/" + node
+    } else {
+      child['id'] = node
+    }
+
+    if (filesAndDirsDict[node] !== null) {
+      child['children'] = createFilesystemTreeViewBranch(child['id'], filesAndDirsDict[node])
+    }
+    children.push(child)
   }
 
   return children

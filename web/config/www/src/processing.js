@@ -811,6 +811,40 @@ var addPluginTreeView = {
   `
 }
 
+var fileBrowserTreeView = {
+  mounted: function () {
+    this.$store.dispatch('loadDirStructure')
+  },
+  data: function () {
+    return {
+      inputFieldText: null
+    }
+  },
+  computed: {
+    ...Vuex.mapGetters([
+      'dirStructure'
+    ])
+  },
+  components: {
+    'tree-view': VueTreeselect.Treeselect
+  },
+  methods: {
+    buttonClickListener: function () {
+      this.$store.dispatch('loadPl', this.inputFieldText)
+    }
+  },
+  template: `
+    <div class="flex mb-2">
+      <tree-view v-model="inputFieldText"
+        placeholder="Search files..."
+        :options="dirStructure"
+        :disable-branch-nodes="true" />
+      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
+        v-on:click="buttonClickListener">Open Process List</button>
+    </div>
+  `
+}
+
 var plEditorTabContent = {
   computed: Vuex.mapState({
     plPluginElements: state => state.plPluginElements,
