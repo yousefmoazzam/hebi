@@ -1,6 +1,8 @@
 import { store } from './store.js'
 import { pageTitle } from './plugins.js'
 
+Vue.use(BootstrapVue)
+
 var tabContent = {
   props: ['text'],
   template: `
@@ -861,13 +863,74 @@ var addPluginTreeView = {
   `
 }
 
+var filebrowserSplitButton = {
+  data: function () {
+    return {
+      chosenOption: this.options[0]
+    }
+  },
+  props: {
+    options: Array
+  },
+  methods: {
+    changeOption: function (text) {
+      for (var optionIdx in this.options) {
+        if (this.options[optionIdx].text === text) {
+          this.chosenOption = this.options[optionIdx];
+          break;
+        }
+      }
+    },
+
+    clickSplitButton: function () {
+      this.chosenOption.listener()
+    }
+  },
+  template: `
+    <div>
+      <b-dropdown split right class="ml-2"
+        v-on:click="clickSplitButton"
+        :text="chosenOption.text">
+        <b-dropdown-item v-for="option in options"
+          v-on:click="changeOption(option.text)"
+          :key="option.text">
+          {{ option.text }}
+        </b-dropdown-item>
+      </b-dropdown>
+    </div>
+  `
+}
+
 var fileBrowserTreeView = {
   mounted: function () {
     this.$store.dispatch('loadDirStructure')
   },
   data: function () {
     return {
-      inputFieldText: null
+      inputFieldText: null,
+      splitButtonOptions: [
+        {
+          text: 'Open',
+          listener: () => {
+            this.$store.dispatch('loadPl', this.inputFieldText)
+          }
+        },
+        {
+          text: 'Delete',
+          listener: () => {
+            var comp = this
+            deleteProcessList(
+              this.inputFieldText,
+              function () {
+                comp.$store.dispatch('loadDirStructure')
+              },
+              function () {
+                console.log("Failed to delete process list")
+              }
+            )
+          }
+        }
+      ]
     }
   },
   computed: {
@@ -876,7 +939,8 @@ var fileBrowserTreeView = {
     ])
   },
   components: {
-    'tree-view': VueTreeselect.Treeselect
+    'tree-view': VueTreeselect.Treeselect,
+    'filebrowser-split-button': filebrowserSplitButton
   },
   methods: {
     buttonClickListener: function () {
@@ -884,13 +948,15 @@ var fileBrowserTreeView = {
     }
   },
   template: `
-    <div class="flex mb-2">
-      <tree-view v-model="inputFieldText"
-        placeholder="Search files..."
-        :options="dirStructure"
-        :disable-branch-nodes="true" />
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
-        v-on:click="buttonClickListener">Open Process List</button>
+    <div>
+      <h1 class="mb-2">Filebrowser</h1>
+      <div class="flex mb-2">
+        <tree-view v-model="inputFieldText"
+          placeholder="Search files..."
+          :options="dirStructure"
+          :disable-branch-nodes="true" />
+        <filebrowser-split-button :options="splitButtonOptions" />
+      </div>
     </div>
   `
 }

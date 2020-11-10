@@ -111,7 +111,11 @@ export const store = new Vuex.Store({
         generateProcessListObjectHelper(this.state.plPluginElements),
         function (data) {
           context.commit('saveOpenPl', data)
+          // refreshes the process list search in the LHS pane's "Process
+          // Lists" tab
           context.dispatch('loadPlFilepathSearchResults', store.state.plFilepathSearchText)
+          // refreshes the dropdown file browser
+          context.dispatch('loadDirStructure')
         },
         function () {
           console.log("Failed to save new process list: " + filename)
