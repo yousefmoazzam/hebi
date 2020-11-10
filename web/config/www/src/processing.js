@@ -630,11 +630,39 @@ var paramVisibilityDropdown = {
   `
 }
 
+var pluginConfigWarnModalBox = {
+  methods: {
+    timesIconListener: function (e) {
+      this.$emit('hide-modal', false)
+    }
+  },
+  props: {
+    warningText: String,
+    displayModal: Boolean
+  },
+  template: `
+    <div class="h-full w-full pb-2" v-show="displayModal">
+      <div>
+        <div class="justify-between p-3 bg-gray-900 rounded-t flex">
+          <h5 class="text-white uppercase">Important Plugin Notice</h5>
+          <span class="cursor-pointer" v-on:click="timesIconListener">
+            <i class="fas fa-times text-gray-100 hover:text-gray-500"></i>
+          </span>
+        </div>
+        <div class="p-3 w-full h-full overflow-y-auto border border-gray-300">
+          <p>{{ warningText }}</p>
+        </div>
+      </div>
+  </div>
+  `
+}
+
 var plEditorPluginEntry = {
   components: {
     'plugin-param-editor-table': pluginParamEditorTable,
     'toggle-switch': toggleSwitch,
-    'param-visibility-dropdown': paramVisibilityDropdown
+    'param-visibility-dropdown': paramVisibilityDropdown,
+    'plugin-config-warn-modal-box': pluginConfigWarnModalBox
   },
   methods: {
     trashIconListener: function () {
@@ -661,6 +689,10 @@ var plEditorPluginEntry = {
 
     infoIconClickListener: function () {
       window.open(this.plugin.docLink)
+    },
+
+    setConfigWarnDiplay: function (bool) {
+      this.displayConfigWarn = bool
     }
 
   },
@@ -668,6 +700,7 @@ var plEditorPluginEntry = {
     return {
       collapsed: true,
       chosenParamVisibility: 'advanced',
+      displayConfigWarn: true,
       tooltipOptions: {
         content: this.plugin.synopsis,
         placement: 'top-center',
@@ -678,6 +711,11 @@ var plEditorPluginEntry = {
           hide: 0
         }
       }
+    }
+  },
+  computed: {
+    showConfigWarnIcon: function () {
+      return this.plugin.warn !== 'None' && !this.displayConfigWarn
     }
   },
   props: {
@@ -710,6 +748,10 @@ var plEditorPluginEntry = {
                 v-on:click="infoIconClickListener">
               </i>
             </span>
+            <span v-tooltip="{content: 'Click to show plugin warning', delay: {show: 100, hide: 0}}"
+                v-show="showConfigWarnIcon" v-on:click="setConfigWarnDiplay(true)" class="pr-2">
+              <i class="fas fa-comment-dots cursor-pointer"></i>
+            </span>
           </h3>
         </div>
         <toggle-switch :pluginIndex="pluginIndex" :active="plugin.active"/>
@@ -726,9 +768,17 @@ var plEditorPluginEntry = {
           </i>
         </div>
       </div>
-      <plugin-param-editor-table v-show="!collapsed" :plugin="plugin"
-        :chosenParamVisibility="chosenParamVisibility"
-        :pluginIndex="pluginIndex" />
+      <div v-show="!collapsed">
+        <div v-if="plugin.warn !== 'None'">
+          <plugin-config-warn-modal-box
+            :warningText="plugin.warn"
+            :displayModal="displayConfigWarn"
+            v-on:hide-modal="setConfigWarnDiplay"/>
+        </div>
+        <plugin-param-editor-table :plugin="plugin"
+          :chosenParamVisibility="chosenParamVisibility"
+          :pluginIndex="pluginIndex" />
+      </div>
     </div>
   `
 }
