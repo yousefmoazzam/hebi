@@ -14,6 +14,10 @@ function getPluginDetails(pluginName, callback, error) {
   jsonGet("/api/plugin/" + pluginName, callback, error);
 }
 
+function addPluginToProcessList(pluginName, callback, error) {
+  jsonGet("/api/add_plugin/" + pluginName, callback, error);
+}
+
 function getAvailableProcessLists(searchPath, callback, error) {
   jsonGet("/api/process_list?path=" + searchPath, callback, error);
 }

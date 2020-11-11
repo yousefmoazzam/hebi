@@ -200,6 +200,24 @@ def get_plugin_info(name):
     return jsonify(data)
 
 
+@app.route('/add_plugin/<name>')
+def add_plugin_to_process_list(name):
+    if name not in pu.plugins:
+        abort(status.HTTP_404_NOT_FOUND)
+
+    # create a process list with a single plugin in it (an instance of the
+    # plugin desired to be added to the process list editor) so then plugin
+    # data of the desired format can be passed to plugin_list_entry_to_dict()
+    process_list = Content()
+    pos = "1"
+    process_list.add(name, pos)
+    process_list.on_and_off(pos, const.PLUGIN_ENABLED)
+    plugin = process_list.plugin_list.plugin_list[0]
+    data = plugin_list_entry_to_dict(plugin)
+    validation.process_list_entry_schema(data)
+    return jsonify(data)
+
+
 @app.route('/plugin/modify_param_val', methods=['PUT'])
 def modify_param_val():
     data = request.get_json()

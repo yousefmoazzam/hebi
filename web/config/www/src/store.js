@@ -124,7 +124,7 @@ export const store = new Vuex.Store({
     },
 
     addPluginToPl(context, pluginName) {
-      getPluginDetails(
+      addPluginToProcessList(
         pluginName,
         function (plugin) {
           context.commit('addPluginToPlPluginElements', plugin)
@@ -276,7 +276,6 @@ export const store = new Vuex.Store({
     },
 
     addPluginToPlPluginElements(state, plugin) {
-      plugin.active = true
       addPluginHelper(plugin, this.state.plPluginElements)
     },
 
