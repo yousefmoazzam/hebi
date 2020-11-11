@@ -219,7 +219,7 @@ def create_process_list_from_user_data(data):
 
         # Set parameter values
         for param in pl['parameters']:
-            process_list.modify(pos, param['name'], param['value'])
+            process_list.modify(pos, param['name'], param['value'], ref=True)
 
     return process_list
 
@@ -252,15 +252,14 @@ def order_plugin_params(plugin):
     adv_keys = []
 
     for k, v in plugin.tools.param.get_dictionary().items():
-        if v['display'] == 'on':
-            if v['visibility'] == 'datasets':
-                data_keys.append(k)
-            elif v['visibility'] == 'basic':
-                basic_keys.append(k)
-            elif v['visibility'] == 'intermediate':
-                interm_keys.append(k)
-            elif v['visibility'] == 'advanced':
-                adv_keys.append(k)
+        if v['visibility'] == 'datasets':
+            data_keys.append(k)
+        elif v['visibility'] == 'basic':
+            basic_keys.append(k)
+        elif v['visibility'] == 'intermediate':
+            interm_keys.append(k)
+        elif v['visibility'] == 'advanced':
+            adv_keys.append(k)
 
     # show parameters of all levels of visibility in the UI, and order them in
     # the following way
