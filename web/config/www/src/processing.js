@@ -1006,10 +1006,12 @@ var plEditorTabContent = {
   components: {
     'pl-editor-plugin-entry': plEditorPluginEntry,
     'labelled-input-field-button': labelledInputFieldAndButton,
-    'add-plugin-search-input': addPluginSearchInput
+    'add-plugin-search-input': addPluginSearchInput,
+    'file-browser-tree-view': fileBrowserTreeView
   },
   template: `
     <div>
+      <file-browser-tree-view />
       <labelled-input-field-button
         label="File"
         placeholder="process_list.nxs"
@@ -1017,6 +1019,7 @@ var plEditorTabContent = {
         :buttons="inputFieldButtons"
         v-on:changed-input-field-text="inputListener($event)" />
       <div class="pb-4">
+        <h1 class="mb-2">Editor</h1>
         <button class="bg-gray-400 hover:bg-gray-600 text-white font-bold py-2 px-4"
           v-on:click="changeAllPluginsCollapsedState($event, true)" >
           Collapse All
@@ -1074,10 +1077,7 @@ var processingPageGrid = {
   },
   template: `
     <div class="flex flex-wrap">
-      <div class="w-1/3" >
-        <left-pane />
-      </div>
-      <div class="w-2/3 px-2" >
+      <div class="w-full px-2" >
         <right-pane />
       </div>
     </div>
