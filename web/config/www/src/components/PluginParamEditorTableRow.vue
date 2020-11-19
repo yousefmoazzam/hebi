@@ -1,0 +1,53 @@
+<template>
+  <tr>
+    <td class="px-2 py-2">
+      <div>
+        <a class="float-left">
+          {{ param.name }}
+        </a>
+        <span>
+          <i class="fas fa-question fa-xs float-left" v-tooltip="tooltipOptions">
+          </i>
+        </span>
+      </div>
+    </td>
+    <plugin-param-dropdown-menu v-if="'options' in param"
+      :param="param"
+      :key="param.name + param.value"
+      :pluginIndex="pluginIndex" />
+    <plugin-param-input-field v-else
+      :param="param"
+      :key="param.name + param.value"
+      :pluginIndex="pluginIndex" />
+  </tr>
+</template>
+
+<script>
+import PluginParamInputField from './PluginParamInputField.vue'
+import PluginParamDropdownMenu from './PluginParamDropdownMenu.vue'
+
+export default {
+  components: {
+    'plugin-param-input-field': PluginParamInputField,
+    'plugin-param-dropdown-menu': PluginParamDropdownMenu
+  },
+  data: function () {
+    return {
+      tooltipOptions: {
+        content: this.param.description,
+        placement: 'top-center',
+        offset: 10,
+        trigger: 'hover',
+        delay: {
+          show: 100,
+          hide: 0
+        }
+      }
+    }
+  },
+  props: {
+    pluginIndex: Number,
+    param: Object
+  }
+}
+</script>

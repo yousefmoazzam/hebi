@@ -4,10 +4,35 @@
     "@babel/core": "^7.2.2",
     "@babel/plugin-proposal-class-properties": "^7.2.3",
     "@babel/preset-env": "^7.2.3",
-    "jshint": "^2.9.7"
+    "css-loader": "^5.0.1",
+    "jshint": "^2.9.7",
+    "postcss-cli": "^8.2.0",
+    "postcss-loader": "^4.0.4",
+    "sass": "^1.29.0",
+    "sass-loader": "^10.0.1",
+    "source-map-loader": "^1.1.2",
+    "vue-loader": "^15.9.5",
+    "vue-style-loader": "^4.1.2",
+    "vue-template-compiler": "^2.6.12",
+    "webpack": "^5.4.0",
+    "webpack-cli": "^4.2.0"
   },
   "jshintConfig": {
     "esversion": 6,
     "moz": true
+  },
+  "dependencies": {
+    "@riophae/vue-treeselect": "^0.4.0",
+    "bootstrap-vue": "^2.19.0",
+    "jquery": "^3.3.1",
+    "tailwindcss": "^1.2.0",
+    "v-tooltip": "^2.0.3",
+    "vue": "^2.6.12",
+    "vuex": "^3.5.1"
+  },
+  "scripts": {
+    "build-css": "postcss src/assets/styles/index.css -o dist/tailwind.css",
+    "build-js": "webpack --config webpack.config.js",
+    "build": "npm run build-css && npm run build-js"
   }
 }

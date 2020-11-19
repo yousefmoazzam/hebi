@@ -1,7 +1,8 @@
+import $ from 'jquery'
 // TODO: these functions could likely use fetch() instead
 
 // Performs a GET request and receives a plain text response.
-function plainTextGet(url, callback, error) {
+export function plainTextGet(url, callback, error) {
   $.ajax({
     url: url,
     method: "GET",
@@ -17,7 +18,7 @@ function plainTextGet(url, callback, error) {
 }
 
 // Performs a GET request and receives an XML response.
-function xmlGet(url, callback, error) {
+export function xmlGet(url, callback, error) {
   $.ajax({
     url: url,
     method: "GET",
@@ -33,7 +34,7 @@ function xmlGet(url, callback, error) {
 }
 
 // Performs a GET request and receives a JSON response.
-function jsonGet(url, callback, error) {
+export function jsonGet(url, callback, error) {
   $.ajax({
     url: url,
     method: "GET",
@@ -49,7 +50,7 @@ function jsonGet(url, callback, error) {
 }
 
 // Performs a POST request and receives a JSON response.
-function jsonPost(url, inData, callback, error) {
+export function jsonPost(url, inData, callback, error) {
   $.ajax({
     url: url,
     method: "POST",
@@ -67,7 +68,7 @@ function jsonPost(url, inData, callback, error) {
 }
 
 // Performs a PUT request and receives a JSON response.
-function jsonPut(url, inData, callback, error) {
+export function jsonPut(url, inData, callback, error) {
   $.ajax({
     url: url,
     method: "PUT",
@@ -85,7 +86,7 @@ function jsonPut(url, inData, callback, error) {
 }
 
 // Performs a DELETE request and receives a JSON response.
-function jsonDelete(url, callback, error) {
+export function jsonDelete(url, callback, error) {
   $.ajax({
     url: url,
     method: "DELETE",

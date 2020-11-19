@@ -1,4 +1,20 @@
+import Vue from 'vue'
+import Vuex from 'vuex'
+
 Vue.use(Vuex)
+
+import {
+  searchAvailablePlugins,
+  getPluginDetails,
+  getAvailableProcessLists,
+  getProcessList,
+  modifyParamVal,
+  updateProcessList,
+  newProcessList,
+  addPluginToProcessList,
+  getPluginCollections,
+  getDirStructure
+} from './api_savu.js'
 
 export const store = new Vuex.Store({
 
