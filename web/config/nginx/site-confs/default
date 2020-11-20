@@ -31,4 +31,9 @@ server {
     proxy_set_header Connection "Upgrade";
     proxy_pass http://localhost:5000/socket.io;
   }
+
+  # vuetify-file-browser-server
+  location /files/ {
+    proxy_pass http://localhost:8081/;
+  }
 }
