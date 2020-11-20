@@ -20,7 +20,7 @@ module.exports = {
         use: 'vue-loader'
       },
       {
-        test: /\.s(c|a)ss$/,
+        test: /\.(css|sass|scss)$/,
         use: [
           'vue-style-loader',
           {
@@ -29,24 +29,7 @@ module.exports = {
               esModule: false
             }
           },
-          {
-            loader: 'sass-loader'
-          },
-        ]
-      },
-      {
-        test: /\.(css|scss)$/,
-        use: [
-          'vue-style-loader',
-          {
-            loader: 'css-loader',
-            options: {
-              esModule: false
-            }
-          },
-          {
-            loader: 'sass-loader'
-          }
+          'sass-loader'
         ]
       },
       {
