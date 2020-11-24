@@ -29,11 +29,11 @@
           </span>
         </h3>
       </div>
+      <div class="flex-1"></div>
       <toggle-switch :pluginIndex="pluginIndex" :active="plugin.active"/>
       <param-visibility-dropdown
         v-on:change-param-visibility="paramVisibilityDropdownListener($event)"
         :chosenParamVisibility="chosenParamVisibility" />
-      <div class="flex-1"></div>
       <div class="icons">
         <i class="fas action fa-lg fa-trash m-1" v-on:click="trashIconListener">
         </i>

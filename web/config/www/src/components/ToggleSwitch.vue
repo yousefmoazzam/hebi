@@ -1,5 +1,5 @@
 <template>
-  <div class="flex justify-center items-center">
+  <div>
     <div class="relative rounded-full w-12 h-6 transition duration-200 ease-linear"
          :class="[active ? 'bg-blue-500' : 'bg-gray-400']">
       <label :for="pluginIndex"
