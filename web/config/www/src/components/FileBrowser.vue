@@ -16,6 +16,11 @@
         v-on:click="saveButtonClickListener">
         Save
       </button>
+      <button type="button"
+        class="rounded bg-blue-500 hover:bg-blue-700 ml-1 mt-1 mb-1 p-1"
+        v-on:click="saveAsButtonClickListener">
+        Save As
+      </button>
     </div>
     <div v-show="openingFile || savingFile"
       @click.self="closeModal"
@@ -132,6 +137,25 @@ export default {
         // assuming the given filepath is a process list file, attempt to save
         // it
         this.saveFile(this.buttonInputFieldText)
+      }
+    },
+
+    saveAsButtonClickListener: function () {
+      // always open the file browser
+      this.savingFile = true
+      if (this.buttonInputFieldText !== '') {
+        // get filename from filepath and populate the filename input field in
+        // the file browser with it
+        var splitFilepath = this.buttonInputFieldText.split('/')
+        var filename = splitFilepath.pop()
+        this.filenameSaveInputFieldText = filename
+        // navigate to the dir that the filepath in the input field refers to
+        var dirpath = splitFilepath.join('/') + '/'
+        this.$store.dispatch('changeCurrentDir', dirpath)
+        // update the address bar accordingly
+        this.inputFieldText = dirpath
+        // select the given file
+        this.selectedEntry = this.buttonInputFieldText
       }
     },
 
