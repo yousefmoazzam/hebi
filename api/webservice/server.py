@@ -310,6 +310,14 @@ def process_list_list():
         abort(status.HTTP_400_BAD_REQUEST)
 
 
+@app.route('/check_pl_exists')
+def check_pl_exists():
+    fname = request.args.get(const.KEY_FILENAME)
+    return jsonify({
+        'doesFileExist': validate_file(fname, is_file_a_process_list)
+    })
+
+
 @app.route('/process_list', methods=['POST'])
 def process_list_create():
     fname = request.args.get(const.KEY_FILENAME)

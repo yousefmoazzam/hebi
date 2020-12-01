@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import axios from "axios"
 
 Vue.use(Vuex)
 
@@ -30,7 +31,10 @@ export const store = new Vuex.Store({
     jobTabOutputText: '/data',
     jobStatusText: '',
     pluginCollections: [],
-    dirStructure: []
+    dirStructure: [],
+    rootDirs: [],
+    currentDirPath: '/',
+    dirContents: []
   },
 
   actions: {
@@ -132,6 +136,8 @@ export const store = new Vuex.Store({
           context.dispatch('loadPlFilepathSearchResults', store.state.plFilepathSearchText)
           // refreshes the dropdown file browser
           context.dispatch('loadDirStructure')
+          // refresh file browser's dir contents
+          context.dispatch('loadFileBrowserDirContents', store.state.currentDirPath)
         },
         function () {
           console.log("Failed to save new process list: " + filename)
@@ -212,6 +218,40 @@ export const store = new Vuex.Store({
           console.log('Failed to get dir structure')
         }
       )
+    },
+
+    changeCurrentDir(context, dirPath) {
+      context.commit('updateCurrentDirPath', dirPath)
+      // update the dir contents view to reflect the change of dir
+      context.dispatch('loadFileBrowserDirContents', dirPath)
+    },
+
+    async loadRootDirs(context) {
+      var config = {
+        // hardcode for now, based on the dir in the file browser server
+        // container in which all the dirs from Diamond filesystems are mounted
+        // into
+        baseURL: '/files/',
+        url: endpoints.list.url.replace(new RegExp("{path}", "g"), '/'),
+        method: endpoints.list.method || "get"
+      }
+
+      var response = await axiosInstance.request(config)
+      context.commit('getRootDirs', response.data)
+    },
+
+    async loadFileBrowserDirContents(context, dirPath) {
+      var config = {
+        // hardcode for now, based on the dir in the file browser server
+        // container in which all the dirs from Diamond filesystems are mounted
+        // into
+        baseURL: '/files/',
+        url: endpoints.list.url.replace(new RegExp("{path}", "g"), dirPath),
+        method: endpoints.list.method || "get"
+      }
+
+      var response = await axiosInstance.request(config)
+      context.commit('updateFileBrowserDirContents', response.data)
     }
 
   },
@@ -323,6 +363,18 @@ export const store = new Vuex.Store({
 
     updateDirStructure(state, dirDict) {
       state.dirStructure = dirDict
+    },
+
+    updateCurrentDirPath(state, dirPath) {
+      state.currentDirPath = dirPath
+    },
+
+    getRootDirs(state, data) {
+      state.rootDirs = data
+    },
+
+    updateFileBrowserDirContents(state, data) {
+      state.dirContents = data
     }
 
   },
@@ -334,10 +386,18 @@ export const store = new Vuex.Store({
     plEditorFilepath: state => state.plEditorFilepath,
     plFilepathSearchText: state => state.plFilepathSearchText,
     pluginCollections: state => state.pluginCollections,
-    dirStructure: state => state.dirStructure
+    dirStructure: state => state.dirStructure,
+    currentDirPath: state => state.currentDirPath,
+    rootDirs: state => state.rootDirs,
+    dirContents: state => state.dirContents
   }
 })
 
+const axiosInstance = axios.create({})
+
+const endpoints = {
+  list: { url: "/storage/local/list?path={path}", method: "get" }
+}
 
 var generateProcessListObjectHelper = function (pluginElements) {
   // copy of code in plugin_editor.generateProcessListObject()
