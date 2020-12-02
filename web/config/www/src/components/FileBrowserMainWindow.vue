@@ -31,8 +31,8 @@
         Open
       </button>
       <div v-if="savingFile" class="flex">
-        <button type="button"
-          class="rounded bg-blue-200 hover:bg-blue-300 ml-1 mt-1 mb-1 p-1"
+        <button type="button" :disabled="filenameSaveInputFieldText === ''"
+          :class="[filenameSaveInputFieldText === '' ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-blue-200 hover:bg-blue-300', 'rounded ml-1 mt-1 mb-1 p-1']"
           v-on:click="fileSaveButtonListener">
           Save
         </button>
