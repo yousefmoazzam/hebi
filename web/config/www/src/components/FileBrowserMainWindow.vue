@@ -1,10 +1,17 @@
 <template>
   <div class="grid gap-2">
-    <input type="text"
-      class="flex-1 rounded border shadow p-1 m-1"
-      :value="inputFieldText"
-      v-on:input="inputFieldInputListener($event)"
-      v-on:keyup.enter="inputFieldSubmitListener($event)"/>
+    <div class="flex">
+      <input type="text"
+        class="flex-1 rounded border shadow p-1 m-1"
+        :value="inputFieldText"
+        v-on:input="inputFieldInputListener($event)"
+        v-on:keyup.enter="inputFieldSubmitListener($event)"/>
+      <span :class="[currentDirPath === '/' || currentDirPath === '' ? 'bg-gray-200 cursor-not-allowed' : 'bg-purple-200 hover:bg-purple-300 cursor-pointer', 'flex mt-1 mb-1 mr-1 rounded']"
+        v-on:click="dirUpIconClickListener">
+        <i class="fas fa-level-up-alt fa-lg p-1 flex justify-center items-center"
+          aria-hidden="true"></i>
+      </span>
+    </div>
     <div class="content-window overflow-y-auto">
       <table class="w-full">
         <tbody>
@@ -127,6 +134,34 @@ export default {
       this.$emit('save-file', filepath)
       // close file browser modal box
       this.$emit('open-save-button-click')
+    },
+
+    dirUpIconClickListener: function () {
+      if (this.currentDirPath !== '/' && this.currentDirPath !== '') {
+        var dirPath = ''
+
+        if (this.currentDirPath[this.currentDirPath.length - 1] === '/') {
+          dirPath = this.currentDirPath.slice(0, -1)
+        } else {
+          dirPath = this.currentDirPath
+        }
+
+        var splitCurrentDirPath = dirPath.split('/')
+        splitCurrentDirPath.pop()
+        var parentDirPath = splitCurrentDirPath.join('/') + '/'
+
+        // deselect file (if any)
+        this.$emit('change-selected-entry', '')
+        // clear filename input text if the file browser is in a file-saving
+        // state
+        if (this.savingFile) {
+          this.$emit('filename-input-text-change', '')
+        }
+        // navigate to the parent dir
+        this.$store.dispatch('changeCurrentDir', parentDirPath)
+        // update address bar text
+        this.$emit('input-text-change', parentDirPath)
+      }
     }
   }
 }
