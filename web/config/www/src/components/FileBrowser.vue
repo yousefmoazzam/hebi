@@ -26,6 +26,10 @@
       :isVisible="showSavingFileNotification"
       notificationText="Saving file..."
       v-on:change-notification-state="changeSavingFileNotificationVisibility"/>
+    <prompt-modal-box v-for="(modal, index) in promptModalBoxes"
+      :promptText="modal.promptText" :key="index"
+      v-on:prompt-yes-response="modal.yesResponseListener"
+      v-on:prompt-no-response="modal.noResponseListener" />
     <div v-show="openingFile || savingFile"
       @click.self="closeModal"
       class="modal-bg flex fixed inset-0 z-20 items-center justify-center">
@@ -60,6 +64,7 @@ import { mapGetters } from 'vuex'
 import FileBrowserRootDirs from './FileBrowserRootDirs.vue'
 import FileBrowserMainWindow from './FileBrowserMainWindow.vue'
 import NotificationModalBox from './NotificationModalBox.vue'
+import PromptModalBox from './PromptModalBox.vue'
 
 import { checkPlExists } from '../api_savu.js'
 
@@ -70,7 +75,8 @@ export default {
   components: {
     'file-browser-root-dirs': FileBrowserRootDirs,
     'file-browser-main-window': FileBrowserMainWindow,
-    'notification-modal-box': NotificationModalBox
+    'notification-modal-box': NotificationModalBox,
+    'prompt-modal-box': PromptModalBox
   },
   data: function () {
     return {
@@ -80,7 +86,8 @@ export default {
       savingFile: false,
       filenameSaveInputFieldText: '',
       buttonInputFieldText: '',
-      showSavingFileNotification: false
+      showSavingFileNotification: false,
+      promptModalBoxes: []
     }
   },
   computed: {
@@ -108,15 +115,18 @@ export default {
         filepath,
         (response) => {
           if (response.doesFileExist) {
-            var overwriteFile = confirm('Are you sure you want to overwrite the file ' + filepath + '?')
-            if (overwriteFile) {
-              console.log('Overwriting file ' + filepath)
-              comp.$store.dispatch('savePl', filepath)
-              // show "Saving file..." notification
-              this.changeSavingFileNotificationVisibility(true)
-            } else {
-              console.log('Not overwriting file ' + filepath)
-            }
+            // define the prompt modal box for asking if the file should be
+            // overwritten
+            var promptText = 'Are you sure you want to overwrite the file: ' + filepath + '?'
+            this.promptModalBoxes.push({
+              promptText: promptText,
+              yesResponseListener: () => {
+                this.saveFileYesResponse(filepath)
+              },
+              noResponseListener: () => {
+                this.saveFileNoResponse(filepath)
+              }
+            })
           } else {
             comp.$store.dispatch('saveNewPl', filepath)
             // show "Saving file..." notification
@@ -127,6 +137,21 @@ export default {
           console.log('Unable to check if filepath ' + filepath + ' exists')
         }
       )
+    },
+
+    saveFileYesResponse: function (filepath) {
+      console.log('Overwriting file ' + filepath)
+      this.$store.dispatch('savePl', filepath)
+      // show "Saving file..." notification
+      this.changeSavingFileNotificationVisibility(true)
+      // remove prompt
+      this.promptModalBoxes.pop()
+    },
+
+    saveFileNoResponse: function (filepath) {
+      console.log('Not overwriting file ' + filepath)
+      // remove prompt
+      this.promptModalBoxes.pop()
     },
 
     openButtonClickListener: function () {
