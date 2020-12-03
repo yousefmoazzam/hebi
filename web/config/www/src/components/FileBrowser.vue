@@ -22,6 +22,10 @@
         Save As
       </button>
     </div>
+    <notification-modal-box
+      :isVisible="showSavingFileNotification"
+      notificationText="Saving file..."
+      v-on:change-notification-state="changeSavingFileNotificationVisibility"/>
     <div v-show="openingFile || savingFile"
       @click.self="closeModal"
       class="modal-bg flex fixed inset-0 z-20 items-center justify-center">
@@ -55,6 +59,7 @@ import { mapGetters } from 'vuex'
 
 import FileBrowserRootDirs from './FileBrowserRootDirs.vue'
 import FileBrowserMainWindow from './FileBrowserMainWindow.vue'
+import NotificationModalBox from './NotificationModalBox.vue'
 
 import { checkPlExists } from '../api_savu.js'
 
@@ -64,7 +69,8 @@ export default {
   },
   components: {
     'file-browser-root-dirs': FileBrowserRootDirs,
-    'file-browser-main-window': FileBrowserMainWindow
+    'file-browser-main-window': FileBrowserMainWindow,
+    'notification-modal-box': NotificationModalBox
   },
   data: function () {
     return {
@@ -73,7 +79,8 @@ export default {
       openingFile: false,
       savingFile: false,
       filenameSaveInputFieldText: '',
-      buttonInputFieldText: ''
+      buttonInputFieldText: '',
+      showSavingFileNotification: false
     }
   },
   computed: {
@@ -105,11 +112,15 @@ export default {
             if (overwriteFile) {
               console.log('Overwriting file ' + filepath)
               comp.$store.dispatch('savePl', filepath)
+              // show "Saving file..." notification
+              this.changeSavingFileNotificationVisibility(true)
             } else {
               console.log('Not overwriting file ' + filepath)
             }
           } else {
             comp.$store.dispatch('saveNewPl', filepath)
+            // show "Saving file..." notification
+            this.changeSavingFileNotificationVisibility(true)
           }
         },
         () => {
@@ -174,6 +185,10 @@ export default {
 
     openFile: function (filepath) {
       this.buttonInputFieldText = filepath
+    },
+
+    changeSavingFileNotificationVisibility: function (isVisible) {
+      this.showSavingFileNotification = isVisible
     }
   }
 }
