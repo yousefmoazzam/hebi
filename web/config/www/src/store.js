@@ -35,7 +35,8 @@ export const store = new Vuex.Store({
     rootDirs: [],
     currentDirPath: '/',
     dirContents: [],
-    isCurrentProcessListModified: false
+    isCurrentProcessListModified: false,
+    tabCompletionDirContents: []
   },
 
   actions: {
@@ -264,6 +265,31 @@ export const store = new Vuex.Store({
 
     changeIsProcessListModified(context, isModified) {
       context.commit('updateIsProcessListModified', isModified)
+    },
+
+    loadTabCompletionDirContents(context, dirPath) {
+
+      var config = {
+        // hardcode for now, based on the dir in the file browser server
+        // container in which all the dirs from Diamond filesystems are mounted
+        // into
+        baseURL: '/files/',
+        url: endpoints.list.url.replace(new RegExp("{path}", "g"), dirPath),
+        method: endpoints.list.method || "get"
+      }
+
+      return new Promise((resolve, reject) => {
+        axiosInstance.request(config).then(response => {
+          var dirContentsStrings = response.data.map(dirChild => {
+            return dirChild.basename
+          })
+
+          context.commit('updateTabCompletionDirContents', dirContentsStrings)
+          resolve(response)
+        })
+      }, error => {
+        reject(error)
+      })
     }
 
   },
@@ -391,6 +417,10 @@ export const store = new Vuex.Store({
 
     updateIsProcessListModified(state, isModified) {
       state.isCurrentProcessListModified = isModified
+    },
+
+    updateTabCompletionDirContents(state, dirContents) {
+      state.tabCompletionDirContents = dirContents
     }
 
   },
@@ -406,7 +436,8 @@ export const store = new Vuex.Store({
     currentDirPath: state => state.currentDirPath,
     rootDirs: state => state.rootDirs,
     dirContents: state => state.dirContents,
-    isCurrentProcessListModified: state => state.isCurrentProcessListModified
+    isCurrentProcessListModified: state => state.isCurrentProcessListModified,
+    tabCompletionDirContents: state => state.tabCompletionDirContents
   }
 })
 

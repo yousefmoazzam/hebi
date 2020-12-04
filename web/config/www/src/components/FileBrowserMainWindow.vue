@@ -5,7 +5,8 @@
         class="flex-1 rounded border shadow p-1 m-1"
         :value="inputFieldText"
         v-on:input="inputFieldInputListener($event)"
-        v-on:keyup.enter="inputFieldSubmitListener($event)"/>
+        v-on:keyup.enter="inputFieldSubmitListener($event)"
+        v-on:keydown.tab="filepathInputFieldTabKeyListener($event)" />
       <span :class="[currentDirPath === '/' || currentDirPath === '' ? 'bg-gray-200 cursor-not-allowed' : 'bg-purple-200 hover:bg-purple-300 cursor-pointer', 'flex mt-1 mb-1 mr-1 rounded']"
         v-on:click="dirUpIconClickListener">
         <i class="fas fa-level-up-alt fa-lg p-1 flex justify-center items-center"
@@ -67,7 +68,8 @@ export default {
   computed: {
     ...mapGetters([
       'dirContents',
-      'currentDirPath'
+      'currentDirPath',
+      'tabCompletionDirContents'
     ])
   },
   methods: {
@@ -162,6 +164,49 @@ export default {
         // update address bar text
         this.$emit('input-text-change', parentDirPath)
       }
+    },
+
+    async filepathInputFieldTabKeyListener(e) {
+      e.preventDefault()
+      var partialAddressBarString = ''
+      var splitAddressBarText = this.inputFieldText.split('/')
+      var partialAddressBarString = splitAddressBarText.pop()
+
+      // wait until the dir contents of the parent dir that is in the address
+      // bar has been fetched and saved to the store
+      await this.$store.dispatch('loadTabCompletionDirContents', splitAddressBarText.join('/'))
+
+      var matches = this.tabCompletionDirContents.filter(dirChildString => {
+        return dirChildString.startsWith(partialAddressBarString)
+      })
+
+      var stringToAdd = ''
+      if (matches.length === 0) {
+        // no matches have been found, so leave the address bar text as it is
+        return
+      } else if (matches.length === 1) {
+        // use the only match
+        stringToAdd = matches[0]
+      } else {
+        // tab complete up to the shared starting substring of all the matches
+        stringToAdd = this.sharedStartingSubtring(matches)
+      }
+
+      var tabCompletedPath = splitAddressBarText.join('/') + '/' + stringToAdd
+
+      // update address bar text with the best completion string
+      this.$emit('input-text-change', tabCompletedPath)
+    },
+
+    // copied from: https://stackoverflow.com/a/1917041
+    sharedStartingSubtring: function (matchedStrings){
+      var A = matchedStrings.concat().sort()
+      var a1 = A[0]
+      var a2 = A[A.length-1]
+      var L = a1.length
+      var i = 0
+      while(i<L && a1.charAt(i)=== a2.charAt(i)) i++;
+      return a1.substring(0, i)
     }
   }
 }
