@@ -34,7 +34,8 @@ export const store = new Vuex.Store({
     dirStructure: [],
     rootDirs: [],
     currentDirPath: '/',
-    dirContents: []
+    dirContents: [],
+    isCurrentProcessListModified: false
   },
 
   actions: {
@@ -83,6 +84,7 @@ export const store = new Vuex.Store({
         function (data) {
           context.commit('updateOpenPl', data)
           context.dispatch('changePlEditorFilepath', filename)
+          context.commit('updateIsProcessListModified', false)
         }    ,
         function () {
           console.log("Failed to open process list: " + filename)
@@ -104,6 +106,7 @@ export const store = new Vuex.Store({
         data,
         function (response) {
           context.commit('updatePlPluginElements', response)
+          context.commit('updateIsProcessListModified', true)
         },
         function () {
           console.log("Failed to update plPluginElements")
@@ -117,6 +120,7 @@ export const store = new Vuex.Store({
         generateProcessListObjectHelper(this.state.plPluginElements),
         function (data) {
           context.commit('saveOpenPl', data)
+          context.commit('updateIsProcessListModified', false)
         },
         function () {
           console.log("Failed to save process list: " + filename)
@@ -138,6 +142,7 @@ export const store = new Vuex.Store({
           context.dispatch('loadDirStructure')
           // refresh file browser's dir contents
           context.dispatch('loadFileBrowserDirContents', store.state.currentDirPath)
+          context.commit('updateIsProcessListModified', false)
         },
         function () {
           console.log("Failed to save new process list: " + filename)
@@ -159,6 +164,7 @@ export const store = new Vuex.Store({
 
     removePluginFromPl(context, pluginIndex) {
       context.commit('removePlugin', pluginIndex)
+      context.commit('updateIsProcessListModified', true)
     },
 
     movePluginIndex(context, payload) {
@@ -182,10 +188,12 @@ export const store = new Vuex.Store({
         'newPosition': newPosition
       })
 
+      context.commit('updateIsProcessListModified', true)
     },
 
     togglePluginActiveState(context, pluginIndex) {
       context.commit('togglePluginActiveState', pluginIndex)
+      context.commit('updateIsProcessListModified', true)
     },
 
     changePlEditorFilepath(context, filepath) {
@@ -252,6 +260,10 @@ export const store = new Vuex.Store({
 
       var response = await axiosInstance.request(config)
       context.commit('updateFileBrowserDirContents', response.data)
+    },
+
+    changeIsProcessListModified(context, isModified) {
+      context.commit('updateIsProcessListModified', isModified)
     }
 
   },
@@ -375,6 +387,10 @@ export const store = new Vuex.Store({
 
     updateFileBrowserDirContents(state, data) {
       state.dirContents = data
+    },
+
+    updateIsProcessListModified(state, isModified) {
+      state.isCurrentProcessListModified = isModified
     }
 
   },
@@ -389,7 +405,8 @@ export const store = new Vuex.Store({
     dirStructure: state => state.dirStructure,
     currentDirPath: state => state.currentDirPath,
     rootDirs: state => state.rootDirs,
-    dirContents: state => state.dirContents
+    dirContents: state => state.dirContents,
+    isCurrentProcessListModified: state => state.isCurrentProcessListModified
   }
 })
 

@@ -92,7 +92,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'currentDirPath'
+      'currentDirPath',
+      'isCurrentProcessListModified'
     ])
   },
   methods: {
@@ -155,6 +156,31 @@ export default {
     },
 
     openButtonClickListener: function () {
+      if (this.isCurrentProcessListModified) {
+        // ask the user if they want to navigate away from the current process
+        // list editor state
+        var promptText = 'The current process list has unsaved changes which ' +
+        'will be lost if another file is opened, are you sure you want to ' +
+        'open another file?'
+
+        this.promptModalBoxes.push({
+          promptText: promptText,
+          yesResponseListener: () => {
+            this.promptModalBoxes.pop()
+            this.openButtonClickDiscardAnyChanges()
+          },
+          noResponseListener: () => {
+            this.promptModalBoxes.pop()
+          }
+        })
+      } else {
+        // no unsaved changes are present, so continue file-opening
+        // functionality as normal
+        this.openButtonClickDiscardAnyChanges()
+      }
+    },
+
+    openButtonClickDiscardAnyChanges: function () {
       if (this.buttonInputFieldText === '') {
         // open file browser
         this.openingFile = !this.openingFile
