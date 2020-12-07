@@ -1,17 +1,38 @@
 <template>
   <div class="grid gap-2">
-    <div class="flex">
-      <input type="text"
-        class="flex-1 rounded border shadow p-1 m-1"
-        :value="inputFieldText"
-        v-on:input="inputFieldInputListener($event)"
-        v-on:keyup.enter="inputFieldSubmitListener($event)"
-        v-on:keydown.tab="filepathInputFieldTabKeyListener($event)" />
-      <span :class="[currentDirPath === '/' || currentDirPath === '' ? 'bg-gray-200 cursor-not-allowed' : 'bg-purple-200 hover:bg-purple-300 cursor-pointer', 'flex mt-1 mb-1 mr-1 rounded']"
-        v-on:click="dirUpIconClickListener">
-        <i class="fas fa-level-up-alt fa-lg p-1 flex justify-center items-center"
-          aria-hidden="true"></i>
-      </span>
+    <div class="flex-rows">
+      <div class="flex">
+        <input type="text" ref="addressBar"
+          class="flex-1 rounded border shadow p-1 m-1"
+          :value="inputFieldText"
+          v-on:input="inputFieldInputListener($event)"
+          v-on:keyup.enter="inputFieldSubmitListener($event)"
+          v-on:keydown.tab="filepathInputFieldTabKeyListener($event)"
+          v-on:keydown.up="addressBarUpKeyListener($event)"
+          v-on:keydown.down="addressBarDownKeyListener($event)"
+          v-on:keydown.esc="addressBarEscKeyListener($event)" />
+        <span :class="[currentDirPath === '/' || currentDirPath === '' ? 'bg-gray-200 cursor-not-allowed' : 'bg-purple-200 hover:bg-purple-300 cursor-pointer', 'flex mt-1 mb-1 mr-1 rounded']"
+          v-on:click="dirUpIconClickListener">
+          <i class="fas fa-level-up-alt fa-lg p-1 flex justify-center items-center"
+            aria-hidden="true"></i>
+        </span>
+      </div>
+      <div v-show="tabCompletionMatches.length > 0"
+        class="tab-completion-matches overflow-y-auto"
+        ref="suggestionContainer">
+        <table class="ml-1 border border-blue-200" ref="suggestionTable">
+          <tbody>
+            <tr v-for="match in tabCompletionMatches"
+              :class="[match === tabCompletionMatches[tabCompletionMatchHighlightedIndex] ? 'bg-blue-200' : 'bg-gray-200', 'cursor-pointer']"
+              v-on:click="tabCompletionSuggestionClickListener(match)"
+              v-on:mouseenter="tabCompletionSuggestionMouseOverListener(match)">
+              <td class="p-1">
+                {{ match }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div class="content-window overflow-y-auto">
       <table class="w-full">
@@ -58,6 +79,12 @@
 import { mapGetters } from 'vuex'
 
 export default {
+  data: function () {
+    return {
+      tabCompletionMatches: [],
+      tabCompletionMatchHighlightedIndex: 0
+    }
+  },
   props: {
     inputFieldText: String,
     selectedEntry: String,
@@ -109,10 +136,17 @@ export default {
     },
 
     inputFieldSubmitListener: function (e) {
-      // submit path to navigate to
-      this.$store.dispatch('changeCurrentDir', e.target.value)
-      // deselect any selected file
-      this.$emit('change-selected-entry', '')
+      // check if tab completion suggestions are available or not, the enter
+      // key can be used for either selecting a tab completion suggestion or
+      // navigating to an inputted path
+      if (this.tabCompletionMatches.length > 0) {
+        this.selectTabCompletionSuggestion()
+      } else {
+        // submit path to navigate to
+        this.$store.dispatch('changeCurrentDir', e.target.value)
+        // deselect any selected file
+        this.$emit('change-selected-entry', '')
+      }
     },
 
     fileOpenButtonListener: function () {
@@ -187,9 +221,14 @@ export default {
       } else if (matches.length === 1) {
         // use the only match
         stringToAdd = matches[0]
+        // reset the tab completion suggestions to an empty array so then the
+        // single match isn't shown as a tab-completion-suggestion
+        this.clearTabCompletionSuggestions()
       } else {
         // tab complete up to the shared starting substring of all the matches
         stringToAdd = this.sharedStartingSubtring(matches)
+        this.tabCompletionMatches = matches
+        this.tabCompletionMatchHighlightedIndex = 0
       }
 
       var tabCompletedPath = splitAddressBarText.join('/') + '/' + stringToAdd
@@ -207,6 +246,67 @@ export default {
       var i = 0
       while(i<L && a1.charAt(i)=== a2.charAt(i)) i++;
       return a1.substring(0, i)
+    },
+
+    tabCompletionSuggestionMouseOverListener: function (suggestion) {
+      var suggestionIndex = this.tabCompletionMatches.indexOf(suggestion)
+      this.tabCompletionMatchHighlightedIndex = suggestionIndex
+    },
+
+    tabCompletionSuggestionClickListener: function (suggestion) {
+      // perhaps unnecessary since the mouseover event might always trigger
+      // before a click can, so this.tabCompletionSuggestionMouseOverListener()
+      // might always run before this?
+      var suggestionIndex = this.tabCompletionMatches.indexOf(suggestion)
+      this.tabCompletionMatchHighlightedIndex = suggestionIndex
+      this.selectTabCompletionSuggestion()
+    },
+
+    addressBarUpKeyListener: function (e) {
+      e.preventDefault()
+      if (this.tabCompletionMatches.length > 0 &&
+      this.tabCompletionMatchHighlightedIndex - 1 >= 0) {
+        this.tabCompletionMatchHighlightedIndex--
+        // scroll the tab suggestions container if necessary
+        var rowHeight = this.$refs.suggestionTable.rows[0].offsetHeight
+        this.$refs.suggestionContainer.scrollTop = rowHeight *
+          this.tabCompletionMatchHighlightedIndex
+      }
+    },
+
+    addressBarDownKeyListener: function (e) {
+      e.preventDefault()
+      if (this.tabCompletionMatches.length > 0 &&
+        this.tabCompletionMatchHighlightedIndex + 1 < this.tabCompletionMatches.length) {
+        this.tabCompletionMatchHighlightedIndex++
+        // scroll the tab suggestions container if necessary
+        var rowHeight = this.$refs.suggestionTable.rows[0].offsetHeight
+        this.$refs.suggestionContainer.scrollTop = rowHeight *
+          this.tabCompletionMatchHighlightedIndex
+      }
+    },
+
+    addressBarEscKeyListener: function (e) {
+      e.preventDefault()
+      this.clearTabCompletionSuggestions()
+    },
+
+    selectTabCompletionSuggestion: function () {
+      var splitAddressBarText = this.inputFieldText.split('/')
+      splitAddressBarText.pop()
+      var tabCompletedPath = splitAddressBarText.join('/') + '/' +
+        this.tabCompletionMatches[this.tabCompletionMatchHighlightedIndex]
+      this.$emit('input-text-change', tabCompletedPath)
+
+      // focus the address bar input again
+      this.$refs.addressBar.focus()
+
+      this.clearTabCompletionSuggestions()
+    },
+
+    clearTabCompletionSuggestions: function () {
+      this.tabCompletionMatches = []
+      this.tabCompletionMatchHighlightedIndex = 0
     }
   }
 }
@@ -215,5 +315,9 @@ export default {
 <style>
 .content-window {
   max-height: 200px;
+}
+
+.tab-completion-matches {
+  max-height: 100px;
 }
 </style>
