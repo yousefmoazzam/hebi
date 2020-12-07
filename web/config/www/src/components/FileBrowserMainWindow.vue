@@ -17,7 +17,7 @@
             aria-hidden="true"></i>
         </span>
       </div>
-      <div v-show="tabCompletionMatches.length > 0"
+      <div v-show="showTabCompletionMatches"
         class="tab-completion-matches overflow-y-auto"
         ref="suggestionContainer">
         <table class="ml-1 border border-blue-200" ref="suggestionTable">
@@ -81,8 +81,9 @@ import { mapGetters } from 'vuex'
 export default {
   data: function () {
     return {
-      tabCompletionMatches: [],
-      tabCompletionMatchHighlightedIndex: 0
+      showTabCompletionMatches: false,
+      tabCompletionMatchHighlightedIndex: 0,
+      tabCompletionFilteringString: ''
     }
   },
   props: {
@@ -97,7 +98,12 @@ export default {
       'dirContents',
       'currentDirPath',
       'tabCompletionDirContents'
-    ])
+    ]),
+    tabCompletionMatches: function () {
+      return this.tabCompletionDirContents.filter(child => {
+        return child.startsWith(this.tabCompletionFilteringString)
+      })
+    }
   },
   methods: {
     childClickListener: function (child) {
@@ -132,6 +138,17 @@ export default {
     },
 
     inputFieldInputListener: function (e) {
+      if (this.showTabCompletionMatches) {
+        // update tab completion filtering
+        var partialAddressBarString = e.target.value.split('/').pop()
+        this.tabCompletionFilteringString = partialAddressBarString
+        if (this.tabCompletionMatches.length === 0) {
+          this.tabCompletionMatchHighlightedIndex = 0
+        } else if (this.tabCompletionMatchHighlightedIndex >=
+          this.tabCompletionMatches.length) {
+            this.tabCompletionMatchHighlightedIndex = this.tabCompletionMatches.length - 1
+        }
+      }
       this.$emit('input-text-change', e.target.value)
     },
 
@@ -139,7 +156,7 @@ export default {
       // check if tab completion suggestions are available or not, the enter
       // key can be used for either selecting a tab completion suggestion or
       // navigating to an inputted path
-      if (this.tabCompletionMatches.length > 0) {
+      if (this.showTabCompletionMatches) {
         this.selectTabCompletionSuggestion()
       } else {
         // submit path to navigate to
@@ -205,29 +222,28 @@ export default {
       var partialAddressBarString = ''
       var splitAddressBarText = this.inputFieldText.split('/')
       var partialAddressBarString = splitAddressBarText.pop()
+      this.tabCompletionFilteringString = partialAddressBarString
 
       // wait until the dir contents of the parent dir that is in the address
       // bar has been fetched and saved to the store
       await this.$store.dispatch('loadTabCompletionDirContents', splitAddressBarText.join('/'))
 
-      var matches = this.tabCompletionDirContents.filter(dirChildString => {
-        return dirChildString.startsWith(partialAddressBarString)
-      })
-
       var stringToAdd = ''
-      if (matches.length === 0) {
+      if (this.tabCompletionMatches.length === 0) {
         // no matches have been found, so leave the address bar text as it is
         return
-      } else if (matches.length === 1) {
+      } else if (this.tabCompletionMatches.length === 1) {
         // use the only match
-        stringToAdd = matches[0]
+        stringToAdd = this.tabCompletionMatches[0]
         // reset the tab completion suggestions to an empty array so then the
         // single match isn't shown as a tab-completion-suggestion
         this.clearTabCompletionSuggestions()
       } else {
         // tab complete up to the shared starting substring of all the matches
-        stringToAdd = this.sharedStartingSubtring(matches)
-        this.tabCompletionMatches = matches
+        this.showTabCompletionMatches = true
+        // scroll to the top of the tab completion suggestions list
+        this.$refs.suggestionContainer.scrollTop = 0
+        stringToAdd = this.sharedStartingSubtring(this.tabCompletionMatches)
         this.tabCompletionMatchHighlightedIndex = 0
       }
 
@@ -264,7 +280,7 @@ export default {
 
     addressBarUpKeyListener: function (e) {
       e.preventDefault()
-      if (this.tabCompletionMatches.length > 0 &&
+      if (this.showTabCompletionMatches &&
       this.tabCompletionMatchHighlightedIndex - 1 >= 0) {
         this.tabCompletionMatchHighlightedIndex--
         // scroll the tab suggestions container if necessary
@@ -276,7 +292,7 @@ export default {
 
     addressBarDownKeyListener: function (e) {
       e.preventDefault()
-      if (this.tabCompletionMatches.length > 0 &&
+      if (this.showTabCompletionMatches &&
         this.tabCompletionMatchHighlightedIndex + 1 < this.tabCompletionMatches.length) {
         this.tabCompletionMatchHighlightedIndex++
         // scroll the tab suggestions container if necessary
@@ -305,7 +321,8 @@ export default {
     },
 
     clearTabCompletionSuggestions: function () {
-      this.tabCompletionMatches = []
+      this.showTabCompletionMatches = false
+      this.$refs.suggestionContainer.scrollTop = 0
       this.tabCompletionMatchHighlightedIndex = 0
     }
   }
