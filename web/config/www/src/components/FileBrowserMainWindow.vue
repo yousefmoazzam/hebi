@@ -234,7 +234,7 @@ export default {
         return
       } else if (this.tabCompletionMatches.length === 1) {
         // use the only match
-        stringToAdd = this.tabCompletionMatches[0]
+        stringToAdd = this.tabCompletionMatches[0] + '/'
         // reset the tab completion suggestions to an empty array so then the
         // single match isn't shown as a tab-completion-suggestion
         this.clearTabCompletionSuggestions()
@@ -311,7 +311,7 @@ export default {
       var splitAddressBarText = this.inputFieldText.split('/')
       splitAddressBarText.pop()
       var tabCompletedPath = splitAddressBarText.join('/') + '/' +
-        this.tabCompletionMatches[this.tabCompletionMatchHighlightedIndex]
+        this.tabCompletionMatches[this.tabCompletionMatchHighlightedIndex] + '/'
       this.$emit('input-text-change', tabCompletedPath)
 
       // focus the address bar input again

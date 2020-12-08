@@ -280,9 +280,12 @@ export const store = new Vuex.Store({
 
       return new Promise((resolve, reject) => {
         axiosInstance.request(config).then(response => {
-          var dirContentsStrings = response.data.map(dirChild => {
-            return dirChild.basename
-          })
+          var dirContentsStrings = response.data.reduce((result, dirChild) => {
+            if (dirChild.type === 'dir') {
+              result.push(dirChild.basename)
+            }
+            return result
+          }, [])
 
           context.commit('updateTabCompletionDirContents', dirContentsStrings)
           resolve(response)
