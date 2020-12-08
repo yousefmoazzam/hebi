@@ -83,7 +83,8 @@ export default {
     return {
       showTabCompletionMatches: false,
       tabCompletionMatchHighlightedIndex: 0,
-      tabCompletionFilteringString: ''
+      tabCompletionFilteringString: '',
+      tabKeyPressDir: ''
     }
   },
   props: {
@@ -139,14 +140,25 @@ export default {
 
     inputFieldInputListener: function (e) {
       if (this.showTabCompletionMatches) {
-        // update tab completion filtering
-        var partialAddressBarString = e.target.value.split('/').pop()
-        this.tabCompletionFilteringString = partialAddressBarString
-        if (this.tabCompletionMatches.length === 0) {
-          this.tabCompletionMatchHighlightedIndex = 0
-        } else if (this.tabCompletionMatchHighlightedIndex >=
-          this.tabCompletionMatches.length) {
-            this.tabCompletionMatchHighlightedIndex = this.tabCompletionMatches.length - 1
+        var splitAddressBarText = e.target.value.split('/')
+        var partialAddressBarString = splitAddressBarText.pop()
+        var parentDir = splitAddressBarText.join('/') + '/'
+
+        if (parentDir !== this.tabKeyPressDir) {
+          // if a '/' character is typed or deleted, then the current tab
+          // completion list is no longer valid because a different dir is now
+          // being navigated into, so clear the current tab completions
+          this.clearTabCompletionSuggestions()
+        } else {
+          // still in the same dir as when the tab completion was triggered, so
+          // continue as normal with filtering the tab completion suggestions
+          this.tabCompletionFilteringString = partialAddressBarString
+          if (this.tabCompletionMatches.length === 0) {
+            this.tabCompletionMatchHighlightedIndex = 0
+          } else if (this.tabCompletionMatchHighlightedIndex >=
+            this.tabCompletionMatches.length) {
+              this.tabCompletionMatchHighlightedIndex = this.tabCompletionMatches.length - 1
+          }
         }
       }
       this.$emit('input-text-change', e.target.value)
@@ -223,6 +235,7 @@ export default {
       var splitAddressBarText = this.inputFieldText.split('/')
       var partialAddressBarString = splitAddressBarText.pop()
       this.tabCompletionFilteringString = partialAddressBarString
+      this.tabKeyPressDir = splitAddressBarText.join('/') + '/'
 
       // wait until the dir contents of the parent dir that is in the address
       // bar has been fetched and saved to the store
@@ -324,6 +337,7 @@ export default {
       this.showTabCompletionMatches = false
       this.$refs.suggestionContainer.scrollTop = 0
       this.tabCompletionMatchHighlightedIndex = 0
+      this.tabKeyPressDir = ''
     }
   }
 }
