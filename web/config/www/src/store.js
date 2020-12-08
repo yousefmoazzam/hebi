@@ -36,7 +36,8 @@ export const store = new Vuex.Store({
     currentDirPath: '/',
     dirContents: [],
     isCurrentProcessListModified: false,
-    tabCompletionDirContents: []
+    tabCompletionDirContents: [],
+    filepathInputFieldText: ''
   },
 
   actions: {
@@ -293,6 +294,10 @@ export const store = new Vuex.Store({
       }, error => {
         reject(error)
       })
+    },
+
+    changeFilepathInputFieldText(context, filepath) {
+      context.commit('updateFilepathInputFieldText', filepath)
     }
 
   },
@@ -424,6 +429,10 @@ export const store = new Vuex.Store({
 
     updateTabCompletionDirContents(state, dirContents) {
       state.tabCompletionDirContents = dirContents
+    },
+
+    updateFilepathInputFieldText(state, filepath) {
+      state.filepathInputFieldText = filepath
     }
 
   },
@@ -440,7 +449,8 @@ export const store = new Vuex.Store({
     rootDirs: state => state.rootDirs,
     dirContents: state => state.dirContents,
     isCurrentProcessListModified: state => state.isCurrentProcessListModified,
-    tabCompletionDirContents: state => state.tabCompletionDirContents
+    tabCompletionDirContents: state => state.tabCompletionDirContents,
+    filepathInputFieldText: state => state.filepathInputFieldText
   }
 })
 

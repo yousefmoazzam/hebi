@@ -8,8 +8,8 @@
       </button>
       <input type="text" placeholder="'filepath'"
         class="flex-1 rounded border shadow p-1 m-1"
-        v-on:input="buttonInputFieldInputListener($event)"
-        :value="buttonInputFieldText">
+        v-on:input="filepathInputFieldListener($event)"
+        :value="filepathInputFieldText">
       </input>
       <button type="button"
         class="rounded bg-blue-200 hover:bg-blue-300 mt-1 mb-1 p-1"
@@ -50,7 +50,6 @@
             v-on:change-selected-entry="changeSelectedEntry"
             v-on:filename-input-text-change="changeFilenameSaveInputFieldText"
             v-on:save-file="saveFile"
-            v-on:open-file="openFile"
             v-on:open-save-button-click="closeModal" />
         </div>
       </div>
@@ -69,6 +68,14 @@ import PromptModalBox from './PromptModalBox.vue'
 import { checkPlExists } from '../api_savu.js'
 
 export default {
+  created: function () {
+    // add listener for Ctrl+s key combination
+    document.addEventListener('keydown', this.saveProcessListKeyComboListener)
+  },
+  destroyed: function () {
+    // remove listener for Ctrl+s key combination
+    document.removeEventListener('keydown', this.saveProcessListKeyComboListener)
+  },
   mounted: function () {
     this.$store.dispatch('loadFileBrowserDirContents', '/')
   },
@@ -85,7 +92,6 @@ export default {
       openingFile: false,
       savingFile: false,
       filenameSaveInputFieldText: '',
-      buttonInputFieldText: '',
       showSavingFileNotification: false,
       promptModalBoxes: []
     }
@@ -93,7 +99,8 @@ export default {
   computed: {
     ...mapGetters([
       'currentDirPath',
-      'isCurrentProcessListModified'
+      'isCurrentProcessListModified',
+      'filepathInputFieldText'
     ])
   },
   methods: {
@@ -181,34 +188,34 @@ export default {
     },
 
     openButtonClickDiscardAnyChanges: function () {
-      if (this.buttonInputFieldText === '') {
+      if (this.filepathInputFieldText === '') {
         // open file browser
         this.openingFile = !this.openingFile
       } else {
         // assuming the given filepath is a process list file, attempt to open
         // it in the process list editor
-        this.$store.dispatch('loadPl', this.buttonInputFieldText)
+        this.$store.dispatch('loadPl', this.filepathInputFieldText)
       }
     },
 
     saveButtonClickListener: function () {
-      if (this.buttonInputFieldText === '') {
+      if (this.filepathInputFieldText === '') {
         // open file browser
         this.savingFile = !this.savingFile
       } else {
         // assuming the given filepath is a process list file, attempt to save
         // it
-        this.saveFile(this.buttonInputFieldText)
+        this.saveFile(this.filepathInputFieldText)
       }
     },
 
     saveAsButtonClickListener: function () {
       // always open the file browser
       this.savingFile = true
-      if (this.buttonInputFieldText !== '') {
+      if (this.filepathInputFieldText !== '') {
         // get filename from filepath and populate the filename input field in
         // the file browser with it
-        var splitFilepath = this.buttonInputFieldText.split('/')
+        var splitFilepath = this.filepathInputFieldText.split('/')
         var filename = splitFilepath.pop()
         this.filenameSaveInputFieldText = filename
         // navigate to the dir that the filepath in the input field refers to
@@ -217,7 +224,7 @@ export default {
         // update the address bar accordingly
         this.inputFieldText = dirpath
         // select the given file
-        this.selectedEntry = this.buttonInputFieldText
+        this.selectedEntry = this.filepathInputFieldText
       }
     },
 
@@ -230,16 +237,19 @@ export default {
       this.filenameSaveInputFieldText = ''
     },
 
-    buttonInputFieldInputListener: function (e) {
-      this.buttonInputFieldText = e.target.value
-    },
-
-    openFile: function (filepath) {
-      this.buttonInputFieldText = filepath
+    filepathInputFieldListener: function (e) {
+      this.$store.dispatch('changeFilepathInputFieldText', e.target.value)
     },
 
     changeSavingFileNotificationVisibility: function (isVisible) {
       this.showSavingFileNotification = isVisible
+    },
+
+    saveProcessListKeyComboListener: function (e) {
+      if (e.key === 's' && e.ctrlKey) {
+        e.preventDefault()
+        this.saveButtonClickListener()
+      }
     }
   }
 }

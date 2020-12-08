@@ -188,7 +188,7 @@ export default {
       // change the text of the input field outside the file browser to display
       // the opened process list filepath
       var filepath = this.selectedEntry
-      this.$emit('open-file', filepath)
+      this.$store.dispatch('changeFilepathInputFieldText', filepath)
     },
 
     filenameInputOnInputListener: function (e) {
