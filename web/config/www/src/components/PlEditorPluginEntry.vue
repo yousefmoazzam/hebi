@@ -31,9 +31,6 @@
       </div>
       <div class="flex-1"></div>
       <toggle-switch :pluginIndex="pluginIndex" :active="plugin.active"/>
-      <param-visibility-dropdown
-        v-on:change-param-visibility="paramVisibilityDropdownListener($event)"
-        :chosenParamVisibility="chosenParamVisibility" />
       <div class="icons">
         <i class="fas action fa-lg fa-arrow-up m-1 hover:text-gray-500 cursor-pointer" v-on:click="upArrowIconListener">
         </i>
@@ -50,6 +47,9 @@
           :displayModal="displayConfigWarn"
           v-on:hide-modal="setConfigWarnDiplay"/>
       </div>
+      <param-visibility-dropdown
+        v-on:change-param-visibility="paramVisibilityDropdownListener($event)"
+        :chosenParamVisibility="chosenParamVisibility" />
       <plugin-param-editor-table :plugin="plugin"
         :chosenParamVisibility="chosenParamVisibility"
         :pluginIndex="pluginIndex" />
