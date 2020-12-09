@@ -35,11 +35,11 @@
         v-on:change-param-visibility="paramVisibilityDropdownListener($event)"
         :chosenParamVisibility="chosenParamVisibility" />
       <div class="icons">
-        <i class="fas action fa-lg fa-trash m-1" v-on:click="trashIconListener">
+        <i class="fas action fa-lg fa-arrow-up m-1 hover:text-gray-500 cursor-pointer" v-on:click="upArrowIconListener">
         </i>
-        <i class="fas action fa-lg fa-arrow-up m-1" v-on:click="upArrowIconListener">
+        <i class="fas action fa-lg fa-arrow-down m-1 hover:text-gray-500 cursor-pointer" v-on:click="downArrowIconListener">
         </i>
-        <i class="fas action fa-lg fa-arrow-down m-1" v-on:click="downArrowIconListener">
+        <i class="fas action fa-lg fa-trash ml-1 hover:text-gray-500 cursor-pointer" v-on:click="trashIconListener">
         </i>
       </div>
     </div>
