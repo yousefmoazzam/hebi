@@ -55,21 +55,21 @@
     </div>
     <div class="border-t-4 border-gray-200">
       <button v-if="openingFile" type="button" :disabled="selectedEntry === ''"
-        :class="[selectedEntry === '' ? 'rounded bg-gray-200 cursor-not-allowed text-gray-500 ml-1 mt-1 mb-1 p-1' : 'rounded bg-green-200 hover:bg-green-300 ml-1 mt-1 mb-1 p-1']"
+        :class="[selectedEntry === '' ? 'bg-gray-200 cursor-not-allowed text-gray-500' : 'bg-green-200 hover:bg-green-300', 'float-right rounded mr-1 mt-1 mb-1 p-1']"
         v-on:click="fileOpenButtonListener">
         Open
       </button>
       <div v-if="savingFile" class="flex">
-        <button type="button" :disabled="filenameSaveInputFieldText === ''"
-          :class="[filenameSaveInputFieldText === '' ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-blue-200 hover:bg-blue-300', 'rounded ml-1 mt-1 mb-1 p-1']"
-          v-on:click="fileSaveButtonListener">
-          Save
-        </button>
         <input type="text" placeholder="filename"
           class="flex-1 rounded border shadow p-1 m-1"
           v-on:input="filenameInputOnInputListener"
           :value="filenameSaveInputFieldText">
         </input>
+        <button type="button" :disabled="filenameSaveInputFieldText === ''"
+          :class="[filenameSaveInputFieldText === '' ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-blue-200 hover:bg-blue-300', 'rounded mr-1 mt-1 mb-1 p-1']"
+          v-on:click="fileSaveButtonListener">
+          Save
+        </button>
       </div>
     </div>
   </div>
