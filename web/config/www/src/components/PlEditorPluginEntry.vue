@@ -40,6 +40,10 @@
         </i>
       </div>
     </div>
+    <prompt-modal-box v-for="(modal, index) in promptModalBoxes"
+      :promptText="modal.promptText" :key="index"
+      v-on:prompt-yes-response="modal.yesResponseListener"
+      v-on:prompt-no-response="modal.noResponseListener" />
     <div v-show="!collapsed">
       <div v-if="plugin.warn !== 'None'">
         <plugin-config-warn-modal-box
@@ -62,17 +66,38 @@ import PluginParamEditorTable from './PluginParamEditorTable.vue'
 import ToggleSwitch from './ToggleSwitch.vue'
 import ParamVisibilityDropdown from './ParamVisibilityDropdown.vue'
 import PluginConfigWarnModalBox from './PluginConfigWarnModalBox.vue'
+import PromptModalBox from './PromptModalBox.vue'
 
 export default {
   components: {
     'plugin-param-editor-table': PluginParamEditorTable,
     'toggle-switch': ToggleSwitch,
     'param-visibility-dropdown': ParamVisibilityDropdown,
-    'plugin-config-warn-modal-box': PluginConfigWarnModalBox
+    'plugin-config-warn-modal-box': PluginConfigWarnModalBox,
+    'prompt-modal-box': PromptModalBox
   },
   methods: {
     trashIconListener: function () {
+      // prompt user if they really want to delete the plugin from the process
+      // list editor
+      var promptText = 'Are you sure you want to delete the plugin from the ' +
+        'process list?'
+      this.promptModalBoxes.push({
+        promptText: promptText,
+        yesResponseListener: this.deletePluginYesResponse,
+        noResponseListener: this.deletePluginNoResponse
+      })
+    },
+
+    deletePluginYesResponse: function () {
+      console.log('Deleting plugin with index ' + this.pluginIndex)
       this.$store.dispatch('removePluginFromPl', this.pluginIndex)
+      this.promptModalBoxes.pop()
+    },
+
+    deletePluginNoResponse: function () {
+      console.log('Not deleting plugin with index ' + this.pluginIndex)
+      this.promptModalBoxes.pop()
     },
 
     upArrowIconListener: function () {
@@ -116,7 +141,8 @@ export default {
           show: 100,
           hide: 0
         }
-      }
+      },
+      promptModalBoxes: []
     }
   },
   computed: {
