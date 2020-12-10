@@ -33,7 +33,7 @@
     <div v-show="openingFile || savingFile"
       @click.self="closeModal"
       class="modal-bg flex fixed inset-0 z-20 items-center justify-center">
-      <div class="flex bg-white w-5/6">
+      <div class="file-browser flex bg-white w-5/6">
         <div class="w-1/4 border-collapse border border-gray-300">
           <file-browser-root-dirs
             v-on:update-address-text="addressBarInputChange"
@@ -259,5 +259,10 @@ export default {
 .modal-bg {
   // same as tailwind's bg-gray-800, but with a custom opacity
   background: rgba(31, 41, 55, 0.8);
+}
+
+.file-browser {
+  // current version of tailwind doesn't have "h-1/2", so use plain CSS for now
+  height: 50%
 }
 </style>

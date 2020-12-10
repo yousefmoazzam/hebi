@@ -1,5 +1,5 @@
 <template>
-  <div class="grid gap-2">
+  <div class="flex flex-col h-full">
     <div class="flex-rows">
       <div class="flex">
         <input type="text" ref="addressBar"
@@ -34,7 +34,7 @@
         </table>
       </div>
     </div>
-    <div class="content-window overflow-y-auto">
+    <div class="flex-1 overflow-y-auto">
       <table class="w-full">
         <tbody>
           <tr v-for="child in dirContents"
@@ -344,10 +344,6 @@ export default {
 </script>
 
 <style>
-.content-window {
-  max-height: 200px;
-}
-
 .tab-completion-matches {
   max-height: 100px;
 }
