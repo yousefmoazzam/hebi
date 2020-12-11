@@ -147,6 +147,10 @@ export default {
   },
   methods: {
     childClickListener: function (child) {
+      if (this.showTabCompletionMatches) {
+        this.$emit('clear-tab-completion-suggestions')
+      }
+
       // open dirs on one click, select/deselect files on one click
       if (child.type === 'dir'){
         // deselect file if one has been selected
