@@ -102,11 +102,7 @@ export default {
   },
   data: function () {
     return {
-      showTabCompletionMatches: false,
-      tabCompletionMatchHighlightedIndex: 0,
-      tabCompletionFilteringString: '',
-      tabKeyPressDir: '',
-      addressBarHeight: 0
+      tabCompletionFilteringString: ''
     }
   },
   props: {
@@ -115,7 +111,11 @@ export default {
     openingFile: Boolean,
     savingFile: Boolean,
     filenameSaveInputFieldText: String,
-    addressBarCursorHorizontalPosition: Number
+    addressBarCursorHorizontalPosition: Number,
+    showTabCompletionMatches: Boolean,
+    tabCompletionMatchHighlightedIndex: Number,
+    tabKeyPressDir: String,
+    addressBarHeight: Number
   },
   computed: {
     ...mapGetters([
@@ -133,6 +133,16 @@ export default {
     },
     addressBarLeftStyle: function () {
       return 'left: ' + (this.addressBarCursorHorizontalPosition) + 'px'
+    }
+  },
+  watch: {
+    showTabCompletionMatches: function (newVal, oldVal) {
+      if (!newVal) {
+        // if the tab completion list changes to be hidden, then scroll back to
+        // the top of the list for the next time the tab completion list is
+        // opened
+        this.$refs.suggestionContainer.scrollTop = 0
+      }
     }
   },
   methods: {
@@ -177,16 +187,16 @@ export default {
           // if a '/' character is typed or deleted, then the current tab
           // completion list is no longer valid because a different dir is now
           // being navigated into, so clear the current tab completions
-          this.clearTabCompletionSuggestions()
+          this.$emit('clear-tab-completion-suggestions')
         } else {
           // still in the same dir as when the tab completion was triggered, so
           // continue as normal with filtering the tab completion suggestions
           this.tabCompletionFilteringString = partialAddressBarString
           if (this.tabCompletionMatches.length === 0) {
-            this.tabCompletionMatchHighlightedIndex = 0
+            this.$emit('change-tab-completion-highlighted-index', 0)
           } else if (this.tabCompletionMatchHighlightedIndex >=
             this.tabCompletionMatches.length) {
-              this.tabCompletionMatchHighlightedIndex = this.tabCompletionMatches.length - 1
+            this.$emit('change-tab-completion-highlighted-index', this.tabCompletionMatches.length - 1)
           }
         }
       }
@@ -264,7 +274,7 @@ export default {
       var splitAddressBarText = this.inputFieldText.split('/')
       var partialAddressBarString = splitAddressBarText.pop()
       this.tabCompletionFilteringString = partialAddressBarString
-      this.tabKeyPressDir = splitAddressBarText.join('/') + '/'
+      this.$emit('change-tab-key-press-dir', splitAddressBarText.join('/') + '/')
 
       // wait until the dir contents of the parent dir that is in the address
       // bar has been fetched and saved to the store
@@ -279,15 +289,15 @@ export default {
         stringToAdd = this.tabCompletionMatches[0] + '/'
         // reset the tab completion suggestions to an empty array so then the
         // single match isn't shown as a tab-completion-suggestion
-        this.clearTabCompletionSuggestions()
+        this.$emit('clear-tab-completion-suggestions')
       } else {
         // tab complete up to the shared starting substring of all the matches
-        this.showTabCompletionMatches = true
-        this.addressBarHeight = this.$refs.addressBar.clientHeight
+        this.$emit('change-show-tab-completions', true)
+        this.$emit('update-address-bar-height', this.$refs.addressBar.clientHeight)
         // scroll to the top of the tab completion suggestions list
         this.$refs.suggestionContainer.scrollTop = 0
         stringToAdd = this.sharedStartingSubtring(this.tabCompletionMatches)
-        this.tabCompletionMatchHighlightedIndex = 0
+        this.$emit('change-tab-completion-highlighted-index', 0)
       }
 
       var tabCompletedPath = splitAddressBarText.join('/') + '/' + stringToAdd
@@ -309,7 +319,7 @@ export default {
 
     tabCompletionSuggestionMouseOverListener: function (suggestion) {
       var suggestionIndex = this.tabCompletionMatches.indexOf(suggestion)
-      this.tabCompletionMatchHighlightedIndex = suggestionIndex
+      this.$emit('change-tab-completion-highlighted-index', suggestionIndex)
     },
 
     tabCompletionSuggestionClickListener: function (suggestion) {
@@ -317,7 +327,7 @@ export default {
       // before a click can, so this.tabCompletionSuggestionMouseOverListener()
       // might always run before this?
       var suggestionIndex = this.tabCompletionMatches.indexOf(suggestion)
-      this.tabCompletionMatchHighlightedIndex = suggestionIndex
+      this.$emit('change-tab-completion-highlighted-index', suggestionIndex)
       this.selectTabCompletionSuggestion()
     },
 
@@ -325,7 +335,8 @@ export default {
       e.preventDefault()
       if (this.showTabCompletionMatches &&
       this.tabCompletionMatchHighlightedIndex - 1 >= 0) {
-        this.tabCompletionMatchHighlightedIndex--
+        this.$emit('change-tab-completion-highlighted-index',
+          this.tabCompletionMatchHighlightedIndex - 1)
         // scroll the tab suggestions container if necessary
         var rowHeight = this.$refs.suggestionTable.rows[0].offsetHeight
         this.$refs.suggestionContainer.scrollTop = rowHeight *
@@ -337,7 +348,8 @@ export default {
       e.preventDefault()
       if (this.showTabCompletionMatches &&
         this.tabCompletionMatchHighlightedIndex + 1 < this.tabCompletionMatches.length) {
-        this.tabCompletionMatchHighlightedIndex++
+        this.$emit('change-tab-completion-highlighted-index',
+          this.tabCompletionMatchHighlightedIndex + 1)
         // scroll the tab suggestions container if necessary
         var rowHeight = this.$refs.suggestionTable.rows[0].offsetHeight
         this.$refs.suggestionContainer.scrollTop = rowHeight *
@@ -347,7 +359,7 @@ export default {
 
     addressBarEscKeyListener: function (e) {
       e.preventDefault()
-      this.clearTabCompletionSuggestions()
+      this.$emit('clear-tab-completion-suggestions')
     },
 
     selectTabCompletionSuggestion: function () {
@@ -360,15 +372,7 @@ export default {
       // focus the address bar input again
       this.$refs.addressBar.focus()
 
-      this.clearTabCompletionSuggestions()
-    },
-
-    clearTabCompletionSuggestions: function () {
-      this.showTabCompletionMatches = false
-      this.addressBarHeight = 0
-      this.$refs.suggestionContainer.scrollTop = 0
-      this.tabCompletionMatchHighlightedIndex = 0
-      this.tabKeyPressDir = ''
+      this.$emit('clear-tab-completion-suggestions')
     }
   }
 }

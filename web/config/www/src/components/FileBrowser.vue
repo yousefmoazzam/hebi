@@ -51,11 +51,20 @@
             :filenameSaveInputFieldText="filenameSaveInputFieldText"
             :selectedEntry="selectedEntry"
             :addressBarCursorHorizontalPosition="addressBarCursorHorizontalPosition"
+            :showTabCompletionMatches="showTabCompletionMatches"
+            :tabCompletionMatchHighlightedIndex="tabCompletionMatchHighlightedIndex"
+            :tabKeyPressDir="tabKeyPressDir"
+            :addressBarHeight="addressBarHeight"
             v-on:input-text-change="addressBarInputChange"
             v-on:change-selected-entry="changeSelectedEntry"
             v-on:filename-input-text-change="changeFilenameSaveInputFieldText"
             v-on:save-file="saveFile"
-            v-on:open-save-button-click="closeModal" />
+            v-on:open-save-button-click="closeModal"
+            v-on:change-show-tab-completions="changeShowTabCompletionMatches"
+            v-on:change-tab-completion-highlighted-index="changeTabCompletionMatchHighlightedIndex"
+            v-on:change-tab-key-press-dir="changeTabKeyPressDir"
+            v-on:update-address-bar-height="updateAddressBarHeight"
+            v-on:clear-tab-completion-suggestions="clearTabCompletionSuggestions" />
         </div>
       </div>
     </div>
@@ -99,7 +108,11 @@ export default {
       filenameSaveInputFieldText: '',
       showSavingFileNotification: false,
       promptModalBoxes: [],
-      addressBarCursorHorizontalPosition: 0
+      addressBarCursorHorizontalPosition: 0,
+      showTabCompletionMatches: false,
+      tabCompletionMatchHighlightedIndex: 0,
+      tabKeyPressDir: '',
+      addressBarHeight: 0
     }
   },
   computed: {
@@ -251,6 +264,7 @@ export default {
       this.savingFile = false
       // reset the input in the file browser for entering filenames
       this.filenameSaveInputFieldText = ''
+      this.clearTabCompletionSuggestions()
     },
 
     filepathInputFieldListener: function (e) {
@@ -266,6 +280,29 @@ export default {
         e.preventDefault()
         this.saveButtonClickListener()
       }
+    },
+
+    changeShowTabCompletionMatches: function (bool) {
+      this.showTabCompletionMatches = bool
+    },
+
+    changeTabCompletionMatchHighlightedIndex: function (index) {
+      this.tabCompletionMatchHighlightedIndex = index
+    },
+
+    changeTabKeyPressDir: function (dir) {
+      this.tabKeyPressDir = dir
+    },
+
+    updateAddressBarHeight: function (height) {
+      this.addressBarHeight = height
+    },
+
+    clearTabCompletionSuggestions: function () {
+      this.showTabCompletionMatches = false
+      this.addressBarHeight = 0
+      this.tabCompletionMatchHighlightedIndex = 0
+      this.tabKeyPressDir = ''
     }
   }
 }
