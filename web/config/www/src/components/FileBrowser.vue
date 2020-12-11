@@ -41,7 +41,8 @@
         <div class="w-1/4 border-collapse border border-gray-300">
           <file-browser-root-dirs
             v-on:update-address-text="addressBarInputChange"
-            v-on:change-selected-entry="changeSelectedEntry"/>
+            v-on:change-selected-entry="changeSelectedEntry"
+            v-on:clear-tab-completion-suggestions="clearTabCompletionSuggestions" />
         </div>
         <div class="w-3/4 border-collapse border border-gray-300">
           <file-browser-main-window

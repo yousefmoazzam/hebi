@@ -39,6 +39,8 @@ export default {
       this.$emit('update-address-text', dir.path)
       // deslect selected file (if any) in the main window
       this.$emit('change-selected-entry', '')
+      // clear tab completions in main window
+      this.$emit('clear-tab-completion-suggestions')
     }
   }
 }
