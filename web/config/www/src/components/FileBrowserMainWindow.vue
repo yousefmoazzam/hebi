@@ -265,6 +265,9 @@ export default {
         if (this.savingFile) {
           this.$emit('filename-input-text-change', '')
         }
+        if (this.showTabCompletionMatches) {
+          this.$emit('clear-tab-completion-suggestions')
+        }
         // navigate to the parent dir
         this.$store.dispatch('changeCurrentDir', parentDirPath)
         // update address bar text
