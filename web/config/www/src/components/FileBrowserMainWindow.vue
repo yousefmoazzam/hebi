@@ -1,6 +1,24 @@
 <template>
   <div class="flex flex-col h-full">
     <div class="flex-rows">
+      <div v-show="showTabCompletionMatches" class="relative"
+        :style="addressBarTopStyle + ';' + addressBarLeftStyle">
+        <div class="tab-completion-matches absolute overflow-y-auto"
+          ref="suggestionContainer">
+          <table class="ml-1 border border-blue-200" ref="suggestionTable">
+            <tbody>
+              <tr v-for="match in tabCompletionMatches"
+                :class="[match === tabCompletionMatches[tabCompletionMatchHighlightedIndex] ? 'bg-blue-200' : 'bg-gray-200', 'cursor-pointer']"
+                v-on:click="tabCompletionSuggestionClickListener(match)"
+                v-on:mouseenter="tabCompletionSuggestionMouseOverListener(match)">
+                <td class="p-1">
+                  {{ match }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
       <div class="flex">
         <input type="text" ref="addressBar"
           class="flex-1 rounded border shadow p-1 m-1"
@@ -16,22 +34,6 @@
           <i class="fas fa-level-up-alt fa-lg p-1 flex justify-center items-center"
             aria-hidden="true"></i>
         </span>
-      </div>
-      <div v-show="showTabCompletionMatches"
-        class="tab-completion-matches overflow-y-auto"
-        ref="suggestionContainer">
-        <table class="ml-1 border border-blue-200" ref="suggestionTable">
-          <tbody>
-            <tr v-for="match in tabCompletionMatches"
-              :class="[match === tabCompletionMatches[tabCompletionMatchHighlightedIndex] ? 'bg-blue-200' : 'bg-gray-200', 'cursor-pointer']"
-              v-on:click="tabCompletionSuggestionClickListener(match)"
-              v-on:mouseenter="tabCompletionSuggestionMouseOverListener(match)">
-              <td class="p-1">
-                {{ match }}
-              </td>
-            </tr>
-          </tbody>
-        </table>
       </div>
     </div>
     <div class="flex-1 overflow-y-auto">
@@ -79,12 +81,32 @@
 import { mapGetters } from 'vuex'
 
 export default {
+  mounted: function () {
+    // if the dummy input is in this FileBrowserMainWindow component, the width
+    // of it is not updated unless the file browser modal is also displayed, so
+    // to get the correct initial width when the app is first loaded the dummy
+    // input is instead in the FileBrowser component as it is always shown when
+    // the app first loads
+    //
+    // furthermore, when the FileBrowser component is mounted, the dummy input
+    // isn't guaranteed to have been drawn in the DOM yet even if
+    // inputFieldText has been given a default value in FileBrowser
+    //
+    // trigger change of address bar text to the desired default value via
+    // FileBrowserMainWindow.mounted() instead of setting it in
+    // FileBrowser.data() so then the initial width of the dummy input is
+    // guaranteed to be up to date in the DOM before setting the cursor
+    // horizontal position for tab completion (via the watcher of
+    // inputFieldText in FileBrowser)
+    this.$emit('input-text-change', '/')
+  },
   data: function () {
     return {
       showTabCompletionMatches: false,
       tabCompletionMatchHighlightedIndex: 0,
       tabCompletionFilteringString: '',
-      tabKeyPressDir: ''
+      tabKeyPressDir: '',
+      addressBarHeight: 0
     }
   },
   props: {
@@ -92,7 +114,8 @@ export default {
     selectedEntry: String,
     openingFile: Boolean,
     savingFile: Boolean,
-    filenameSaveInputFieldText: String
+    filenameSaveInputFieldText: String,
+    addressBarCursorHorizontalPosition: Number
   },
   computed: {
     ...mapGetters([
@@ -104,6 +127,12 @@ export default {
       return this.tabCompletionDirContents.filter(child => {
         return child.startsWith(this.tabCompletionFilteringString)
       })
+    },
+    addressBarTopStyle: function () {
+      return 'top: ' + this.addressBarHeight + 'px'
+    },
+    addressBarLeftStyle: function () {
+      return 'left: ' + (this.addressBarCursorHorizontalPosition) + 'px'
     }
   },
   methods: {
@@ -254,6 +283,7 @@ export default {
       } else {
         // tab complete up to the shared starting substring of all the matches
         this.showTabCompletionMatches = true
+        this.addressBarHeight = this.$refs.addressBar.clientHeight
         // scroll to the top of the tab completion suggestions list
         this.$refs.suggestionContainer.scrollTop = 0
         stringToAdd = this.sharedStartingSubtring(this.tabCompletionMatches)
@@ -335,6 +365,7 @@ export default {
 
     clearTabCompletionSuggestions: function () {
       this.showTabCompletionMatches = false
+      this.addressBarHeight = 0
       this.$refs.suggestionContainer.scrollTop = 0
       this.tabCompletionMatchHighlightedIndex = 0
       this.tabKeyPressDir = ''

@@ -30,6 +30,10 @@
       :promptText="modal.promptText" :key="index"
       v-on:prompt-yes-response="modal.yesResponseListener"
       v-on:prompt-no-response="modal.noResponseListener" />
+    <div class="dummy-input absolute ml-1 mt-1 mb-1 pl-1 pt-1 pb-1 invisible"
+      ref="dummyInput">
+      {{ inputFieldText }}
+    </div>
     <div v-show="openingFile || savingFile"
       @click.self="closeModal"
       class="modal-bg flex fixed inset-0 z-20 items-center justify-center">
@@ -46,6 +50,7 @@
             :inputFieldText="inputFieldText"
             :filenameSaveInputFieldText="filenameSaveInputFieldText"
             :selectedEntry="selectedEntry"
+            :addressBarCursorHorizontalPosition="addressBarCursorHorizontalPosition"
             v-on:input-text-change="addressBarInputChange"
             v-on:change-selected-entry="changeSelectedEntry"
             v-on:filename-input-text-change="changeFilenameSaveInputFieldText"
@@ -87,13 +92,14 @@ export default {
   },
   data: function () {
     return {
-      inputFieldText: '/',
+      inputFieldText: '',
       selectedEntry: '',
       openingFile: false,
       savingFile: false,
       filenameSaveInputFieldText: '',
       showSavingFileNotification: false,
-      promptModalBoxes: []
+      promptModalBoxes: [],
+      addressBarCursorHorizontalPosition: 0
     }
   },
   computed: {
@@ -102,6 +108,16 @@ export default {
       'isCurrentProcessListModified',
       'filepathInputFieldText'
     ])
+  },
+  watch: {
+    inputFieldText: function () {
+      // wait until the dummy input has changed in the DOM, then fetch its new
+      // width
+      this.$nextTick(() => {
+        // update horizontal position of tab completion list to follow the cursor
+        this.addressBarCursorHorizontalPosition = this.$refs.dummyInput.offsetWidth
+      })
+    }
   },
   methods: {
     addressBarInputChange: function (path) {
