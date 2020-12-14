@@ -162,6 +162,7 @@ export const store = new Vuex.Store({
             'plugin': plugin,
             'pluginIndex': payload.pluginIndex
           })
+          context.dispatch('changeIsProcessListModified', true)
           // update the index in the input field that specifies the index to
           // add a plugin to, to be the new end position in the process list
           var newIndex = store.state.plPluginElements.length
