@@ -37,7 +37,8 @@ export const store = new Vuex.Store({
     dirContents: [],
     isCurrentProcessListModified: false,
     tabCompletionDirContents: [],
-    filepathInputFieldText: ''
+    filepathInputFieldText: '',
+    addPluginIndexInputFieldText: '0'
   },
 
   actions: {
@@ -153,6 +154,7 @@ export const store = new Vuex.Store({
     },
 
     addPluginToPl(context, payload) {
+      var store = this
       addPluginToProcessList(
         payload.pluginName,
         function (plugin) {
@@ -160,6 +162,10 @@ export const store = new Vuex.Store({
             'plugin': plugin,
             'pluginIndex': payload.pluginIndex
           })
+          // update the index in the input field that specifies the index to
+          // add a plugin to, to be the new end position in the process list
+          var newIndex = store.state.plPluginElements.length
+          context.dispatch('changeAddPluginIndexInputFieldText', newIndex.toString())
         },
         function () {
           console.log("Failed to add plugin to process list")
@@ -170,6 +176,10 @@ export const store = new Vuex.Store({
     removePluginFromPl(context, pluginIndex) {
       context.commit('removePlugin', pluginIndex)
       context.commit('updateIsProcessListModified', true)
+      // update the index in the input field that specifies the index to
+      // add a plugin to, to be the new end position in the process list
+      var newIndex = this.state.plPluginElements.length
+      context.dispatch('changeAddPluginIndexInputFieldText', newIndex.toString())
     },
 
     movePluginIndex(context, payload) {
@@ -301,6 +311,10 @@ export const store = new Vuex.Store({
 
     changeFilepathInputFieldText(context, filepath) {
       context.commit('updateFilepathInputFieldText', filepath)
+    },
+
+    changeAddPluginIndexInputFieldText(context, index) {
+      context.commit('updateAddPluginIndexInputFieldText', index)
     }
 
   },
@@ -441,6 +455,10 @@ export const store = new Vuex.Store({
 
     updateFilepathInputFieldText(state, filepath) {
       state.filepathInputFieldText = filepath
+    },
+
+    updateAddPluginIndexInputFieldText(state, index) {
+      state.addPluginIndexInputFieldText = index
     }
 
   },
@@ -458,7 +476,8 @@ export const store = new Vuex.Store({
     dirContents: state => state.dirContents,
     isCurrentProcessListModified: state => state.isCurrentProcessListModified,
     tabCompletionDirContents: state => state.tabCompletionDirContents,
-    filepathInputFieldText: state => state.filepathInputFieldText
+    filepathInputFieldText: state => state.filepathInputFieldText,
+    addPluginIndexInputFieldText: state => state.addPluginIndexInputFieldText
   }
 })
 

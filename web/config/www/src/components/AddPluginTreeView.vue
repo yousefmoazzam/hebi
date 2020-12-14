@@ -9,7 +9,8 @@
     <div class="flex">
       <input class="flex-1 border border-2 px-1 py-1 mr-1" type="text"
         placeholder="Insert plugin at index..."
-        v-model="addPluginIndexText" />
+        :value="addPluginIndexInputFieldText"
+        v-on:input="addPluginInputFieldListener($event)" />
       <button class="bg-blue-500 rounded hover:bg-blue-700 py-1 px-2"
         v-on:click="buttonClickListener">Add Plugin</button>
     </div>
@@ -28,13 +29,13 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'pluginCollections'
+      'pluginCollections',
+      'addPluginIndexInputFieldText'
     ])
   },
   data: function () {
     return {
-      inputFieldText: null,
-      addPluginIndexText: ''
+      inputFieldText: null
     }
   },
   components: {
@@ -44,9 +45,11 @@ export default {
     buttonClickListener: function () {
       this.$store.dispatch('addPluginToPl', {
         'pluginName': this.inputFieldText,
-        'pluginIndex': this.addPluginIndexText
+        'pluginIndex': this.addPluginIndexInputFieldText
       })
-      this.addPluginIndexText = ''
+    },
+    addPluginInputFieldListener: function (e) {
+      this.$store.dispatch('changeAddPluginIndexInputFieldText', e.target.value)
     }
   }
 }
