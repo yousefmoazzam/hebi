@@ -82,12 +82,15 @@ export const store = new Vuex.Store({
     },
 
     loadPl(context, filename) {
+      var store = this
       getProcessList(
         filename,
         function (data) {
           context.commit('updateOpenPl', data)
           context.dispatch('changePlEditorFilepath', filename)
           context.dispatch('changeIsProcessListModified', false)
+          var newIndex = store.state.plPluginElements.length
+          context.dispatch('changeAddPluginIndexInputFieldText', newIndex.toString())
         }    ,
         function () {
           console.log("Failed to open process list: " + filename)
