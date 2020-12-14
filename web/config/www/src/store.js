@@ -152,11 +152,14 @@ export const store = new Vuex.Store({
       )
     },
 
-    addPluginToPl(context, pluginName) {
+    addPluginToPl(context, payload) {
       addPluginToProcessList(
-        pluginName,
+        payload.pluginName,
         function (plugin) {
-          context.commit('addPluginToPlPluginElements', plugin)
+          context.commit('addPluginToPlPluginElements', {
+            'plugin': plugin,
+            'pluginIndex': payload.pluginIndex
+          })
         },
         function () {
           console.log("Failed to add plugin to process list")
@@ -319,7 +322,12 @@ export const store = new Vuex.Store({
       var newPlPluginElements = []
 
       for (var plugin of data.plugins) {
-        addPluginHelper(plugin, newPlPluginElements)
+        addPluginHelper({
+            'plugin': plugin,
+            'pluginIndex': ''
+          },
+          newPlPluginElements
+        )
       }
 
       state.plPluginElements = newPlPluginElements
@@ -377,8 +385,8 @@ export const store = new Vuex.Store({
       // a file?
     },
 
-    addPluginToPlPluginElements(state, plugin) {
-      addPluginHelper(plugin, this.state.plPluginElements)
+    addPluginToPlPluginElements(state, payload) {
+      addPluginHelper(payload, this.state.plPluginElements)
     },
 
     removePlugin(state, pluginIndex) {
@@ -491,19 +499,19 @@ var generateProcessListObjectHelper = function (pluginElements) {
   return {"plugins": plugins}
 }
 
-var addPluginHelper = function (plugin, plPluginElements) {
+var addPluginHelper = function (data, plPluginElements) {
 
   var elements = {
-    "name": plugin.name,
-    "synopsis": plugin.synopsis,
-    "docLink": plugin.doc_link,
-    "active": plugin.active,
-    "warn": plugin.warn.replace(/\n/gm, " "),
+    "name": data.plugin.name,
+    "synopsis": data.plugin.synopsis,
+    "docLink": data.plugin.doc_link,
+    "active": data.plugin.active,
+    "warn": data.plugin.warn.replace(/\n/gm, " "),
     "parameters": []
   };
 
-  for (var parameterIdx in plugin.parameters) {
-    var parameter = plugin.parameters[parameterIdx];
+  for (var parameterIdx in data.plugin.parameters) {
+    var parameter = data.plugin.parameters[parameterIdx];
 
     var paramInfo = {
       "name": parameter.name,
@@ -524,7 +532,16 @@ var addPluginHelper = function (plugin, plPluginElements) {
     elements.parameters.push(paramInfo)
   }
 
-  plPluginElements.push(elements)
+  if (data.pluginIndex === '') {
+    plPluginElements.push(elements)
+  } else {
+    var idx = parseInt(data.pluginIndex)
+    if (idx <= 0) {
+      plPluginElements.splice(0, 0, elements)
+    } else {
+      plPluginElements.splice(idx, 0, elements)
+    }
+  }
 
 }
 

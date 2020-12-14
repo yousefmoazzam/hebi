@@ -1,11 +1,18 @@
 <template>
-  <div class="flex mb-2 blah">
-    <tree-view v-model="inputFieldText"
-      placeholder="Search plugins..."
-      :options="pluginCollections"
-      :disable-branch-nodes="true" />
-    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
-      v-on:click="buttonClickListener">Add Plugin</button>
+  <div class="grid grid-flow-cols grid-cols-2 gap-1">
+    <div>
+      <tree-view v-model="inputFieldText"
+        placeholder="Search plugins..."
+        :options="pluginCollections"
+        :disable-branch-nodes="true" />
+    </div>
+    <div class="flex">
+      <input class="flex-1 border border-2 px-1 py-1 mr-1" type="text"
+        placeholder="Insert plugin at index..."
+        v-model="addPluginIndexText" />
+      <button class="bg-blue-500 rounded hover:bg-blue-700 py-1 px-2"
+        v-on:click="buttonClickListener">Add Plugin</button>
+    </div>
   </div>
 </template>
 
@@ -26,7 +33,8 @@ export default {
   },
   data: function () {
     return {
-      inputFieldText: null
+      inputFieldText: null,
+      addPluginIndexText: ''
     }
   },
   components: {
@@ -34,7 +42,11 @@ export default {
   },
   methods: {
     buttonClickListener: function () {
-      this.$store.dispatch('addPluginToPl', this.inputFieldText)
+      this.$store.dispatch('addPluginToPl', {
+        'pluginName': this.inputFieldText,
+        'pluginIndex': this.addPluginIndexText
+      })
+      this.addPluginIndexText = ''
     }
   }
 }
