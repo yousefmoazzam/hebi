@@ -38,7 +38,8 @@ export const store = new Vuex.Store({
     isCurrentProcessListModified: false,
     tabCompletionDirContents: [],
     filepathInputFieldText: '',
-    addPluginIndexInputFieldText: '0'
+    addPluginIndexInputFieldText: '0',
+    favouritedDirs: []
   },
 
   actions: {
@@ -278,7 +279,13 @@ export const store = new Vuex.Store({
       }
 
       var response = await axiosInstance.request(config)
-      context.commit('updateFileBrowserDirContents', response.data)
+      var modifiedData = response.data.map(dir => {
+        return {
+          ...dir,
+          isFavourite: this.state.favouritedDirs.includes(dir.path)
+        }
+      })
+      context.commit('updateFileBrowserDirContents', modifiedData)
     },
 
     changeIsProcessListModified(context, isModified) {
@@ -319,6 +326,35 @@ export const store = new Vuex.Store({
 
     changeAddPluginIndexInputFieldText(context, index) {
       context.commit('updateAddPluginIndexInputFieldText', index)
+    },
+
+    addFavouriteDir(context, path) {
+      var dirIdx = 0
+      for (var childIdx in this.state.dirContents) {
+        if (this.state.dirContents[childIdx].path === path) {
+          dirIdx = childIdx
+          break
+        }
+      }
+      context.commit('addFavouriteDir', {
+        dirContentsIdx: dirIdx,
+        path: path
+      })
+    },
+
+    removeFavouriteDir(context, path) {
+      var dirIdx = 0
+      for (var childIdx in this.state.dirContents) {
+        if (this.state.dirContents[childIdx].path === path) {
+          dirIdx = childIdx
+          break
+        }
+      }
+      var favDirIndex = this.state.favouritedDirs.indexOf(path)
+      context.commit('removeFavouriteDir', {
+        dirContentsIdx: dirIdx,
+        favDirIndex: favDirIndex
+      })
     }
 
   },
@@ -463,6 +499,20 @@ export const store = new Vuex.Store({
 
     updateAddPluginIndexInputFieldText(state, index) {
       state.addPluginIndexInputFieldText = index
+    },
+
+    addFavouriteDir(state, payload) {
+      // change isFavourite attr in the dir's entry in state.dirContents
+      state.dirContents[payload.dirContentsIdx].isFavourite = true
+      // modify state.favouritedDirs
+      state.favouritedDirs.push(payload.path)
+    },
+
+    removeFavouriteDir(state, payload) {
+      // change isFavourite attr in the dir's entry in state.dirContents
+      state.dirContents[payload.dirContentsIdx].isFavourite = false
+      // modify state.favouritedDirs
+      state.favouritedDirs.splice(payload.favDirIndex, 1)
     }
 
   },
@@ -481,7 +531,8 @@ export const store = new Vuex.Store({
     isCurrentProcessListModified: state => state.isCurrentProcessListModified,
     tabCompletionDirContents: state => state.tabCompletionDirContents,
     filepathInputFieldText: state => state.filepathInputFieldText,
-    addPluginIndexInputFieldText: state => state.addPluginIndexInputFieldText
+    addPluginIndexInputFieldText: state => state.addPluginIndexInputFieldText,
+    favouritedDirs: state => state.favouritedDirs
   }
 })
 

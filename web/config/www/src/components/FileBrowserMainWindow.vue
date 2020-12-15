@@ -47,19 +47,31 @@
       </label>
     </div>
     <div class="flex-1 overflow-y-auto">
-      <table class="w-full">
+      <table class="w-full table-fixed">
         <tbody>
           <tr v-for="child in filteredDirContents"
             v-on:click="childClickListener(child)"
+            v-on:mouseenter="childMouseEnterListener(child.path)"
+            v-on:mouseleave="hoveredChild = ''"
             :class="[child.path === selectedEntry ? 'bg-gray-200 hover:bg-gray-300': 'hover:bg-gray-200']">
-            <td class="p-1">
+            <td class="p-1 w-1/6">
               <span>
                 <i v-if="child.type === 'dir'" class="fa fa-folder" aria-hidden="true"></i>
                 <i v-else-if="child.type === 'file'" class="fas fa-file" aria-hidden="true"></i>
               </span>
             </td>
-            <td class="p-1">
+            <td class="p-1 w-4/6">
               {{ child.basename }}
+            </td>
+            <td class="p-1 w-1/6">
+              <span v-if="child.isFavourite"
+                class="fa fa-star cursor-pointer text-yellow-400 hover:text-yellow-500"
+                v-on:click.stop="removeDirFromFavourites(child.path)">
+              </span>
+              <span v-else
+                :class="[child.type === 'dir' && child.path === hoveredChild ? 'fa fa-star cursor-pointer text-gray-400 hover:text-yellow-400' : '', '']"
+                v-on:click.stop="addDirToFavourites(child.path)">
+              </span>
             </td>
           </tr>
         </tbody>
@@ -114,7 +126,8 @@ export default {
     return {
       tabCompletionFilteringString: '',
       showSettingsToolbar: false,
-      showHiddenFiles: false
+      showHiddenFiles: false,
+      hoveredChild: ''
     }
   },
   props: {
@@ -401,6 +414,18 @@ export default {
       this.$refs.addressBar.focus()
 
       this.$emit('clear-tab-completion-suggestions')
+    },
+
+    childMouseEnterListener: function (childPath) {
+      this.hoveredChild = childPath
+    },
+
+    addDirToFavourites: function (childPath) {
+      this.$store.dispatch('addFavouriteDir', childPath)
+    },
+
+    removeDirFromFavourites: function (childPath) {
+      this.$store.dispatch('removeFavouriteDir', childPath)
     },
 
     cogIconClickListener: function () {
