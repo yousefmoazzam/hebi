@@ -34,12 +34,22 @@
           <i class="fas fa-level-up-alt fa-lg p-1 flex justify-center items-center"
             aria-hidden="true"></i>
         </span>
+        <span :class="[showSettingsToolbar ? 'text-gray-400 bg-purple-600' : 'text-black hover:text-gray-400 bg-purple-400 hover:bg-purple-600', 'cursor-pointer flex mt-1 mb-1 mr-1 rounded']"
+          v-on:click="cogIconClickListener">
+          <i class="fas fa-cog fa-lg p-1 flex justify-center items-center"></i>
+        </span>
       </div>
+    </div>
+    <div v-show="showSettingsToolbar" class="p-1 shadow">
+      <input type="checkbox" id="showHiddenFilesAndDirs" v-model="showHiddenFiles">
+      <label for="showHiddenFilesAndDirs" class="select-none">
+        Show hidden files
+      </label>
     </div>
     <div class="flex-1 overflow-y-auto">
       <table class="w-full">
         <tbody>
-          <tr v-for="child in dirContents"
+          <tr v-for="child in filteredDirContents"
             v-on:click="childClickListener(child)"
             :class="[child.path === selectedEntry ? 'bg-gray-200 hover:bg-gray-300': 'hover:bg-gray-200']">
             <td class="p-1">
@@ -102,7 +112,9 @@ export default {
   },
   data: function () {
     return {
-      tabCompletionFilteringString: ''
+      tabCompletionFilteringString: '',
+      showSettingsToolbar: false,
+      showHiddenFiles: false
     }
   },
   props: {
@@ -133,6 +145,15 @@ export default {
     },
     addressBarLeftStyle: function () {
       return 'left: ' + (this.addressBarCursorHorizontalPosition) + 'px'
+    },
+    filteredDirContents: function () {
+      if (!this.showHiddenFiles) {
+        return this.dirContents.filter(child => {
+          return !child.basename.startsWith('.')
+        })
+      } else {
+        return this.dirContents
+      }
     }
   },
   watch: {
@@ -380,6 +401,10 @@ export default {
       this.$refs.addressBar.focus()
 
       this.$emit('clear-tab-completion-suggestions')
+    },
+
+    cogIconClickListener: function () {
+      this.showSettingsToolbar = !this.showSettingsToolbar
     }
   }
 }
