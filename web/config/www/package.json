@@ -6,6 +6,7 @@
     "@babel/preset-env": "^7.2.3",
     "css-loader": "^5.0.1",
     "deepmerge": "^4.2.2",
+    "js-yaml": "^3.14.1",
     "jshint": "^2.9.7",
     "postcss-cli": "^8.2.0",
     "postcss-loader": "^4.0.4",

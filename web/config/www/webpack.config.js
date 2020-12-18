@@ -2,6 +2,7 @@
 
 const { VueLoaderPlugin } = require('vue-loader')
 const path = require('path');
+const webpack = require('webpack')
 
 module.exports = {
   mode: 'development',
@@ -40,7 +41,10 @@ module.exports = {
     ],
   },
   plugins: [
-    new VueLoaderPlugin()
+    new VueLoaderPlugin(),
+    new webpack.DefinePlugin({
+      FEDID: JSON.stringify(DUMMY_FEDID)
+    })
   ],
   resolve: {
     alias: {

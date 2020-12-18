@@ -92,7 +92,10 @@ export default {
     document.removeEventListener('keydown', this.saveProcessListKeyComboListener)
   },
   mounted: function () {
-    this.$store.dispatch('loadFileBrowserDirContents', '/')
+    this.$store.dispatch('loadConfig', {
+      name: 'loadFileBrowserDirContents',
+      data: '/'
+    })
   },
   components: {
     'file-browser-root-dirs': FileBrowserRootDirs,

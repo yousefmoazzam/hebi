@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 import axios from "axios"
+import yaml from 'js-yaml'
 
 Vue.use(Vuex)
 
@@ -39,7 +40,7 @@ export const store = new Vuex.Store({
     tabCompletionDirContents: [],
     filepathInputFieldText: '',
     addPluginIndexInputFieldText: '0',
-    favouritedDirs: []
+    configObject: {}
   },
 
   actions: {
@@ -282,7 +283,7 @@ export const store = new Vuex.Store({
       var modifiedData = response.data.map(dir => {
         return {
           ...dir,
-          isFavourite: this.state.favouritedDirs.includes(dir.path)
+          isFavourite: this.state.configObject.favourite_dirs.includes(dir.path)
         }
       })
       context.commit('updateFileBrowserDirContents', modifiedData)
@@ -340,6 +341,7 @@ export const store = new Vuex.Store({
         dirContentsIdx: dirIdx,
         path: path
       })
+      context.dispatch('saveConfig')
     },
 
     removeFavouriteDir(context, path) {
@@ -350,11 +352,42 @@ export const store = new Vuex.Store({
           break
         }
       }
-      var favDirIndex = this.state.favouritedDirs.indexOf(path)
+      var favDirIndex = this.state.configObject.favourite_dirs.indexOf(path)
       context.commit('removeFavouriteDir', {
         dirContentsIdx: dirIdx,
         favDirIndex: favDirIndex
       })
+      context.dispatch('saveConfig')
+    },
+
+    async loadConfig(context, nextAction) {
+      var axiosConfig = {
+        // hardcode for now, based on the dir in the file browser server
+        // container in which all the dirs from Diamond filesystems are mounted
+        // into
+        baseURL: '/files/',
+        url: endpoints.readTextFile.url.replace(new RegExp("{path}", "g"), yamlConfig),
+        method: endpoints.readTextFile.method || "get"
+      }
+      var response = await axiosInstance.request(axiosConfig)
+      var config = yaml.safeLoad(response.data)
+      context.commit('loadConfigObject', config)
+      context.dispatch(nextAction.name, nextAction.data)
+    },
+
+    async saveConfig(context) {
+      var axiosConfig = {
+        // hardcode for now, based on the dir in the file browser server
+        // container in which all the dirs from Diamond filesystems are mounted
+        // into
+        baseURL: '/files/',
+        url: endpoints.writeTextFile.url.replace(new RegExp("{path}", "g"), yamlConfig),
+        method: endpoints.writeTextFile.method || "post",
+        data: {
+          configContent: yaml.safeDump(this.state.configObject)
+        }
+      }
+      var response = await axiosInstance.request(axiosConfig)
     }
 
   },
@@ -504,17 +537,20 @@ export const store = new Vuex.Store({
     addFavouriteDir(state, payload) {
       // change isFavourite attr in the dir's entry in state.dirContents
       state.dirContents[payload.dirContentsIdx].isFavourite = true
-      // modify state.favouritedDirs
-      state.favouritedDirs.push(payload.path)
+      // modify state.configObject
+      state.configObject.favourite_dirs.push(payload.path)
     },
 
     removeFavouriteDir(state, payload) {
       // change isFavourite attr in the dir's entry in state.dirContents
       state.dirContents[payload.dirContentsIdx].isFavourite = false
-      // modify state.favouritedDirs
-      state.favouritedDirs.splice(payload.favDirIndex, 1)
-    }
+      // modify state.configObject
+      state.configObject.favourite_dirs.splice(payload.favDirIndex, 1)
+    },
 
+    loadConfigObject(state, data) {
+      state.configObject = data
+    }
   },
 
   getters: {
@@ -532,15 +568,19 @@ export const store = new Vuex.Store({
     tabCompletionDirContents: state => state.tabCompletionDirContents,
     filepathInputFieldText: state => state.filepathInputFieldText,
     addPluginIndexInputFieldText: state => state.addPluginIndexInputFieldText,
-    favouritedDirs: state => state.favouritedDirs
+    favouritedDirs: state => state.configObject.favourite_dirs
   }
 })
 
 const axiosInstance = axios.create({})
 
 const endpoints = {
-  list: { url: "/storage/local/list?path={path}", method: "get" }
+  list: { url: "/storage/local/list?path={path}", method: "get" },
+  readTextFile: { url: "/storage/local/readTextFile?path={path}", method: "get" },
+  writeTextFile: { url: "/storage/local/writeTextFile?path={path}", method: "post" }
 }
+
+const yamlConfig = '/home/' + FEDID + '/.hebi/config.yaml'
 
 var generateProcessListObjectHelper = function (pluginElements) {
   // copy of code in plugin_editor.generateProcessListObject()
