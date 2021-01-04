@@ -366,12 +366,36 @@ export const store = new Vuex.Store({
         // container in which all the dirs from Diamond filesystems are mounted
         // into
         baseURL: '/files/',
-        url: endpoints.readTextFile.url.replace(new RegExp("{path}", "g"), yamlConfig),
+        url: endpoints.readTextFile.url.replace(new RegExp("{path}", "g"), YAML_CONFIG),
         method: endpoints.readTextFile.method || "get"
       }
+
       var response = await axiosInstance.request(axiosConfig)
-      var config = yaml.safeLoad(response.data)
-      context.commit('loadConfigObject', config)
+
+      // check if the response to the read request of the config file was
+      // successful or not
+      if (typeof response.data !== 'string') {
+        if (response.data.code === 'ENOENT') {
+          // the config file doesn't exist, so create it and then set
+          // state.configObject to be blank
+          createConfig()
+          context.commit('loadConfigObject', {
+            favourite_dirs: []
+          })
+        }
+      } else {
+        if (response.data === '') {
+          // an empty string in the file server response means that the config
+          // file is empty; the YAML parser will return "undefined" when given
+          // this, so set state.configObject to be blank instead
+          context.commit('loadConfigObject', {
+            favourite_dirs: []
+          })
+        } else {
+          var config = yaml.safeLoad(response.data)
+          context.commit('loadConfigObject', config)
+        }
+      }
       context.dispatch(nextAction.name, nextAction.data)
     },
 
@@ -381,7 +405,7 @@ export const store = new Vuex.Store({
         // container in which all the dirs from Diamond filesystems are mounted
         // into
         baseURL: '/files/',
-        url: endpoints.writeTextFile.url.replace(new RegExp("{path}", "g"), yamlConfig),
+        url: endpoints.writeTextFile.url.replace(new RegExp("{path}", "g"), YAML_CONFIG),
         method: endpoints.writeTextFile.method || "post",
         data: {
           configContent: yaml.safeDump(this.state.configObject)
@@ -577,10 +601,12 @@ const axiosInstance = axios.create({})
 const endpoints = {
   list: { url: "/storage/local/list?path={path}", method: "get" },
   readTextFile: { url: "/storage/local/readTextFile?path={path}", method: "get" },
-  writeTextFile: { url: "/storage/local/writeTextFile?path={path}", method: "post" }
+  writeTextFile: { url: "/storage/local/writeTextFile?path={path}", method: "post" },
+  mkdir: { url: "/storage/local/mkdir?path={path}", method: "post" }
 }
 
-const yamlConfig = '/home/' + FEDID + '/.hebi/config.yaml'
+const CONFIG_DIR = '/home/' + FEDID + '/.hebi/'
+const YAML_CONFIG = CONFIG_DIR + 'config.yaml'
 
 var generateProcessListObjectHelper = function (pluginElements) {
   // copy of code in plugin_editor.generateProcessListObject()
@@ -708,4 +734,23 @@ var createFilesystemTreeViewBranch = function (parentDirName, filesAndDirsDict) 
   }
 
   return children
+}
+
+var createConfig = async function () {
+  // create dir that will contain the config file
+  await axiosInstance.request({
+    baseURL: '/files/',
+    url: endpoints.mkdir.url.replace(new RegExp("{path}", "g"), CONFIG_DIR),
+    method: endpoints.mkdir.method || "post"
+  })
+
+  // create config file
+  await axiosInstance.request({
+    baseURL: '/files/',
+    url: endpoints.writeTextFile.url.replace(new RegExp("{path}", "g"), YAML_CONFIG),
+    method: endpoints.writeTextFile.method || "post",
+    data: {
+      configContent: ''
+    }
+  })
 }
