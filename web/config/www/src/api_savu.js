@@ -64,10 +64,6 @@ export function modifyParamVal(data, callback, error) {
   jsonPut("/api/plugin/modify_param_val", data, callback, error);
 }
 
-export function getDirStructure(callback, error) {
-  jsonGet("/api/dir_structure", callback, error)
-}
-
 export function checkPlExists(filename, callback, error) {
   jsonGet("/api/check_pl_exists?filename=" + filename, callback, error)
 }

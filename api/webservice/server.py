@@ -73,36 +73,6 @@ def validate_config():
         app.config[const.CONFIG_NAMESPACE_SAVU])
 
 
-@app.route('/dir_structure')
-def get_dir_structure():
-    # the code below to create a dict from a directory structure is taken from
-    # the following stackoverflow question:
-    # https://stackoverflow.com/a/12389499
-
-    def set_leaf(tree, branches, leaf):
-        if len(branches) == 1:
-            tree[branches[0]] = leaf
-            return
-        if not tree.has_key(branches[0]):
-            tree[branches[0]] = {}
-        set_leaf(tree[branches[0]], branches[1:], leaf)
-
-    # the directory in the container in which data and process list files are
-    # stored is currently fixed (based on the volume mounting done when first
-    # running the container), so the path at which the file searching starts
-    # from can be hardcoded for now
-    startpath = '/data'
-    tree = {}
-    for root, dirs, files in os.walk(startpath):
-        branches = [startpath]
-        if root != startpath:
-            branches.extend(os.path.relpath(root, startpath).split('/'))
-
-        set_leaf(tree, branches, dict([(d,{}) for d in dirs]+ \
-                                      [(f,None) for f in files]))
-    return jsonify(tree)
-
-
 @app.route('/plugin')
 def query_plugin_list():
     query = request.args.get(const.KEY_QUERY)

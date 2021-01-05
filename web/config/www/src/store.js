@@ -14,8 +14,7 @@ import {
   updateProcessList,
   newProcessList,
   addPluginToProcessList,
-  getPluginCollections,
-  getDirStructure
+  getPluginCollections
 } from './api_savu.js'
 
 export const store = new Vuex.Store({
@@ -32,7 +31,6 @@ export const store = new Vuex.Store({
     jobTabOutputText: '/data',
     jobStatusText: '',
     pluginCollections: [],
-    dirStructure: [],
     rootDirs: [],
     currentDirPath: '/',
     dirContents: [],
@@ -146,8 +144,6 @@ export const store = new Vuex.Store({
           // refreshes the process list search in the LHS pane's "Process
           // Lists" tab
           context.dispatch('loadPlFilepathSearchResults', store.state.plFilepathSearchText)
-          // refreshes the dropdown file browser
-          context.dispatch('loadDirStructure')
           // refresh file browser's dir contents
           context.dispatch('loadFileBrowserDirContents', store.state.currentDirPath)
           context.dispatch('changeIsProcessListModified', false)
@@ -233,18 +229,6 @@ export const store = new Vuex.Store({
         },
         () => {
           console.log('Failed to get plugin collections')
-        }
-      )
-    },
-
-    loadDirStructure(context) {
-      getDirStructure(
-        (dirDict) => {
-          var filesystemTreeView = createFilesystemTreeViewBranch("/data", dirDict)
-          context.commit('updateDirStructure', filesystemTreeView)
-        },
-        () => {
-          console.log('Failed to get dir structure')
         }
       )
     },
@@ -526,10 +510,6 @@ export const store = new Vuex.Store({
       state.pluginCollections = collectionsDict
     },
 
-    updateDirStructure(state, dirDict) {
-      state.dirStructure = dirDict
-    },
-
     updateCurrentDirPath(state, dirPath) {
       state.currentDirPath = dirPath
     },
@@ -584,7 +564,6 @@ export const store = new Vuex.Store({
     plEditorFilepath: state => state.plEditorFilepath,
     plFilepathSearchText: state => state.plFilepathSearchText,
     pluginCollections: state => state.pluginCollections,
-    dirStructure: state => state.dirStructure,
     currentDirPath: state => state.currentDirPath,
     rootDirs: state => state.rootDirs,
     dirContents: state => state.dirContents,
@@ -704,33 +683,6 @@ var createCollectionTreeViewBranch = function (collsAndPluginsDict) {
       'children': createCollectionTreeViewBranch(collsAndPluginsDict['collections'][collectionName])
     }
     children.push(branch)
-  }
-
-  return children
-}
-
-var createFilesystemTreeViewBranch = function (parentDirName, filesAndDirsDict) {
-
-  var children = []
-
-  for (var node in filesAndDirsDict) {
-    var child = {}
-
-    // set the 'label' attribute (the string that is displayed in the UI) as
-    // the file or directory name
-    child['label'] = node
-
-    // set the 'id' attribute to be the full path to the file or directory
-    if (node !== parentDirName) {
-      child['id'] = parentDirName + "/" + node
-    } else {
-      child['id'] = node
-    }
-
-    if (filesAndDirsDict[node] !== null) {
-      child['children'] = createFilesystemTreeViewBranch(child['id'], filesAndDirsDict[node])
-    }
-    children.push(child)
   }
 
   return children
