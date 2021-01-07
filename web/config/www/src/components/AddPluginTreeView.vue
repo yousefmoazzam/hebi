@@ -1,5 +1,5 @@
 <template>
-  <div class="grid grid-flow-cols grid-cols-2 gap-1">
+  <div class="grid grid-flow-cols grid-cols-2 gap-1 mb-1">
     <div>
       <tree-view v-model="inputFieldText"
         placeholder="Search plugins..."
@@ -7,7 +7,7 @@
         :disable-branch-nodes="true" />
     </div>
     <div class="flex">
-      <input class="flex-1 border border-2 px-1 py-1 mr-1" type="text"
+      <input class="flex-1 rounded border px-1 py-1 mr-1" type="text"
         placeholder="Insert plugin at index..."
         :value="addPluginIndexInputFieldText"
         v-on:input="addPluginInputFieldListener($event)" />

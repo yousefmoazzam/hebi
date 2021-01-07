@@ -2,13 +2,12 @@
   <div>
     <file-browser />
     <add-plugin-tree-view />
-    <div class="pb-4">
-      <h1 class="mb-2">Editor</h1>
-      <button class="bg-gray-400 hover:bg-gray-600 text-white font-bold py-2 px-4"
+    <div :class="[plPluginElements.length === 0 ? '' : 'pb-4']">
+      <button class="bg-gray-400 hover:bg-gray-600 py-2 px-4 rounded"
         v-on:click="changeAllPluginsCollapsedState($event, true)" >
         Collapse All
       </button>
-      <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4"
+      <button class="bg-blue-500 hover:bg-blue-700 py-2 px-4 rounded"
         v-on:click="changeAllPluginsCollapsedState($event, false)" >
         Expand All
       </button>

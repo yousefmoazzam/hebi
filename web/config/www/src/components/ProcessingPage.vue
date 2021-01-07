@@ -1,6 +1,5 @@
 <template>
   <div id="root">
-    <page-title text="Processing" />
     <processing-page-grid />
   </div>
 </template>

@@ -7,7 +7,7 @@
         Open
       </button>
       <input type="text" placeholder="'filepath'"
-        class="flex-1 rounded border shadow p-1 m-1"
+        class="flex-1 rounded border p-1 m-1"
         v-on:input="filepathInputFieldListener($event)"
         :value="filepathInputFieldText">
       </input>
