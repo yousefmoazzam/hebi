@@ -1,6 +1,7 @@
 <template>
   <div>
     <file-browser />
+    <add-plugin-tree-view />
     <div class="pb-4">
       <h1 class="mb-2">Editor</h1>
       <button class="bg-gray-400 hover:bg-gray-600 text-white font-bold py-2 px-4"
@@ -18,8 +19,6 @@
       :plugin="plugin"
       :pluginName="plugin.name"
       :pluginIndex="index" />
-    <add-plugin-search-input />
-    <add-plugin-tree-view />
   </div>
 </template>
 
@@ -28,7 +27,6 @@ import { mapState } from 'vuex'
 
 import PlEditorPluginEntry from './PlEditorPluginEntry.vue'
 import LabelledInputFieldAndButton from './LabelledInputFieldAndButton.vue'
-import AddPluginSearchInput from './AddPluginSearchInput.vue'
 import AddPluginTreeView from './AddPluginTreeView.vue'
 import FileBrowser from './FileBrowser.vue'
 
@@ -36,7 +34,6 @@ export default {
   components: {
     'pl-editor-plugin-entry': PlEditorPluginEntry,
     'labelled-input-field-button': LabelledInputFieldAndButton,
-    'add-plugin-search-input': AddPluginSearchInput,
     'add-plugin-tree-view': AddPluginTreeView,
     'file-browser': FileBrowser
   },
