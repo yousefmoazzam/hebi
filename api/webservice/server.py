@@ -96,21 +96,9 @@ def get_plugin_collecions():
     def create_collection_dict(coll_name):
         child = {
             'collections': {},
-            'plugins': create_collection_plugins_array(coll_name)
+            'plugins': config_utils.__get_filtered_plugins(coll_name)
         }
         return child
-
-    def create_collection_plugins_array(coll_name):
-        # use a similar strategy to the code in savu_config._list() in Savu
-        # that gets all plugins that match a search query:
-        # https://github.com/DiamondLightSource/Savu/blob/0c3d52d6362c6645eed6d77e01eef5a346b7cabe/scripts/config_generator/savu_config.py#L79
-        # to find all plugins in a collection
-        plugins = []
-        list_content = Content()
-        config_utils._populate_plugin_list(list_content, pfilter=coll_name)
-        for plugin in list_content.plugin_list.plugin_list:
-            plugins.append(plugin['name'])
-        return plugins
 
     def find_parent_collection_dict(colls_dict, collection_path):
         split_subcollections = collection_path.split('/')
