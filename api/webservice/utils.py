@@ -46,7 +46,7 @@ def plugin_to_dict(name, p):
     Returns a dictionary representation of a plugin in a given state.
     """
     parameters = []
-    keys = order_plugin_params(p)
+    keys = pu.set_order_by_visibility(p.tools.param.get_dictionary())
     for param_name in keys:
         description = p.tools.param.get_dictionary()[param_name]['description']
         if not isinstance(description, str):
@@ -58,8 +58,7 @@ def plugin_to_dict(name, p):
             'value': stringify_parameter_value(p.parameters[param_name]),
             'type': p.tools.param.get_dictionary()[param_name]['dtype'],
             'description': description,
-            'visibility': p.tools.param.get_dictionary()[param_name]['visibility'],
-            'display': p.tools.param.get_dictionary()[param_name]['display'],
+            'visibility': p.tools.param.get_dictionary()[param_name]['visibility']
         })
 
     return {
@@ -75,12 +74,10 @@ def plugin_list_entry_to_dict(p):
     # Get plugin details
     pl = pu.plugins[p['name']]()
     pl._populate_default_parameters()
-    data = plugin_to_dict(p['name'], pl)
-
 
     # Format parameters
     parameters = []
-    keys = order_plugin_params(pl)
+    keys = pu.set_order_by_visibility(p['param'])
     for pn in keys:
         description = p['param'][pn]['description']
         if not isinstance(description, str):
@@ -88,7 +85,7 @@ def plugin_list_entry_to_dict(p):
             # and the param description is in the summary key of this dict
             description = p['param'][pn]['description']['summary']
             if 'options' in p['param'][pn]:
-                options = pl.tools.param.get_dictionary()[pn]['description']['options'].items()
+                options = p['param'][pn]['description']['options'].items()
                 for i, (param, desc) in enumerate(options):
                     if desc is None:
                         options[i] = (param, str(desc))
@@ -99,14 +96,13 @@ def plugin_list_entry_to_dict(p):
                 # description would be a dict and not a string. Therefore,
                 # since the param description is just a string, it can be
                 # assumed that the options have no descriptions either
-                options = [(option, 'None') for option in pl.tools.param.get_dictionary()[pn]['options']]
+                options = [(option, 'None') for option in p['param'][pn]['options']]
 
         parameter_info = {
             'name': pn,
             'value': stringify_parameter_value(p['data'][pn]),
             'description': description,
-            'visibility': p['param'][pn]['visibility'],
-            'display': p['param'][pn]['display'],
+            'visibility': p['param'][pn]['visibility']
         }
 
         if 'options' in p['param'][pn]:
@@ -114,14 +110,16 @@ def plugin_list_entry_to_dict(p):
 
         parameters.append(parameter_info)
 
-    data.update({
+    return {
+        'name': p['name'] ,
+        'info': pl.docstring_info.get('info'),
+        'synopsis': pl.docstring_info.get('synopsis'),
+        'warn': str(pl.docstring_info.get('warn')),
         'doc_link': str(pl.docstring_info['documentation_link']),
         'parameters': parameters,
         'id': p['id'],
         'active': bool(p['active']),  # Convert from numpy bool
-    })
-
-    return data
+    }
 
 
 def check_hdf5_file(filename, hdf5_paths):
@@ -237,30 +235,3 @@ def stringify_parameter_value(value):
     See display_formatter.py
     """
     return str(value).replace("'", "")
-
-
-def order_plugin_params(plugin):
-    """
-    Group and order the plugin parameters by their visibility.
-    """
-    # note that this is copying part of the
-    # DisplayFormatter._get_param_details() function from the configurator
-
-    data_keys = []
-    basic_keys = []
-    interm_keys = []
-    adv_keys = []
-
-    for k, v in plugin.tools.param.get_dictionary().items():
-        if v['visibility'] == 'datasets':
-            data_keys.append(k)
-        elif v['visibility'] == 'basic':
-            basic_keys.append(k)
-        elif v['visibility'] == 'intermediate':
-            interm_keys.append(k)
-        elif v['visibility'] == 'advanced':
-            adv_keys.append(k)
-
-    # show parameters of all levels of visibility in the UI, and order them in
-    # the following way
-    return basic_keys + interm_keys + adv_keys + data_keys

@@ -430,33 +430,16 @@ export const store = new Vuex.Store({
 
     updatePlPluginElements(state, response) {
       if (response.is_valid) {
-        // update state.plPluginElements, so need to form the dict/object for
-        // the modified plugin, that should then go in the array
-        // state.plPluginElements (which is the array that this.pluginElements
-        // was)
+        // remove old state of plugin before the param modification
+        state.plPluginElements.splice(response.plugin_index, 1)
 
-        var elements = {
-          "name": response.plugin_data.name,
-          "active": response.plugin_data.active,
-          "parameters": []
-        };
-
-        // Modify parameter
-        for (var parameterIdx in this.state.plPluginElements[response.plugin_index].parameters) {
-          var parameter = this.state.plPluginElements[response.plugin_index].parameters[parameterIdx];
-
-          // update the "display" attribute, in case this parameter value
-          // modification changed whether any of the other parameters should be
-          // displayed or not
-          parameter["display"] = response.plugin_data.parameters[parameterIdx].display;
-
-          if (parameter.name === response.param_name) {
-            parameter["value"] = response.plugin_data.parameters[parameterIdx].value;
-            // reset type error
-            parameter["typeError"]["hasError"] = false;
-            parameter["typeError"]["errorString"] = "";
-          }
-        }
+        // add new state of plugin after the param modification
+        addPluginHelper({
+            'plugin': response.plugin_data,
+            'pluginIndex': response.plugin_index
+          },
+          state.plPluginElements
+        )
 
       } else {
         // find param in plugin and set a type error by adding to the
@@ -597,8 +580,7 @@ var generateProcessListObjectHelper = function (pluginElements) {
     var parameters = [];
     // For each parameter
     for (var parameter of plugin.parameters) {
-      if (parameter["visibility"] !== "hidden" &&
-          parameter["display"] !== "off") {
+      if (parameter["visibility"] !== "hidden") {
           // Add the parameter value
           parameters.push({
             "name": parameter.name,
@@ -636,7 +618,6 @@ var addPluginHelper = function (data, plPluginElements) {
       "name": parameter.name,
       "description": parameter.description,
       "value": parameter.value,
-      "display": parameter.display,
       "visibility": parameter.visibility,
       "typeError": {
         "hasError": false,
