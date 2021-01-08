@@ -444,8 +444,8 @@ export const store = new Vuex.Store({
       } else {
         // find param in plugin and set a type error by adding to the
         // typeError attribute
-        for (var parameterIdx in this.state.plPluginElements[response.plugin_index].parameters) {
-          var parameter = this.state.plPluginElements[response.plugin_index].parameters[parameterIdx];
+        for (var parameterIdx in state.plPluginElements[response.plugin_index].parameters) {
+          var parameter = state.plPluginElements[response.plugin_index].parameters[parameterIdx];
           if (parameter.name === response.param_name) {
             parameter["value"] = response.errored_param_value;
             // add a type error
@@ -464,7 +464,7 @@ export const store = new Vuex.Store({
     },
 
     addPluginToPlPluginElements(state, payload) {
-      addPluginHelper(payload, this.state.plPluginElements)
+      addPluginHelper(payload, state.plPluginElements)
     },
 
     removePlugin(state, pluginIndex) {
