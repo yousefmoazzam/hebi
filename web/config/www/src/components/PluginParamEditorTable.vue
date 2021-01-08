@@ -3,7 +3,7 @@
     <tbody>
       <plugin-param-editor-table-row v-for="(param, paramIndex) in plugin.parameters"
         v-if="isVisible(param)"
-        :key="paramIndex"
+        :key="param.name"
         :param="param"
         :pluginIndex="pluginIndex" />
     </tbody>
