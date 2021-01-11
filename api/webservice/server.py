@@ -216,7 +216,7 @@ def modify_param_val():
             'dtype': required_type,
             'plugin_index': plugin_index,
             'param_name': param_name,
-            'errored_param_value': cast_param_value,
+            'errored_param_value': param_value,
             'error_str': error_str
         })
 
