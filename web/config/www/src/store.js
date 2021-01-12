@@ -580,13 +580,10 @@ var generateProcessListObjectHelper = function (pluginElements) {
     var parameters = [];
     // For each parameter
     for (var parameter of plugin.parameters) {
-      if (parameter["visibility"] !== "hidden") {
-          // Add the parameter value
-          parameters.push({
-            "name": parameter.name,
-            "value": parameter.value,
-          });
-      }
+        parameters.push({
+          "name": parameter.name,
+          "value": parameter.value,
+        });
     }
 
     // Add name, active/enabled flag and parameter list

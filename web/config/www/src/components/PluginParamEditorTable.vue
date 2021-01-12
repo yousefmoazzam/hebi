@@ -16,10 +16,9 @@ import PluginParamEditorTableRow from './PluginParamEditorTableRow.vue'
 export default {
   created: function () {
     const VisibilityOrdering = {
-      'HIDDEN': 0,
-      'BASIC': 1,
-      'INTERMEDIATE': 2,
-      'ADVANCED': 3
+      'BASIC': 0,
+      'INTERMEDIATE': 1,
+      'ADVANCED': 2
     }
     this.visibilityOrdering = VisibilityOrdering
   },
@@ -48,8 +47,8 @@ export default {
           return false
         } else {
           // the parameter visibility nor the chosen visibility is "datasets",
-          // so they have a value in "hidden", "basic", "intermediate", or
-          // "advanced", and can be compared using the "enum" called
+          // so they have a value in "basic", "intermediate", or "advanced",
+          // and can be compared using the "enum" called
           // this.visibilityOrdering defined in the created() function of this
           // component to determine whether or not the parameter should be
           // displayed
