@@ -13,7 +13,7 @@ import voluptuous
 
 import savu.plugins as savu_plugins
 import savu.plugins.utils as pu
-import savu.plugins.parameter_utils as param_utils
+import scripts.config_generator.parameter_utils as param_utils
 import scripts.config_generator.config_utils as config_utils
 from scripts.config_generator.content import Content
 from scripts.config_generator.completer import Completer
