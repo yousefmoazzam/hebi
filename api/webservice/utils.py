@@ -217,7 +217,8 @@ def create_process_list_from_user_data(data):
 
         # Set parameter values
         for param in pl['parameters']:
-            process_list.modify(pos, param['name'], param['value'], ref=True)
+            cast_param_val = process_list.value(param['value'])
+            process_list.modify(pos, param['name'], cast_param_val, ref=True)
 
     return process_list
 
