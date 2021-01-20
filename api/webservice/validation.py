@@ -1,6 +1,6 @@
 from voluptuous import Schema, Required, Optional, All, Any, Length, Number, Extra
 
-_string = Any(str, unicode)
+_string = Any(bytes, str)
 
 _non_empty_string = All(_string, Length(min=1))
 

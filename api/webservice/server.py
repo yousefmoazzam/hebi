@@ -18,13 +18,13 @@ import scripts.config_generator.config_utils as config_utils
 from scripts.config_generator.content import Content
 from scripts.config_generator.completer import Completer
 
-from utils import (plugin_to_dict, plugin_list_entry_to_dict,
+from webservice.utils import (plugin_to_dict, plugin_list_entry_to_dict,
                    is_file_a_data_file, is_file_a_process_list, validate_file,
                    to_bool, create_process_list_from_user_data,
                    find_files_recursive)
-from execution import NoSuchJobError
-import const
-import validation
+from webservice.execution import NoSuchJobError
+from . import const
+from . import validation
 
 
 class BetterJsonEncoder(JSONEncoder):
@@ -41,7 +41,7 @@ CORS(app)
 def setup_runners():
     import importlib
     for queue_name, runner in app.config[const.CONFIG_NAMESPACE_SAVU][
-            const.CONFIG_KEY_JOB_RUNNERS].iteritems():
+            const.CONFIG_KEY_JOB_RUNNERS].items():
         # Create an instance of the job runner
         m = importlib.import_module(runner[const.CONFIG_KEY_RUNNER_MODULE])
         c = getattr(m, runner[const.CONFIG_KEY_RUNNER_CLASS])

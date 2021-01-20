@@ -1,6 +1,7 @@
 import os
 import pkgutil
 import sys
+import importlib.util
 
 import h5py
 
@@ -8,37 +9,33 @@ import savu.plugins.utils as pu
 from savu.data.plugin_list import CitationInformation
 from scripts.config_generator.content import Content
 
-import const
+from . import const
 
 
 def populate_plugins():
     """
     Loads plugins from plugin paths.
 
-    Almost identical to the function in scripts.config_generator
+    Almost identical to the function in scripts.config_generator.config_utils
     """
 
-    def _add_module(loader, module_name):
+    def _load_module(finder, module_name):
         if module_name not in sys.modules:
             try:
-                loader.find_module(module_name).load_module(module_name)
+                spec = finder.find_spec(module_name)
+                mod = importlib.util.module_from_spec(spec)
+                sys.modules[spec.name] = mod
+                spec.loader.exec_module(mod)
             except Exception:
                 pass
 
     # load all the plugins
-    plugins_path = pu.get_plugins_paths()
-    savu_path = plugins_path[-1].split('savu')[0]
-    savu_plugins = plugins_path[-1:]
-    local_plugins = plugins_path[0:-1] + [savu_path + 'plugins_examples']
+    plugins_paths = pu.get_plugins_paths()
 
-    # load local plugins
-    for loader, module_name, is_pkg in pkgutil.walk_packages(local_plugins):
-        _add_module(loader, module_name)
-
-    # load savu plugins
-    for loader, module_name, is_pkg in pkgutil.walk_packages(savu_plugins):
-        if module_name.split('savu.plugins')[0] == '':
-            _add_module(loader, module_name)
+    for path, name in plugins_paths.items():
+        for finder, module_name, is_pkg in pkgutil.walk_packages([path], name):
+            if not is_pkg:
+                _load_module(finder, module_name)
 
 
 def plugin_to_dict(name, p):

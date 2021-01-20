@@ -1,8 +1,8 @@
 import sys
 
-import server
-import utils
-import validation
+from . import server
+from . import utils
+from . import validation
 
 utils.populate_plugins()
 
