@@ -82,7 +82,7 @@ def plugin_list_entry_to_dict(p):
             # and the param description is in the summary key of this dict
             description = p['param'][pn]['description']['summary']
             if 'options' in p['param'][pn]:
-                options = p['param'][pn]['description']['options'].items()
+                options = list(p['param'][pn]['description']['options'].items())
                 for i, (param, desc) in enumerate(options):
                     if desc is None:
                         options[i] = (param, str(desc))
