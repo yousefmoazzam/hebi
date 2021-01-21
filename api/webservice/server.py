@@ -182,7 +182,7 @@ def modify_param_val():
     user_pl_data = data["processList"]
     plugin_index = int(data["pluginIndex"])
     param_name = data["paramName"]
-    param_value = str(data["newParamVal"])
+    param_value = data["newParamVal"]
 
     process_list = create_process_list_from_user_data(user_pl_data)
 
