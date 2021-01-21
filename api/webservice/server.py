@@ -79,10 +79,10 @@ def query_plugin_list():
 
     if query:
         query = query.lower()
-        plugin_names = [k for k, v in pu.plugins.iteritems() \
+        plugin_names = [k for k, v in pu.plugins.items() \
                         if fuzz.partial_ratio(k.lower(), query) > 75]
     else:
-        plugin_names = [k for k, v in pu.plugins.iteritems()]
+        plugin_names = [k for k, v in pu.plugins.items()]
 
     validation.query_plugin_list_schema(plugin_names)
     return jsonify(plugin_names)
