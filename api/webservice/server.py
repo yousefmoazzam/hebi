@@ -1,6 +1,5 @@
 import glob
 import os
-import os.path
 
 from flask import (Flask, jsonify, request, abort, make_response, send_file)
 from flask.json import JSONEncoder
