@@ -258,7 +258,10 @@ def process_list_list():
         plugins = [plugin_list_entry_to_dict(p) for \
                    p in process_list.plugin_list.plugin_list]
 
-        data = {const.KEY_FILENAME: fname, const.KEY_PLUGINS: plugins}
+        data = {
+            const.KEY_FILENAME: fname,
+            const.KEY_PLUGINS: plugins
+        }
 
         validation.process_list_list_filename_schema(data)
         return jsonify(data)

@@ -45,17 +45,17 @@ def plugin_to_dict(name, p):
     parameters = []
     keys = pu.set_order_by_visibility(p.tools.param.get_dictionary())
     for param_name in keys:
-        description = p.tools.param.get_dictionary()[param_name]['description']
+        param_dict = p.tools.param.get_dictionary()[param_name]
+        description = param_dict['description']
         if not isinstance(description, str):
-            description = \
-                p.tools.param.get_dictionary()[param_name]['description']['summary']
+            description = param_dict['description']['summary']
 
         parameters.append({
             'name': param_name,
             'value': stringify_parameter_value(p.parameters[param_name]),
-            'type': p.tools.param.get_dictionary()[param_name]['dtype'],
+            'type': param_dict['dtype'],
             'description': description,
-            'visibility': p.tools.param.get_dictionary()[param_name]['visibility']
+            'visibility': param_dict['visibility']
         })
 
     return {
@@ -75,34 +75,35 @@ def plugin_list_entry_to_dict(p):
     # Format parameters
     parameters = []
     keys = pu.set_order_by_visibility(p['param'])
-    for pn in keys:
-        description = p['param'][pn]['description']
+    for param_name in keys:
+        param_dict = p['param'][param_name]
+        description = param_dict['description']
         if not isinstance(description, str):
             # the description is a dict containing more info about the param,
             # and the param description is in the summary key of this dict
-            description = p['param'][pn]['description']['summary']
-            if 'options' in p['param'][pn]:
-                options = list(p['param'][pn]['description']['options'].items())
+            description = param_dict['description']['summary']
+            if 'options' in param_dict:
+                options = list(param_dict['description']['options'].items())
                 for i, (param, desc) in enumerate(options):
                     if desc is None:
                         options[i] = (param, str(desc))
         else:
             # the description is just a string
-            if 'options' in p['param'][pn]:
+            if 'options' in param_dict:
                 # If the options had descriptions as well, then the param
                 # description would be a dict and not a string. Therefore,
                 # since the param description is just a string, it can be
                 # assumed that the options have no descriptions either
-                options = [(option, 'None') for option in p['param'][pn]['options']]
+                options = [(option, 'None') for option in param_dict['options']]
 
         parameter_info = {
-            'name': pn,
-            'value': stringify_parameter_value(p['data'][pn]),
+            'name': param_name,
+            'value': stringify_parameter_value(p['data'][param_name]),
             'description': description,
-            'visibility': p['param'][pn]['visibility']
+            'visibility': param_dict['visibility']
         }
 
-        if 'options' in p['param'][pn]:
+        if 'options' in param_dict:
             parameter_info['options'] = options
 
         parameters.append(parameter_info)
