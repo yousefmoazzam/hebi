@@ -31,21 +31,6 @@ class ServerTest(unittest.TestCase):
         self.assertTrue(isinstance(data, list))
         self.assertGreater(len(data), 0)
 
-    def test_get_plugin_info_no_citation(self):
-        rv = self.app.get('/plugin/Dezinger')
-        data = json.loads(rv.data)
-        self.assertEqual(len(data['citation']), 0)
-
-    def test_get_plugin_info_1_citation(self):
-        rv = self.app.get('/plugin/TomopyRecon')
-        data = json.loads(rv.data)
-        self.assertEqual(len(data['citation']), 1)
-
-    def test_get_plugin_info_multiple_citation(self):
-        rv = self.app.get('/plugin/AstraReconGpu')
-        data = json.loads(rv.data)
-        self.assertEqual(len(data['citation']), 3)
-
     def test_data_default_paths(self):
         rv = self.app.get('/default_paths')
         data = json.loads(rv.data)
