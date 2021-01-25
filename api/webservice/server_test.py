@@ -2,7 +2,7 @@ import unittest
 import json
 
 import server
-from utils import populate_plugins
+from webservice.utils import populate_plugins
 
 
 class ServerTest(unittest.TestCase):

@@ -9,7 +9,7 @@ import savu.plugins.utils as pu
 from savu.data.plugin_list import CitationInformation
 from scripts.config_generator.content import Content
 
-from . import const
+from webservice import const
 
 
 def populate_plugins():

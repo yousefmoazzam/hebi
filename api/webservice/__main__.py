@@ -1,8 +1,6 @@
 import sys
 
-from . import server
-from . import utils
-from . import validation
+from webservice import server, utils
 
 utils.populate_plugins()
 

@@ -22,8 +22,8 @@ from webservice.utils import (plugin_to_dict, plugin_list_entry_to_dict,
                    to_bool, create_process_list_from_user_data,
                    find_files_recursive)
 from webservice.execution import NoSuchJobError
-from . import const
-from . import validation
+from webservice import const
+from webservice import validation
 
 
 class BetterJsonEncoder(JSONEncoder):
