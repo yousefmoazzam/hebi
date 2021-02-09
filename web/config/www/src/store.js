@@ -417,12 +417,7 @@ export const store = new Vuex.Store({
       var newPlPluginElements = []
 
       for (var plugin of data.plugins) {
-        addPluginHelper({
-            'plugin': plugin,
-            'pluginIndex': ''
-          },
-          newPlPluginElements
-        )
+        addPluginHelper(plugin, '', newPlPluginElements)
       }
 
       state.plPluginElements = newPlPluginElements
@@ -434,12 +429,8 @@ export const store = new Vuex.Store({
         state.plPluginElements.splice(response.plugin_index, 1)
 
         // add new state of plugin after the param modification
-        addPluginHelper({
-            'plugin': response.plugin_data,
-            'pluginIndex': response.plugin_index
-          },
-          state.plPluginElements
-        )
+        addPluginHelper(response.plugin_data, response.plugin_index,
+            state.plPluginElements)
 
       } else {
         // find param in plugin and set a type error by adding to the
@@ -464,7 +455,8 @@ export const store = new Vuex.Store({
     },
 
     addPluginToPlPluginElements(state, payload) {
-      addPluginHelper(payload, state.plPluginElements)
+      addPluginHelper(payload.plugin, payload.pluginIndex,
+          state.plPluginElements)
     },
 
     removePlugin(state, pluginIndex) {
@@ -597,19 +589,20 @@ var generateProcessListObjectHelper = function (pluginElements) {
   return {"plugins": plugins}
 }
 
-var addPluginHelper = function (data, plPluginElements) {
+var createPlPluginElementsEntry = function (plugin) {
 
   var elements = {
-    "name": data.plugin.name,
-    "synopsis": data.plugin.synopsis,
-    "docLink": data.plugin.doc_link,
-    "active": data.plugin.active,
-    "warn": data.plugin.warn.replace(/\n/gm, " "),
+    "name": plugin.name,
+    "synopsis": plugin.synopsis,
+    "info": plugin.info,
+    "docLink": plugin.doc_link,
+    "active": plugin.active,
+    "warn": plugin.warn.replace(/\n/gm, " "),
     "parameters": []
   };
 
-  for (var parameterIdx in data.plugin.parameters) {
-    var parameter = data.plugin.parameters[parameterIdx];
+  for (var parameterIdx in plugin.parameters) {
+    var parameter = plugin.parameters[parameterIdx];
 
     var paramInfo = {
       "name": parameter.name,
@@ -629,17 +622,27 @@ var addPluginHelper = function (data, plPluginElements) {
     elements.parameters.push(paramInfo)
   }
 
-  if (data.pluginIndex === '') {
-    plPluginElements.push(elements)
+  return elements
+}
+
+var addPluginToPlPluginElements = function (plugin, index, plPluginElements) {
+
+  if (index === '') {
+    plPluginElements.push(plugin)
   } else {
-    var idx = parseInt(data.pluginIndex)
+    var idx = parseInt(index)
     if (idx <= 0) {
-      plPluginElements.splice(0, 0, elements)
+      plPluginElements.splice(0, 0, plugin)
     } else {
-      plPluginElements.splice(idx, 0, elements)
+      plPluginElements.splice(idx, 0, plugin)
     }
   }
 
+}
+
+var addPluginHelper = function (plugin, index, plPluginElements) {
+  var elements = createPlPluginElementsEntry(plugin)
+  addPluginToPlPluginElements(elements, index, plPluginElements)
 }
 
 var createCollectionTreeViewBranch = function (collsAndPluginsDict) {
