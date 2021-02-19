@@ -1,7 +1,7 @@
 <template>
   <div>
     <file-browser />
-    <add-plugin-tree-view />
+    <plugin-browser />
     <prompt-modal-box v-for="(modal, index) in promptModalBoxes"
       :promptText="modal.promptText" :key="index"
       v-on:prompt-yes-response="modal.yesResponseListener"
@@ -34,7 +34,7 @@ import { mapState } from 'vuex'
 
 import PlEditorPluginEntry from './PlEditorPluginEntry.vue'
 import LabelledInputFieldAndButton from './LabelledInputFieldAndButton.vue'
-import AddPluginTreeView from './AddPluginTreeView.vue'
+import PluginBrowser from './PluginBrowser.vue'
 import FileBrowser from './FileBrowser.vue'
 import PromptModalBox from './PromptModalBox.vue'
 
@@ -42,7 +42,7 @@ export default {
   components: {
     'pl-editor-plugin-entry': PlEditorPluginEntry,
     'labelled-input-field-button': LabelledInputFieldAndButton,
-    'add-plugin-tree-view': AddPluginTreeView,
+    'plugin-browser': PluginBrowser,
     'file-browser': FileBrowser,
     'prompt-modal-box': PromptModalBox
   },

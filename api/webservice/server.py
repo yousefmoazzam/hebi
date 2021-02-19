@@ -87,6 +87,22 @@ def query_plugin_list():
     return jsonify(plugin_names)
 
 
+@app.route('/plugin/search')
+def search_plugins():
+    query = request.args.get(const.KEY_QUERY)
+
+    if query:
+        query = query.lower()
+        # use search in configurator
+        matched_plugins = config_utils.__get_filtered_plugins(query)
+    else:
+        # empty query, all plugins match this
+        matched_plugins = [k for k, v in pu.plugins.items()]
+
+    validation.query_plugin_list_schema(matched_plugins)
+    return jsonify(matched_plugins)
+
+
 @app.route('/plugin_collections')
 def get_plugin_collecions():
 

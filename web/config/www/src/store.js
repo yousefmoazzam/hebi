@@ -14,7 +14,8 @@ import {
   updateProcessList,
   newProcessList,
   addPluginToProcessList,
-  getPluginCollections
+  getPluginCollections,
+  searchPlugins
 } from './api_savu.js'
 
 export const store = new Vuex.Store({
@@ -38,7 +39,10 @@ export const store = new Vuex.Store({
     tabCompletionDirContents: [],
     filepathInputFieldText: '',
     addPluginIndexInputFieldText: '0',
-    configObject: {}
+    configObject: {},
+    pluginSearchMatches: [],
+    pluginBrowserSearchInputFieldText: '',
+    isPluginBrowserDropdownVisible: false
   },
 
   actions: {
@@ -55,6 +59,18 @@ export const store = new Vuex.Store({
           console.log("Failed to list available plugins");
         }
       );
+    },
+
+    loadPluginSearchMatches(context, query) {
+      searchPlugins(
+        query,
+        function (plugins) {
+          context.commit('setPluginSearchMatches', plugins)
+        },
+        function () {
+          console.log('Failed to search for plugins using the query: ' + query)
+        }
+      )
     },
 
     loadPluginDetails(context, pluginName) {
@@ -224,8 +240,7 @@ export const store = new Vuex.Store({
     loadPluginCollections(context) {
       getPluginCollections(
         (collectionsDict) => {
-          var collectionsTreeView = createCollectionTreeViewBranch(collectionsDict)
-          context.commit('setPluginCollections', collectionsTreeView)
+          context.commit('setPluginCollections', collectionsDict)
         },
         () => {
           console.log('Failed to get plugin collections')
@@ -396,6 +411,15 @@ export const store = new Vuex.Store({
         }
       }
       var response = await axiosInstance.request(axiosConfig)
+    },
+
+    changePluginBrowserSearchInputFieldText(context, text) {
+      context.commit('updatePluginBrowserSearchInputFieldText', text)
+      context.dispatch('loadPluginSearchMatches', text)
+    },
+
+    changePluginBrowserDropdownVisibility(context, bool) {
+      context.commit('updatePluginBrowserDropdownVisibility', bool)
     }
 
   },
@@ -529,6 +553,18 @@ export const store = new Vuex.Store({
 
     loadConfigObject(state, data) {
       state.configObject = data
+    },
+
+    setPluginSearchMatches(state, matches) {
+      state.pluginSearchMatches = matches
+    },
+
+    updatePluginBrowserSearchInputFieldText(state, text) {
+      state.pluginBrowserSearchInputFieldText = text
+    },
+
+    updatePluginBrowserDropdownVisibility(state, bool) {
+      state.isPluginBrowserDropdownVisible = bool
     }
   },
 
@@ -546,7 +582,10 @@ export const store = new Vuex.Store({
     tabCompletionDirContents: state => state.tabCompletionDirContents,
     filepathInputFieldText: state => state.filepathInputFieldText,
     addPluginIndexInputFieldText: state => state.addPluginIndexInputFieldText,
-    favouritedDirs: state => state.configObject.favourite_dirs
+    favouritedDirs: state => state.configObject.favourite_dirs,
+    pluginSearchMatches: state => state.pluginSearchMatches,
+    pluginBrowserSearchInputFieldText: state => state.pluginBrowserSearchInputFieldText,
+    isPluginBrowserDropdownVisible: state => state.isPluginBrowserDropdownVisible
   }
 })
 
@@ -643,30 +682,6 @@ var addPluginToPlPluginElements = function (plugin, index, plPluginElements) {
 var addPluginHelper = function (plugin, index, plPluginElements) {
   var elements = createPlPluginElementsEntry(plugin)
   addPluginToPlPluginElements(elements, index, plPluginElements)
-}
-
-var createCollectionTreeViewBranch = function (collsAndPluginsDict) {
-
-  var children = []
-
-  for (var pluginIdx in collsAndPluginsDict['plugins']) {
-    var leaf = {
-      'id': collsAndPluginsDict['plugins'][pluginIdx],
-      'label': collsAndPluginsDict['plugins'][pluginIdx]
-    }
-    children.push(leaf)
-  }
-
-  for (var collectionName in collsAndPluginsDict['collections']) {
-    var branch = {
-      'id': collectionName,
-      'label': collectionName,
-      'children': createCollectionTreeViewBranch(collsAndPluginsDict['collections'][collectionName])
-    }
-    children.push(branch)
-  }
-
-  return children
 }
 
 var createConfig = async function () {

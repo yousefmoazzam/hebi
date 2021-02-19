@@ -67,3 +67,7 @@ export function modifyParamVal(data, callback, error) {
 export function checkPlExists(filename, callback, error) {
   jsonGet("/api/check_pl_exists?filename=" + filename, callback, error)
 }
+
+export function searchPlugins(query, callback, error) {
+  jsonGet("/api/plugin/search?q=" + query, callback, error);
+}
