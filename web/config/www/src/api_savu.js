@@ -71,3 +71,7 @@ export function checkPlExists(filename, callback, error) {
 export function searchPlugins(query, callback, error) {
   jsonGet("/api/plugin/search?q=" + query, callback, error);
 }
+
+export function getPluginBrowserInfo(query, callback, error) {
+  jsonGet("/api/plugin_browser/info?q=" + query, callback, error)
+}

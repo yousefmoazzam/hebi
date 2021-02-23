@@ -93,15 +93,14 @@
 }
 
 .tooltip.popover .popover-inner {
-  background: #f9f9f9;
-  color: black;
-  padding: 24px;
+  background: black;
+  color: white;
   border-radius: 5px;
-  box-shadow: 0 5px 30px rgba(black, .1);
+  padding: 5px 10px 4px;
 }
 
 .tooltip.popover .popover-arrow {
-  border-color: #f9f9f9;
+  border-color: black;
 }
 
 .tooltip[aria-hidden='true'] {

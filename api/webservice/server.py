@@ -87,6 +87,20 @@ def query_plugin_list():
     return jsonify(plugin_names)
 
 
+@app.route('/plugin_browser/info')
+def get_plugin_browser_info():
+    plugin_name = request.args.get(const.KEY_QUERY)
+    plugin = pu.plugins[plugin_name]()
+    plugin._populate_default_parameters()
+    plugin_info = {
+        'doc_link': str(plugin.docstring_info.get('documentation_link')),
+        'info': plugin.docstring_info.get('info'),
+        'synopsis': plugin.docstring_info.get('synopsis')
+    }
+
+    return jsonify(plugin_info)
+
+
 @app.route('/plugin/search')
 def search_plugins():
     query = request.args.get(const.KEY_QUERY)
