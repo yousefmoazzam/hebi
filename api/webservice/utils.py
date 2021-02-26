@@ -29,8 +29,8 @@ def populate_plugins():
             except Exception:
                 pass
 
-    # load all the plugins
-    plugins_paths = pu.get_plugins_paths()
+    # load all plugins except example ones
+    plugins_paths = pu.get_plugins_paths(examples=False)
 
     for path, name in plugins_paths.items():
         for finder, module_name, is_pkg in pkgutil.walk_packages([path], name):
