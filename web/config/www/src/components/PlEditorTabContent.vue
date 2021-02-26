@@ -19,6 +19,10 @@
         v-on:click="deleteAllListener" >
         Delete All
       </button>
+      <button class="bg-blue-200 hover:bg-blue-300 py-2 px-4 rounded"
+        v-on:click="resetAllListener" >
+        Reset All
+      </button>
     </div>
     <pl-editor-plugin-entry v-for="(plugin, index) in plPluginElements"
       :key="plugin.name"
@@ -105,6 +109,27 @@ export default {
     },
     deleteAllNoResponse: function () {
       console.log('Not deleting all plugins')
+      this.promptModalBoxes.pop()
+    },
+    resetAllListener: function () {
+      var promptText = 'Are you sure you want to reset the parameters of ALL ' +
+        'plugins in the process list to their default values?'
+      this.promptModalBoxes.push({
+        promptText: promptText,
+        yesResponseListener: this.resetAllYesResponse,
+        noResponseListener: this.resetAllNoResponse
+      })
+    },
+    resetAllYesResponse: function () {
+      for (var idx = 0; idx < this.plPluginElements.length; idx++) {
+        this.$store.dispatch('resetPluginParamsToDefault', {
+          'pluginName': this.plPluginElements[idx]['name'],
+          'pluginIndex': idx
+        })
+      }
+      this.promptModalBoxes.pop()
+    },
+    resetAllNoResponse: function () {
       this.promptModalBoxes.pop()
     }
   }
