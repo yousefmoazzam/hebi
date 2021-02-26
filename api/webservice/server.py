@@ -106,7 +106,6 @@ def search_plugins():
     query = request.args.get(const.KEY_QUERY)
 
     if query:
-        query = query.lower()
         # use search in configurator
         matched_plugins = config_utils.__get_filtered_plugins(query)
     else:
