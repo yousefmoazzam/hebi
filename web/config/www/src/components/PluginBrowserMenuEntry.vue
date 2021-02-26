@@ -1,6 +1,6 @@
 <template>
   <div class="select-none cursor-pointer p-1 hover:bg-gray-200"
-    v-on:click="clickListener">
+    v-on:click.stop="clickListener">
     <div class="flex">
       <p class="pr-2">
         {{ entry }}
@@ -47,6 +47,7 @@ export default {
   methods: {
     clickListener() {
       this.$store.dispatch('changePluginBrowserSearchInputFieldText', this.entry)
+      this.$store.dispatch('changePluginBrowserDropdownVisibility', false)
     },
 
     loadPluginInfo: function () {
