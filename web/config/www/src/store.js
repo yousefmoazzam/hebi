@@ -200,6 +200,25 @@ export const store = new Vuex.Store({
       context.dispatch('changeAddPluginIndexInputFieldText', newIndex.toString())
     },
 
+    resetPluginParamsToDefault(context, payload) {
+      // fetch the default param info for the plugin needing to be reset
+      addPluginToProcessList(
+        payload.pluginName,
+        function (plugin) {
+          var defaultPluginParamData = createPlPluginElementsEntry(plugin)
+          var mutationPayload = {
+            'defaultPluginParamData': defaultPluginParamData,
+            'pluginIndex': payload.pluginIndex
+          }
+          context.commit('resetPluginInPl', mutationPayload)
+          context.dispatch('changeIsProcessListModified', true)
+        },
+        function () {
+          console.log("Failed to reset a plugin")
+        }
+      )
+    },
+
     movePluginIndex(context, payload) {
 
       // Nothing to do in this case
@@ -553,6 +572,11 @@ export const store = new Vuex.Store({
 
     loadConfigObject(state, data) {
       state.configObject = data
+    },
+
+    resetPluginInPl(state, payload) {
+      state.plPluginElements.splice(payload.pluginIndex, 1,
+        payload.defaultPluginParamData)
     },
 
     setPluginSearchMatches(state, matches) {

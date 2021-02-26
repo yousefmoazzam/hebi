@@ -27,6 +27,11 @@
               v-show="showConfigWarnIcon" v-on:click="setConfigWarnDiplay(true)" class="pr-2">
             <i class="fas fa-comment-dots cursor-pointer"></i>
           </span>
+          <span class="pr-2">
+            <i class="fas fa-sync m-1 hover:text-gray-500 cursor-pointer"
+              v-on:click="resetIconListener">
+            </i>
+          </span>
         </h3>
       </div>
       <div class="flex-1"></div>
@@ -124,6 +129,28 @@ export default {
 
     setConfigWarnDiplay: function (bool) {
       this.displayConfigWarn = bool
+    },
+
+    resetIconListener: function () {
+      var promptText = 'Are you sure you want to reset all the parameters ' +
+        'of ' + this.pluginName + ' to their default values?'
+      this.promptModalBoxes.push({
+        promptText: promptText,
+        yesResponseListener: this.resetYesResponse,
+        noResponseListener: this.resetNoResponse
+      })
+    },
+
+    resetYesResponse: function () {
+      this.$store.dispatch('resetPluginParamsToDefault', {
+        'pluginName': this.pluginName,
+        'pluginIndex': this.pluginIndex
+      })
+      this.promptModalBoxes.pop()
+    },
+
+    resetNoResponse: function () {
+      this.promptModalBoxes.pop()
     }
 
   },
