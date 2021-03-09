@@ -32,6 +32,16 @@
               v-on:click="resetIconListener">
             </i>
           </span>
+          <span v-if="plugin.citations.length > 0" class="pr-2">
+            <i class="fa fa-quote-right m-1 hover:text-gray-500 cursor-pointer"
+              v-on:click="citationIconListener(true)">
+            </i>
+          </span>
+          <pl-editor-plugin-citations-popup
+            :isVisible="isCitationsPopupVisible"
+            :citations="plugin.citations"
+            :pluginNames="[pluginName]"
+            v-on:change-citations-popup-visibility="citationIconListener" />
         </h3>
       </div>
       <div class="flex-1"></div>
@@ -72,6 +82,7 @@ import ToggleSwitch from './ToggleSwitch.vue'
 import ParamVisibilityDropdown from './ParamVisibilityDropdown.vue'
 import PluginConfigWarnModalBox from './PluginConfigWarnModalBox.vue'
 import PromptModalBox from './PromptModalBox.vue'
+import PlEditorPluginCitationsPopup from './PlEditorPluginCitationsPopup.vue'
 
 export default {
   components: {
@@ -79,7 +90,8 @@ export default {
     'toggle-switch': ToggleSwitch,
     'param-visibility-dropdown': ParamVisibilityDropdown,
     'plugin-config-warn-modal-box': PluginConfigWarnModalBox,
-    'prompt-modal-box': PromptModalBox
+    'prompt-modal-box': PromptModalBox,
+    'pl-editor-plugin-citations-popup': PlEditorPluginCitationsPopup
   },
   methods: {
     trashIconListener: function () {
@@ -151,6 +163,10 @@ export default {
 
     resetNoResponse: function () {
       this.promptModalBoxes.pop()
+    },
+
+    citationIconListener: function (bool) {
+      this.isCitationsPopupVisible = bool
     }
 
   },
@@ -169,7 +185,8 @@ export default {
           hide: 0
         }
       },
-      promptModalBoxes: []
+      promptModalBoxes: [],
+      isCitationsPopupVisible: false
     }
   },
   computed: {

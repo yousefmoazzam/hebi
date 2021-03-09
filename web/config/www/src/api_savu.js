@@ -1,4 +1,4 @@
-import { jsonGet, jsonPut, jsonPost, jsonDelete } from './api_common.js'
+import { jsonGet, jsonPut, jsonPost, jsonDelete, textDownload } from './api_common.js'
 
 export function getAvailablePlugins(callback, error) {
   jsonGet("/api/plugin", callback, error);
@@ -74,4 +74,22 @@ export function searchPlugins(query, callback, error) {
 
 export function getPluginBrowserInfo(query, callback, error) {
   jsonGet("/api/plugin_browser/info?q=" + query, callback, error)
+}
+
+export async function downloadPluginCitation(info, type) {
+  var file_content = ''
+
+  for (var idx = 0; idx < info['plugins'].length; idx++) {
+    var url = "/api/plugin/download/citation/" + info['plugins'][idx] + "?q=" +
+      type
+    var data = await textDownload(url)
+    file_content += data['text']
+  }
+
+  var blob = new Blob([file_content], {type: data['type']})
+  var url = window.URL.createObjectURL(blob)
+  var a = document.createElement('a');
+  a.download = info['filename'] + '.' + type
+  a.href = url;
+  a.click();
 }

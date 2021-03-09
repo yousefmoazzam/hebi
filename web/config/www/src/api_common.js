@@ -100,3 +100,29 @@ export function jsonDelete(url, callback, error) {
     }
   });
 }
+
+export function textDownload(url) {
+  return new Promise((resolve, reject) => {
+    fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/text'
+      }
+    }).then(resp => {
+      var a = resp.body.getReader()
+      a.read().then(({ done, value }) => {
+        // get filename from Content-Disposition in response header
+        // regex taken from https://stackoverflow.com/a/23054920
+        var contentDisposition = resp.headers.get('Content-Disposition')
+        var filename = contentDisposition.match(/filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/)[1]
+        var text = new TextDecoder("utf-8").decode(value)
+        var data = {
+          'text': text,
+          'type': 'application/' + resp.type,
+          'filename': filename
+        }
+        resolve(data)
+      })
+    })
+  })
+}

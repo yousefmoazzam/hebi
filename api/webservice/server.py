@@ -1,5 +1,6 @@
 import glob
 import os
+from io import StringIO
 
 from flask import (Flask, jsonify, request, abort, make_response, send_file)
 from flask.json import JSONEncoder
@@ -384,6 +385,31 @@ def process_list_download():
         abort(status.HTTP_404_NOT_FOUND)
 
     return send_file(fname)
+
+
+@app.route('/plugin/download/citation/<plugin_name>')
+def plugin_citation_download(plugin_name):
+    citation_type = request.args.get(const.KEY_QUERY)
+    plugin = pu.plugins[plugin_name]()
+    plugin._populate_default_parameters()
+    citations = plugin.tools.get_citations()
+    contents = ''
+
+    for (k, v) in citations.items():
+        if citation_type == 'bibtex':
+            contents += v.bibtex + '\n'
+        elif citation_type == 'endnote':
+            contents += v.endnote + '\n'
+
+    if citation_type == 'bibtex':
+        filename = plugin_name + '.bibtex'
+    elif citation_type == 'endnote':
+        filename = plugin_name + '.endnote'
+
+    f = StringIO(contents)
+
+    return send_file(f, mimetype='text', as_attachment=True,
+        attachment_filename=filename)
 
 
 @app.route('/data/find')

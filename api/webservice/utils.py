@@ -37,6 +37,19 @@ def populate_plugins():
             if not is_pkg:
                 _load_module(finder, module_name)
 
+def citation_information_to_dict(citation_string, citation_dict):
+    """
+    Return a dictionary representation of citation information.
+    """
+
+    return {
+        'citation': citation_string,
+        'description': citation_dict.description,
+        'doi': citation_dict.doi,
+        'endnote': citation_dict.endnote,
+        'bibtex': citation_dict.bibtex
+    }
+
 
 def plugin_to_dict(name, p):
     """
@@ -108,6 +121,11 @@ def plugin_list_entry_to_dict(p):
 
         parameters.append(parameter_info)
 
+    # get plugin's citations
+    citations_dict = p['tools'].get_citations()
+    citations = [citation_information_to_dict(k, v) for (k, v)
+        in citations_dict.items()]
+
     return {
         'name': p['name'] ,
         'info': pl.docstring_info.get('info'),
@@ -117,6 +135,7 @@ def plugin_list_entry_to_dict(p):
         'parameters': parameters,
         'id': p['id'],
         'active': bool(p['active']),  # Convert from numpy bool
+        'citations': citations
     }
 
 

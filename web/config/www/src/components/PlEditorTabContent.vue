@@ -23,6 +23,15 @@
         v-on:click="resetAllListener" >
         Reset All
       </button>
+      <button class="bg-purple-200 hover:bg-purple-300 py-2 px-4 rounded"
+        v-on:click="allCitationsListener(true)" >
+        All Citations
+      </button>
+      <pl-editor-plugin-citations-popup
+        :isVisible="isAllCitationsPopupVisible"
+        :citations="allPluginCitations"
+        :pluginNames="pluginNames"
+        v-on:change-citations-popup-visibility="allCitationsListener" />
     </div>
     <pl-editor-plugin-entry v-for="(plugin, index) in plPluginElements"
       :key="plugin.name"
@@ -41,6 +50,7 @@ import LabelledInputFieldAndButton from './LabelledInputFieldAndButton.vue'
 import PluginBrowser from './PluginBrowser.vue'
 import FileBrowser from './FileBrowser.vue'
 import PromptModalBox from './PromptModalBox.vue'
+import PlEditorPluginCitationsPopup from './PlEditorPluginCitationsPopup.vue'
 
 export default {
   components: {
@@ -48,12 +58,29 @@ export default {
     'labelled-input-field-button': LabelledInputFieldAndButton,
     'plugin-browser': PluginBrowser,
     'file-browser': FileBrowser,
-    'prompt-modal-box': PromptModalBox
+    'prompt-modal-box': PromptModalBox,
+    'pl-editor-plugin-citations-popup': PlEditorPluginCitationsPopup
   },
-  computed: mapState({
-    plPluginElements: state => state.plPluginElements,
-    plEditorFilepath: state => state.plEditorFilepath
-  }),
+  computed: {
+    ...mapState({
+      plPluginElements: state => state.plPluginElements,
+      plEditorFilepath: state => state.plEditorFilepath
+    }),
+
+    allPluginCitations: function () {
+      var allCitations = []
+      for (var idx = 0; idx < this.plPluginElements.length; idx++) {
+        allCitations.push(...this.plPluginElements[idx]['citations'])
+      }
+      return allCitations
+    },
+
+    pluginNames: function () {
+      return this.plPluginElements.map(plugin => {
+        return plugin['name']
+      })
+    }
+  },
   data: function () {
     return {
       inputFieldButtons: [
@@ -74,7 +101,8 @@ export default {
           }
         }
       ],
-      promptModalBoxes: []
+      promptModalBoxes: [],
+      isAllCitationsPopupVisible: false
     }
   },
   methods: {
@@ -131,6 +159,10 @@ export default {
     },
     resetAllNoResponse: function () {
       this.promptModalBoxes.pop()
+    },
+
+    allCitationsListener: function (bool) {
+      this.isAllCitationsPopupVisible = bool
     }
   }
 }

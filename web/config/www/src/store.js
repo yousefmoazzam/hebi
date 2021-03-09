@@ -661,6 +661,7 @@ var createPlPluginElementsEntry = function (plugin) {
     "docLink": plugin.doc_link,
     "active": plugin.active,
     "warn": plugin.warn.replace(/\n/gm, " "),
+    "citations": plugin.citations,
     "parameters": []
   };
 

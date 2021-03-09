@@ -20,6 +20,14 @@ _parameter_full.update({
     Optional('options'): [(_non_empty_string, _non_empty_string)],
 })
 
+_citation = {
+    Required('citation'): _string,
+    Required('description'): _string,
+    Required('bibtex'): _string,
+    Required('endnote'): _string,
+    Required('doi'): _string
+}
+
 _plugin_basic = {
     Required('name'): _non_empty_string,
     Required('active'): bool,
@@ -35,6 +43,7 @@ _plugin_full = {
     Required('warn'): _string,
     Required('id'): _non_empty_string,
     Required('parameters'): [_parameter_full],
+    Required('citations'): [_citation]
 }
 
 server_configuration_schema = Schema({
