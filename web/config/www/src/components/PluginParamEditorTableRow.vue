@@ -34,7 +34,7 @@ export default {
   data: function () {
     return {
       tooltipOptions: {
-        content: this.param.description,
+        content: this.tooltipContent(),
         placement: 'top-center',
         offset: 10,
         trigger: 'hover',
@@ -48,6 +48,16 @@ export default {
   props: {
     pluginIndex: Number,
     param: Object
+  },
+  methods: {
+    tooltipContent: function () {
+      if ('verbose' in this.param.description) {
+        return this.param.description['summary'] +
+        '<br><br>' + this.param.description['verbose']
+      } else {
+        return this.param.description['summary']
+      }
+    }
   }
 }
 </script>

@@ -11,9 +11,14 @@ _parameter_basic = {
     Required('value'): _parameter_value,
 }
 
+_parameter_description = {
+    Required('summary'): _non_empty_string,
+    Optional('verbose'): _non_empty_string
+}
+
 _parameter_full = _parameter_basic.copy()
 _parameter_full.update({
-    Required('description'): _non_empty_string,
+    Required('description'): _parameter_description,
     Optional('type'): Any(_non_empty_string, [_non_empty_string]),
     Optional('visibility'): _non_empty_string,
     Optional('display'): _non_empty_string,

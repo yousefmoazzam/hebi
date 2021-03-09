@@ -90,18 +90,23 @@ def plugin_list_entry_to_dict(p):
     keys = pu.set_order_by_visibility(p['param'])
     for param_name in keys:
         param_dict = p['param'][param_name]
-        description = param_dict['description']
-        if not isinstance(description, str):
+        description = {}
+        if not isinstance(param_dict['description'], str):
             # the description is a dict containing more info about the param,
-            # and the param description is in the summary key of this dict
-            description = param_dict['description']['summary']
+            # and the param description has a summary key in this dict, and may
+            # also have a verbose key
+            description['summary'] = param_dict['description']['summary']
+            if 'verbose' in param_dict['description']:
+                description['verbose'] = param_dict['description']['verbose']
             if 'options' in param_dict:
                 options = list(param_dict['description']['options'].items())
                 for i, (param, desc) in enumerate(options):
                     if desc is None:
                         options[i] = (param, str(desc))
         else:
-            # the description is just a string
+            # the description is just a string, and there is no verbose
+            # description
+            description['summary'] = param_dict['description']
             if 'options' in param_dict:
                 # If the options had descriptions as well, then the param
                 # description would be a dict and not a string. Therefore,
