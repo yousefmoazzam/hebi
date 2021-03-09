@@ -176,7 +176,8 @@ export default {
       chosenParamVisibility: 'advanced',
       displayConfigWarn: true,
       tooltipOptions: {
-        content: this.plugin.synopsis + "<br>Click for more information",
+        content: this.plugin.synopsis + "<br><br>" + this.plugin.info +
+          "<br><br>" + "Click for more information",
         placement: 'top-center',
         offset: 10,
         trigger: 'hover',
