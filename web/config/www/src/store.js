@@ -15,7 +15,8 @@ import {
   newProcessList,
   addPluginToProcessList,
   getPluginCollections,
-  searchPlugins
+  searchPlugins,
+  getFrameworkCitations
 } from './api_savu.js'
 
 export const store = new Vuex.Store({
@@ -42,7 +43,8 @@ export const store = new Vuex.Store({
     configObject: {},
     pluginSearchMatches: [],
     pluginBrowserSearchInputFieldText: '',
-    isPluginBrowserDropdownVisible: false
+    isPluginBrowserDropdownVisible: false,
+    frameworkCitations: []
   },
 
   actions: {
@@ -439,6 +441,17 @@ export const store = new Vuex.Store({
 
     changePluginBrowserDropdownVisibility(context, bool) {
       context.commit('updatePluginBrowserDropdownVisibility', bool)
+    },
+
+    loadFrameworkCitations(context) {
+      getFrameworkCitations(
+        function (citations) {
+          context.commit('updateFrameworkCitations', citations)
+        },
+        function () {
+          console.log('Failed to get framework citations')
+        }
+      )
     }
 
   },
@@ -589,7 +602,12 @@ export const store = new Vuex.Store({
 
     updatePluginBrowserDropdownVisibility(state, bool) {
       state.isPluginBrowserDropdownVisible = bool
+    },
+
+    updateFrameworkCitations(state, citations) {
+      state.frameworkCitations = citations
     }
+
   },
 
   getters: {
@@ -609,7 +627,8 @@ export const store = new Vuex.Store({
     favouritedDirs: state => state.configObject.favourite_dirs,
     pluginSearchMatches: state => state.pluginSearchMatches,
     pluginBrowserSearchInputFieldText: state => state.pluginBrowserSearchInputFieldText,
-    isPluginBrowserDropdownVisible: state => state.isPluginBrowserDropdownVisible
+    isPluginBrowserDropdownVisible: state => state.isPluginBrowserDropdownVisible,
+    frameworkCitations: state => state.frameworkCitations
   }
 })
 

@@ -19,45 +19,94 @@
             Endnote
           </a>
         </div>
-        <div v-for="(citation, index) in citations"
-          :class="[index < citations.length - 1 ? 'border-b-4 border-gray-700' : '',  'p-2']">
-          <h2 class="text-lg">Paper</h2>
-          <p class="">
-            {{ citation.citation }}
-          </p>
-          <br>
-          <h2 class="text-lg">Description</h2>
-          <p class="">
-            {{ citation.description }}
-          </p>
-          <br>
-          <h2 class="text-lg">DOI</h2>
-          <p class="">
-            {{ citation.doi }}
-          </p>
-          <br>
-          <div class="flex">
-            <h2 class="text-lg">BibTeX</h2>
-            <span class="pr-2">
-              <i class="fas fa-paste m-1 hover:text-gray-500 cursor-pointer"
-                v-on:click="copyText(citation.bibtex)">
-              </i>
-            </span>
+        <div class="border-b-4 border-black mb-2">
+          <h2 class="text-xl text-center">Framework Citations</h2>
+          <div v-for="(citation, index) in frameworkCitations"
+            :class="[index < frameworkCitations.length - 1 ? 'border-b-2 border-gray-700' : '',  'p-2']">
+            <h2 class="text-lg">Article</h2>
+            <p>
+              {{ citation.short_name_article }}
+            </p>
+            <br>
+            <h2 class="text-lg">Description</h2>
+            <p>
+              {{ citation.description }}
+            </p>
+            <br>
+            <div v-if="'doi' in citation">
+              <h2 class="text-lg">DOI</h2>
+              <p>
+                {{ citation.doi }}
+              </p>
+              <br>
+            </div>
+            <div class="flex">
+              <h2 class="text-lg">BibTeX</h2>
+              <span class="pr-2">
+                <i class="fas fa-paste m-1 hover:text-gray-500 cursor-pointer"
+                  v-on:click="copyText(citation.bibtex)">
+                </i>
+              </span>
+            </div>
+            <div class="overflow-x-auto">
+              <p class="whitespace-pre">{{ citation.bibtex }}</p>
+            </div>
+            <br>
+            <div class="flex">
+              <h2 class="text-lg">Endnote</h2>
+              <span class="pr-2">
+                <i class="fas fa-paste m-1 hover:text-gray-500 cursor-pointer"
+                  v-on:click="copyText(citation.endnote)">
+                </i>
+              </span>
+            </div>
+            <div class="overflow-x-auto">
+              <p class="whitespace-pre">{{ citation.endnote }}</p>
+            </div>
           </div>
-          <div class="overflow-x-auto">
-            <p class="whitespace-pre">{{ citation.bibtex }}</p>
-          </div>
-          <br>
-          <div class="flex">
-            <h2 class="text-lg">Endnote</h2>
-            <span class="pr-2">
-              <i class="fas fa-paste m-1 hover:text-gray-500 cursor-pointer"
-                v-on:click="copyText(citation.endnote)">
-              </i>
-            </span>
-          </div>
-          <div class="overflow-x-auto">
-            <p class="whitespace-pre">{{ citation.endnote }}</p>
+        </div>
+        <div>
+          <h2 class="text-xl text-center">Plugin Citations</h2>
+          <div v-for="(citation, index) in citations"
+            :class="[index < citations.length - 1 ? 'border-b-2 border-gray-700' : '',  'p-2']">
+            <h2 class="text-lg">Paper</h2>
+            <p class="">
+              {{ citation.citation }}
+            </p>
+            <br>
+            <h2 class="text-lg">Description</h2>
+            <p class="">
+              {{ citation.description }}
+            </p>
+            <br>
+            <h2 class="text-lg">DOI</h2>
+            <p class="">
+              {{ citation.doi }}
+            </p>
+            <br>
+            <div class="flex">
+              <h2 class="text-lg">BibTeX</h2>
+              <span class="pr-2">
+                <i class="fas fa-paste m-1 hover:text-gray-500 cursor-pointer"
+                  v-on:click="copyText(citation.bibtex)">
+                </i>
+              </span>
+            </div>
+            <div class="overflow-x-auto">
+              <p class="whitespace-pre">{{ citation.bibtex }}</p>
+            </div>
+            <br>
+            <div class="flex">
+              <h2 class="text-lg">Endnote</h2>
+              <span class="pr-2">
+                <i class="fas fa-paste m-1 hover:text-gray-500 cursor-pointer"
+                  v-on:click="copyText(citation.endnote)">
+                </i>
+              </span>
+            </div>
+            <div class="overflow-x-auto">
+              <p class="whitespace-pre">{{ citation.endnote }}</p>
+            </div>
           </div>
         </div>
       </div>
@@ -80,7 +129,8 @@ export default {
 
   computed: {
     ...mapGetters([
-      'filepathInputFieldText'
+      'filepathInputFieldText',
+      'frameworkCitations'
     ])
   },
 

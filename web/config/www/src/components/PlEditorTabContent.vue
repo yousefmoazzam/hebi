@@ -53,6 +53,9 @@ import PromptModalBox from './PromptModalBox.vue'
 import PlEditorPluginCitationsPopup from './PlEditorPluginCitationsPopup.vue'
 
 export default {
+  mounted: function () {
+    this.$store.dispatch('loadFrameworkCitations')
+  },
   components: {
     'pl-editor-plugin-entry': PlEditorPluginEntry,
     'labelled-input-field-button': LabelledInputFieldAndButton,

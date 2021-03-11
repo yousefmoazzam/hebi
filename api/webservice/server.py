@@ -10,9 +10,11 @@ from flask_socketio import SocketIO, emit, join_room, leave_room
 from fuzzywuzzy import fuzz
 import json_tricks
 import voluptuous
+import requests
 
 import savu.plugins as savu_plugins
 import savu.plugins.utils as pu
+import savu.data.framework_citations as fc
 import scripts.config_generator.parameter_utils as param_utils
 import scripts.config_generator.config_utils as config_utils
 from scripts.config_generator.content import Content
@@ -397,14 +399,56 @@ def plugin_citation_download(plugin_name):
 
     for (k, v) in citations.items():
         if citation_type == 'bibtex':
-            contents += v.bibtex + '\n'
+            contents += v.bibtex.rstrip('\n') + '\n\n'
         elif citation_type == 'endnote':
-            contents += v.endnote + '\n'
+            contents += v.endnote.rstrip('\n') + '\n\n'
 
     if citation_type == 'bibtex':
         filename = plugin_name + '.bibtex'
     elif citation_type == 'endnote':
         filename = plugin_name + '.endnote'
+
+    f = StringIO(contents)
+
+    return send_file(f, mimetype='text', as_attachment=True,
+        attachment_filename=filename)
+
+
+@app.route('/framework_citations')
+def get_framework_citations():
+    # get the latest Savu DOI
+    # this url always redirects to the latest Savu DOI
+    url = 'https://doi.org/10.5281/zenodo.592215'
+    r = requests.get(url)
+    # get the specific DOI suffix that the url redirected to
+    doi_suffix = r.url.split('/')[-1]
+    ZENODO_PREFIX = '10.5281/zenodo.'
+    savu_doi = ZENODO_PREFIX + doi_suffix
+
+    framework_citations = fc.get_framework_citations()
+    for citation in framework_citations:
+        if citation['short_name_article'] == 'Savu':
+            citation['doi'] = savu_doi
+
+    return jsonify(framework_citations)
+
+
+@app.route('/framework_citations/download')
+def download_framework_citations():
+    citation_type = request.args.get(const.KEY_QUERY)
+    contents = ''
+    framework_citations = fc.get_framework_citations()
+
+    for citation in framework_citations:
+        if citation_type == 'bibtex':
+            contents += citation['bibtex'].rstrip('\n') + '\n\n'
+        elif citation_type == 'endnote':
+            contents += citation['endnote'].rstrip('\n') + '\n\n'
+
+    if citation_type == 'bibtex':
+        filename = 'framework_citations.bibtex'
+    elif citation_type == 'endnote':
+        filename = 'framework_citations.endnote'
 
     f = StringIO(contents)
 

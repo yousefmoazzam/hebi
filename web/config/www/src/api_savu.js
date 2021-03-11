@@ -79,6 +79,12 @@ export function getPluginBrowserInfo(query, callback, error) {
 export async function downloadPluginCitation(info, type) {
   var file_content = ''
 
+  // get framework citations first
+  var frameworkCitationsUrl = "/api/framework_citations/download" + "?q=" + type
+  var frameworkCitations = await textDownload(frameworkCitationsUrl)
+  file_content += frameworkCitations['text']
+
+  // then get plugin citations
   for (var idx = 0; idx < info['plugins'].length; idx++) {
     var url = "/api/plugin/download/citation/" + info['plugins'][idx] + "?q=" +
       type
@@ -92,4 +98,8 @@ export async function downloadPluginCitation(info, type) {
   a.download = info['filename'] + '.' + type
   a.href = url;
   a.click();
+}
+
+export function getFrameworkCitations(callback, error) {
+  jsonGet("/api/framework_citations", callback, error)
 }

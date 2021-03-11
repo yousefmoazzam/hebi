@@ -32,7 +32,7 @@
               v-on:click="resetIconListener">
             </i>
           </span>
-          <span v-if="plugin.citations.length > 0" class="pr-2">
+          <span class="pr-2">
             <i class="fa fa-quote-right m-1 hover:text-gray-500 cursor-pointer"
               v-on:click="citationIconListener(true)">
             </i>
