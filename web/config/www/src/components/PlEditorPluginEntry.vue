@@ -15,7 +15,7 @@
       </div>
       <div>
         <h3>
-          <span class="pr-2">{{ pluginIndex }}</span>
+          <span class="pr-2">{{ plugin.pos }}</span>
           <span class="pr-2">{{ pluginName }}</span>
           <span class="pr-2">
             <i class="fas fa-info-circle cursor-pointer"
@@ -45,7 +45,7 @@
         </h3>
       </div>
       <div class="flex-1"></div>
-      <toggle-switch :pluginIndex="pluginIndex" :active="plugin.active"/>
+      <toggle-switch :pluginIndex="plugin.pos" :active="plugin.active"/>
       <div class="icons">
         <i class="fas action fa-lg fa-arrow-up m-1 hover:text-gray-500 cursor-pointer" v-on:click="upArrowIconListener">
         </i>
@@ -71,7 +71,7 @@
         :chosenParamVisibility="chosenParamVisibility" />
       <plugin-param-editor-table :plugin="plugin"
         :chosenParamVisibility="chosenParamVisibility"
-        :pluginIndex="pluginIndex" />
+        :pluginIndex="plugin.pos" />
     </div>
   </div>
 </template>
@@ -107,26 +107,26 @@ export default {
     },
 
     deletePluginYesResponse: function () {
-      console.log('Deleting plugin with index ' + this.pluginIndex)
-      this.$store.dispatch('removePluginFromPl', this.pluginIndex)
+      console.log('Deleting plugin with index ' + this.plugin.pos)
+      this.$store.dispatch('removePluginFromPl', this.plugin.pos)
       this.promptModalBoxes.pop()
     },
 
     deletePluginNoResponse: function () {
-      console.log('Not deleting plugin with index ' + this.pluginIndex)
+      console.log('Not deleting plugin with index ' + this.plugin.pos)
       this.promptModalBoxes.pop()
     },
 
     upArrowIconListener: function () {
       this.$store.dispatch('movePluginIndex', {
-        'pluginIndex': this.pluginIndex,
+        'pluginIndex': this.plugin.pos,
         'direction': -1
       })
     },
 
     downArrowIconListener: function () {
       this.$store.dispatch('movePluginIndex', {
-        'pluginIndex': this.pluginIndex,
+        'pluginIndex': this.plugin.pos,
         'direction': 1
       })
     },
@@ -156,7 +156,7 @@ export default {
     resetYesResponse: function () {
       this.$store.dispatch('resetPluginParamsToDefault', {
         'pluginName': this.pluginName,
-        'pluginIndex': this.pluginIndex
+        'pluginIndex': this.plugin.pos
       })
       this.promptModalBoxes.pop()
     },
@@ -196,7 +196,6 @@ export default {
     }
   },
   props: {
-    pluginIndex: Number,
     pluginName: String,
     plugin: Object
   }

@@ -189,20 +189,24 @@ def get_plugin_info(name):
     return jsonify(data)
 
 
-@app.route('/add_plugin/<name>')
-def add_plugin_to_process_list(name):
-    if name not in pu.plugins:
+@app.route('/add_plugin', methods=['PUT'])
+def add_plugin_to_process_list():
+    request_data = request.get_json()
+
+    if request_data['pluginName'] not in pu.plugins:
         abort(status.HTTP_404_NOT_FOUND)
 
     # create a process list with a single plugin in it (an instance of the
     # plugin desired to be added to the process list editor) so then plugin
     # data of the desired format can be passed to plugin_list_entry_to_dict()
     process_list = Content()
-    pos = "1"
-    process_list.add(name, pos)
-    process_list.on_and_off(pos, const.PLUGIN_ENABLED)
+    dummy_pos = "1"
+    process_list.add(request_data['pluginName'], dummy_pos)
+    process_list.on_and_off(dummy_pos, const.PLUGIN_ENABLED)
     plugin = process_list.plugin_list.plugin_list[0]
     data = plugin_list_entry_to_dict(plugin)
+    # update with the desired pos value
+    data['pos'] = request_data['pluginIndex']
     validation.process_list_entry_schema(data)
     return jsonify(data)
 
@@ -219,17 +223,17 @@ def modify_param_val():
 
     # check if the type of the given param value is the same as the required
     # type for the param
-    plugin = process_list.plugin_list.plugin_list[plugin_index]
+    plugin = process_list.plugin_list.plugin_list[plugin_index - 1]
     cast_param_value = process_list.value(param_value)
     param_valid, error_str = param_utils.is_valid(param_name, cast_param_value,
         plugin['tools'].param.get_dictionary()[param_name])
 
     if param_valid:
         # modify the plugin param value to be the new value submitted in the UI
-        process_list.modify(str(plugin_index + 1), param_name, param_value)
+        process_list.modify(data["pluginIndex"], param_name, param_value)
 
         # get the new state of the plugin with any changes to param display
-        modified_plugin = process_list.plugin_list.plugin_list[plugin_index]
+        modified_plugin = process_list.plugin_list.plugin_list[plugin_index - 1]
         modified_plugin_data = plugin_list_entry_to_dict(modified_plugin)
         validation.process_list_entry_schema(modified_plugin_data)
 

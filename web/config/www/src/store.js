@@ -39,7 +39,7 @@ export const store = new Vuex.Store({
     isCurrentProcessListModified: false,
     tabCompletionDirContents: [],
     filepathInputFieldText: '',
-    addPluginIndexInputFieldText: '0',
+    addPluginIndexInputFieldText: '1',
     configObject: {},
     pluginSearchMatches: [],
     pluginBrowserSearchInputFieldText: '',
@@ -107,7 +107,7 @@ export const store = new Vuex.Store({
           context.commit('updateOpenPl', data)
           context.dispatch('changePlEditorFilepath', filename)
           context.dispatch('changeIsProcessListModified', false)
-          var newIndex = store.state.plPluginElements.length
+          var newIndex = store.state.plPluginElements.length + 1
           context.dispatch('changeAddPluginIndexInputFieldText', newIndex.toString())
         }    ,
         function () {
@@ -174,17 +174,19 @@ export const store = new Vuex.Store({
 
     addPluginToPl(context, payload) {
       var store = this
+      if (payload.pluginIndex === '') {
+        // default to adding the plugin to the end of the process list
+        payload.pluginIndex = String(this.state.plPluginElements.length + 1)
+      }
+
       addPluginToProcessList(
-        payload.pluginName,
+        payload,
         function (plugin) {
-          context.commit('addPluginToPlPluginElements', {
-            'plugin': plugin,
-            'pluginIndex': payload.pluginIndex
-          })
+          context.commit('addPluginToPlPluginElements', plugin)
           context.dispatch('changeIsProcessListModified', true)
           // update the index in the input field that specifies the index to
           // add a plugin to, to be the new end position in the process list
-          var newIndex = store.state.plPluginElements.length
+          var newIndex = store.state.plPluginElements.length + 1
           context.dispatch('changeAddPluginIndexInputFieldText', newIndex.toString())
         },
         function () {
@@ -194,18 +196,18 @@ export const store = new Vuex.Store({
     },
 
     removePluginFromPl(context, pluginIndex) {
-      context.commit('removePlugin', pluginIndex)
+      context.commit('removePlugin', savuIndexToZeroBasedIndex(pluginIndex))
       context.dispatch('changeIsProcessListModified', true)
       // update the index in the input field that specifies the index to
       // add a plugin to, to be the new end position in the process list
-      var newIndex = this.state.plPluginElements.length
+      var newIndex = this.state.plPluginElements.length + 1
       context.dispatch('changeAddPluginIndexInputFieldText', newIndex.toString())
     },
 
     resetPluginParamsToDefault(context, payload) {
       // fetch the default param info for the plugin needing to be reset
       addPluginToProcessList(
-        payload.pluginName,
+        payload,
         function (plugin) {
           var defaultPluginParamData = createPlPluginElementsEntry(plugin)
           var mutationPayload = {
@@ -229,24 +231,30 @@ export const store = new Vuex.Store({
       }
 
       // Calculate new position (plugin to swap position with)
-      var newPosition = payload.pluginIndex + payload.direction;
+      var zeroBasedIndex = savuIndexToZeroBasedIndex(payload.pluginIndex)
+      var newZeroBasedIndex = zeroBasedIndex + payload.direction;
+      var newSavuIndex = zeroBasedIndexToSavuIndex(newZeroBasedIndex)
 
       // Check the new position is within the valid plugin indices
-      if (newPosition < 0 || newPosition > this.state.plPluginElements.length - 1) {
-        console.log("New position (" + newPosition + ") not valid");
+      if (newZeroBasedIndex < 0 ||
+          newZeroBasedIndex > this.state.plPluginElements.length - 1) {
+        console.log("New Savu-index (" + newSavuIndex + ") not valid");
         return
       }
 
       context.commit('movePluginIndex', {
-        'pluginIndex': payload.pluginIndex,
-        'newPosition': newPosition
+        'oldZeroBasedIndex': zeroBasedIndex,
+        'oldSavuIndex': payload.pluginIndex,
+        'newZeroBasedIndex': newZeroBasedIndex,
+        'newSavuIndex': newSavuIndex
       })
 
       context.dispatch('changeIsProcessListModified', true)
     },
 
     togglePluginActiveState(context, pluginIndex) {
-      context.commit('togglePluginActiveState', pluginIndex)
+      context.commit('togglePluginActiveState',
+        savuIndexToZeroBasedIndex(pluginIndex))
       context.dispatch('changeIsProcessListModified', true)
     },
 
@@ -473,26 +481,25 @@ export const store = new Vuex.Store({
       var newPlPluginElements = []
 
       for (var plugin of data.plugins) {
-        addPluginHelper(plugin, '', newPlPluginElements)
+        addPluginHelper(plugin, newPlPluginElements)
       }
 
       state.plPluginElements = newPlPluginElements
     },
 
     updatePlPluginElements(state, response) {
+      var zeroBasedPluginIndex = savuIndexToZeroBasedIndex(response.plugin_index)
+
       if (response.is_valid) {
-        // remove old state of plugin before the param modification
-        state.plPluginElements.splice(response.plugin_index, 1)
-
-        // add new state of plugin after the param modification
-        addPluginHelper(response.plugin_data, response.plugin_index,
-            state.plPluginElements)
-
+        var updatedPlugin = createPlPluginElementsEntry(response.plugin_data)
+        // replace old state of plugin before the param modification with the
+        // new state of the plugin after the param modification
+        state.plPluginElements.splice(zeroBasedPluginIndex, 1, updatedPlugin)
       } else {
         // find param in plugin and set a type error by adding to the
         // typeError attribute
-        for (var parameterIdx in state.plPluginElements[response.plugin_index].parameters) {
-          var parameter = state.plPluginElements[response.plugin_index].parameters[parameterIdx];
+        for (var parameterIdx in state.plPluginElements[zeroBasedPluginIndex].parameters) {
+          var parameter = state.plPluginElements[zeroBasedPluginIndex].parameters[parameterIdx];
           if (parameter.name === response.param_name) {
             parameter["value"] = response.errored_param_value;
             // add a type error
@@ -511,18 +518,26 @@ export const store = new Vuex.Store({
     },
 
     addPluginToPlPluginElements(state, payload) {
-      addPluginHelper(payload.plugin, payload.pluginIndex,
-          state.plPluginElements)
+      addPluginHelper(payload, state.plPluginElements)
     },
 
     removePlugin(state, pluginIndex) {
+      // remove plugin
       state.plPluginElements.splice(pluginIndex, 1)
+
+      // modify pos values of plugins that originally came after the now
+      // deleted plugin
+      updatePluginsPos(-1, pluginIndex, state.plPluginElements)
     },
 
     movePluginIndex(state, payload) {
       // Reorder cached elements
-      var cache = state.plPluginElements.splice(payload.pluginIndex, 1)[0];
-      state.plPluginElements.splice(payload.newPosition, 0, cache);
+      var cache = state.plPluginElements.splice(payload.oldZeroBasedIndex, 1)[0];
+      state.plPluginElements.splice(payload.newZeroBasedIndex, 0, cache);
+
+      // swap the Savu-index of the two swapped plugins
+      state.plPluginElements[payload.oldZeroBasedIndex]['pos'] = payload.oldSavuIndex
+      state.plPluginElements[payload.newZeroBasedIndex]['pos'] = payload.newSavuIndex
     },
 
     togglePluginActiveState(state, pluginIndex) {
@@ -588,7 +603,8 @@ export const store = new Vuex.Store({
     },
 
     resetPluginInPl(state, payload) {
-      state.plPluginElements.splice(payload.pluginIndex, 1,
+      state.plPluginElements.splice(
+        savuIndexToZeroBasedIndex(payload.pluginIndex), 1,
         payload.defaultPluginParamData)
     },
 
@@ -675,6 +691,7 @@ var createPlPluginElementsEntry = function (plugin) {
 
   var elements = {
     "name": plugin.name,
+    "pos": plugin.pos,
     "synopsis": plugin.synopsis,
     "info": plugin.info,
     "docLink": plugin.doc_link,
@@ -708,24 +725,52 @@ var createPlPluginElementsEntry = function (plugin) {
   return elements
 }
 
-var addPluginToPlPluginElements = function (plugin, index, plPluginElements) {
+var addPluginToPlPluginElements = function (plugin, plPluginElements) {
+  var zeroBasedIndex = savuIndexToZeroBasedIndex(plugin['pos'])
 
-  if (index === '') {
-    plPluginElements.push(plugin)
+  if (zeroBasedIndex <= 0) {
+    // put the plugin at the beginning of the process list, and set the pos
+    // attribute (the Savu-index) to be 1
+    plugin['pos'] = "1"
+    plPluginElements.splice(0, 0, plugin)
+    updatePluginsPos(1, 1, plPluginElements)
+  } else if (zeroBasedIndex > 0 && zeroBasedIndex < plPluginElements.length) {
+    plPluginElements.splice(zeroBasedIndex, 0, plugin)
+    updatePluginsPos(1, zeroBasedIndex + 1, plPluginElements)
   } else {
-    var idx = parseInt(index)
-    if (idx <= 0) {
-      plPluginElements.splice(0, 0, plugin)
-    } else {
-      plPluginElements.splice(idx, 0, plugin)
-    }
+    // put the plugin at the end of the process list, and set the pos
+    // attribute (the Savu-index) to be the same as the new length of the
+    // process list
+    plugin['pos'] = String(plPluginElements.length + 1)
+    plPluginElements.push(plugin)
   }
 
 }
 
-var addPluginHelper = function (plugin, index, plPluginElements) {
+var updatePluginsPos = function (direction, index, plPluginElements) {
+  // after adding or deleting a plugin, update the pos attribute of all plugins
+  // after the one that's been added/deleted
+  for (var idx = index; idx < plPluginElements.length; idx++) {
+    var oldPos = plPluginElements[idx]['pos']
+    if (direction === 1) {
+      plPluginElements[idx]['pos'] = String(parseInt(oldPos) + 1)
+    } else if (direction === -1) {
+      plPluginElements[idx]['pos'] = String(parseInt(oldPos) - 1)
+    }
+  }
+}
+
+var zeroBasedIndexToSavuIndex = function (numberIndex) {
+  return String(numberIndex + 1)
+}
+
+var savuIndexToZeroBasedIndex = function (stringIndex) {
+  return parseInt(stringIndex) - 1
+}
+
+var addPluginHelper = function (plugin, plPluginElements) {
   var elements = createPlPluginElementsEntry(plugin)
-  addPluginToPlPluginElements(elements, index, plPluginElements)
+  addPluginToPlPluginElements(elements, plPluginElements)
 }
 
 var createConfig = async function () {

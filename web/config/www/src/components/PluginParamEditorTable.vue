@@ -23,7 +23,7 @@ export default {
     this.visibilityOrdering = VisibilityOrdering
   },
   props: {
-    pluginIndex: Number,
+    pluginIndex: String,
     plugin: Object,
     chosenParamVisibility: String
   },

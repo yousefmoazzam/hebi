@@ -21,7 +21,7 @@
 <script>
 export default {
   props: {
-    pluginIndex: Number,
+    pluginIndex: String,
     active: Boolean
   },
   computed: {

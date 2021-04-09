@@ -41,6 +41,7 @@ _plugin_basic = {
 
 _plugin_full = {
     Required('name'): _non_empty_string,
+    Required('pos'): _non_empty_string,
     Required('doc_link'): _non_empty_string,
     Required('active'): bool,
     Required('info'): _string,

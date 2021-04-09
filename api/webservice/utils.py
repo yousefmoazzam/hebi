@@ -133,6 +133,7 @@ def plugin_list_entry_to_dict(p):
 
     return {
         'name': p['name'] ,
+        'pos': p['pos'].decode('utf-8') if type(p['pos']) is bytes else p['pos'],
         'info': pl.docstring_info.get('info'),
         'synopsis': pl.docstring_info.get('synopsis'),
         'warn': str(pl.docstring_info.get('warn')),

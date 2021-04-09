@@ -16,8 +16,8 @@ export function getPluginDetails(pluginName, callback, error) {
   jsonGet("/api/plugin/" + pluginName, callback, error);
 }
 
-export function addPluginToProcessList(pluginName, callback, error) {
-  jsonGet("/api/add_plugin/" + pluginName, callback, error);
+export function addPluginToProcessList(data, callback, error) {
+  jsonPut("/api/add_plugin", data, callback, error);
 }
 
 export function getAvailableProcessLists(searchPath, callback, error) {

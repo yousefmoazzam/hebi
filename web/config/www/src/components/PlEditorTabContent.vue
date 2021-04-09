@@ -37,8 +37,7 @@
       :key="plugin.name"
       :ref="plugin.name"
       :plugin="plugin"
-      :pluginName="plugin.name"
-      :pluginIndex="index" />
+      :pluginName="plugin.name" />
   </div>
 </template>
 
@@ -134,7 +133,8 @@ export default {
     deleteAllYesResponse: function () {
       console.log('Deleting all plugins')
       for (var idx = this.plPluginElements.length - 1; idx >= 0; idx--) {
-        this.$store.dispatch('removePluginFromPl', idx)
+        this.$store.dispatch('removePluginFromPl',
+          this.plPluginElements[idx]['pos'])
       }
       this.promptModalBoxes.pop()
     },
@@ -155,7 +155,7 @@ export default {
       for (var idx = 0; idx < this.plPluginElements.length; idx++) {
         this.$store.dispatch('resetPluginParamsToDefault', {
           'pluginName': this.plPluginElements[idx]['name'],
-          'pluginIndex': idx
+          'pluginIndex': this.plPluginElements[idx]['pos']
         })
       }
       this.promptModalBoxes.pop()

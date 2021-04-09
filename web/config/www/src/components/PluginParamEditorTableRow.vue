@@ -46,7 +46,7 @@ export default {
     }
   },
   props: {
-    pluginIndex: Number,
+    pluginIndex: String,
     param: Object
   },
   methods: {
