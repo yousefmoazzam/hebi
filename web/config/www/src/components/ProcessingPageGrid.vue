@@ -1,6 +1,6 @@
 <template>
-  <div class="flex flex-wrap">
-    <div class="w-full px-2" >
+  <div class="flex justify-center">
+    <div class="w-full px-2 py-4" >
       <right-pane />
     </div>
   </div>
