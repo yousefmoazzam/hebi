@@ -173,7 +173,7 @@ export default {
   data: function () {
     return {
       collapsed: true,
-      chosenParamVisibility: 'advanced',
+      chosenParamVisibility: 'basic',
       displayConfigWarn: true,
       tooltipOptions: {
         content: this.plugin.synopsis + "<br><br>" + this.plugin.info +
