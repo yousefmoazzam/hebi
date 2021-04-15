@@ -48,6 +48,13 @@ export default {
       return classString
     }
   },
+  watch: {
+    'param.value': function (newVal, oldVal) {
+      if (oldVal !== newVal) {
+        this.latestInputValue = newVal
+      }
+    }
+  },
   methods: {
     valueChangeListener: function (e) {
       this.$store.dispatch('loadPlPluginElements', {

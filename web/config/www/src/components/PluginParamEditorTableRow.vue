@@ -13,11 +13,11 @@
     </td>
     <plugin-param-dropdown-menu v-if="'options' in param"
       :param="param"
-      :key="param.name + param.value"
+      :key="pluginIndex + '.' + param.name"
       :pluginIndex="pluginIndex" />
     <plugin-param-input-field v-else
       :param="param"
-      :key="param.name + param.value"
+      :key="pluginIndex + '.' + param.name"
       :pluginIndex="pluginIndex" />
   </tr>
 </template>
