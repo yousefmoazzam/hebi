@@ -33,7 +33,6 @@
 <script>
 import { mapGetters } from 'vuex'
 
-import PluginBrowserDropdownNode from './PluginBrowserDropdownNode.vue'
 import PluginBrowserMenuHeader from './PluginBrowserMenuHeader.vue'
 
 export default {
@@ -53,7 +52,6 @@ export default {
   },
 
   components: {
-    'plugin-browser-dropdown-node': PluginBrowserDropdownNode,
     'plugin-browser-menu-header': PluginBrowserMenuHeader
   },
 
