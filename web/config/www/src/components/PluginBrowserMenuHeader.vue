@@ -15,7 +15,8 @@
     <div class="ml-4" v-show="showChildren">
       <plugin-browser-menu-entry
         v-for="pluginName in children['plugins']"
-        :entry="pluginName" />
+        :entry="pluginName"
+        :key="header + '.' + pluginName" />
       <plugin-browser-menu-header
         v-for="(collection, collectionName) in children['collections']"
         :header="collectionName"

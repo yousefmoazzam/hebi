@@ -16,6 +16,7 @@
     </div>
     <div class="grid grid-cols-3 gap-2">
       <param-tuning-range-input-field v-for="(data, idx) in inputFields"
+        :key="data.label + 'RangeInputField'"
         :value="data.value"
         :isCorrectType="data.isCorrectType"
         :label="data.label"
