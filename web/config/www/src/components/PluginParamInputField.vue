@@ -1,7 +1,17 @@
 <template>
 <div>
   <td class="px-2 py-2">
+    <span>
+      <i class="fas fa-tools hover:text-gray-500 cursor-pointer"
+        v-on:click="paramTuningIconListener(true)">
+      </i>
+    </span>
   </td>
+  <param-tuning-popup-box
+    :isVisible="isParamTuningPopupVisible"
+    :pluginIndex="pluginIndex"
+    :param="param"
+    v-on:change-parameter-tuning-popup-visibility="paramTuningIconListener" />
   <td class="px-2 py-2 w-full">
     <input type="text" :value="latestInputValue" :class="inputFieldClass"
       v-on:change="valueChangeListener"
@@ -19,10 +29,17 @@
 </template>
 
 <script>
+import ParameterTuningPopupBox from './ParameterTuningPopupBox.vue'
+
 export default {
+
+  components: {
+    'param-tuning-popup-box': ParameterTuningPopupBox
+  },
   data: function () {
     return {
-      latestInputValue: this.param.value
+      latestInputValue: this.param.value,
+      isParamTuningPopupVisible: false
     }
   },
   props: {
@@ -65,6 +82,9 @@ export default {
     },
     valueInputListener: function (e) {
       this.latestInputValue = e.target.value
+    },
+    paramTuningIconListener: function (bool) {
+      this.isParamTuningPopupVisible = bool
     }
   }
 }
