@@ -1,6 +1,6 @@
 import glob
 import os
-from io import StringIO
+from io import BytesIO
 
 from flask import (Flask, jsonify, request, abort, make_response, send_file)
 from flask.json import JSONEncoder
@@ -412,7 +412,7 @@ def plugin_citation_download(plugin_name):
     elif citation_type == 'endnote':
         filename = plugin_name + '.endnote'
 
-    f = StringIO(contents)
+    f = BytesIO(contents.encode('utf-8'))
 
     return send_file(f, mimetype='text', as_attachment=True,
         attachment_filename=filename)
@@ -454,7 +454,7 @@ def download_framework_citations():
     elif citation_type == 'endnote':
         filename = 'framework_citations.endnote'
 
-    f = StringIO(contents)
+    f = BytesIO(contents.encode('utf-8'))
 
     return send_file(f, mimetype='text', as_attachment=True,
         attachment_filename=filename)
