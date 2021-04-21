@@ -224,7 +224,7 @@ def modify_param_val():
     # check if the type of the given param value is the same as the required
     # type for the param
     plugin = process_list.plugin_list.plugin_list[plugin_index - 1]
-    cast_param_value = process_list.value(param_value)
+    cast_param_value = pu._dumps(param_value)
     param_valid, error_str = param_utils.is_valid(param_name, cast_param_value,
         plugin['tools'].param.get_dictionary()[param_name])
 
