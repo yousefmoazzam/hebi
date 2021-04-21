@@ -94,7 +94,7 @@ def query_plugin_list():
 def get_plugin_browser_info():
     plugin_name = request.args.get(const.KEY_QUERY)
     plugin = pu.plugins[plugin_name]()
-    plugin._populate_default_parameters()
+    plugin.get_plugin_tools()._populate_default_parameters()
     plugin_info = {
         'doc_link': str(plugin.docstring_info.get('documentation_link')),
         'info': plugin.docstring_info.get('info'),
@@ -181,7 +181,7 @@ def get_plugin_info(name):
 
     # Create plugin instance with default parameter values
     p = pu.plugins[name]()
-    p._populate_default_parameters()
+    p.get_plugin_tools()._populate_default_parameters()
 
     data = plugin_to_dict(name, p)
 
@@ -397,7 +397,7 @@ def process_list_download():
 def plugin_citation_download(plugin_name):
     citation_type = request.args.get(const.KEY_QUERY)
     plugin = pu.plugins[plugin_name]()
-    plugin._populate_default_parameters()
+    plugin.get_plugin_tools()._populate_default_parameters()
     citations = plugin.tools.get_citations()
     contents = ''
 

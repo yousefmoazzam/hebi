@@ -83,7 +83,7 @@ def plugin_to_dict(name, p):
 def plugin_list_entry_to_dict(p):
     # Get plugin details
     pl = pu.plugins[p['name']]()
-    pl._populate_default_parameters()
+    pl.get_plugin_tools()._populate_default_parameters()
 
     # Format parameters
     parameters = []
@@ -134,10 +134,10 @@ def plugin_list_entry_to_dict(p):
     return {
         'name': p['name'] ,
         'pos': p['pos'],
-        'info': pl.docstring_info.get('info'),
-        'synopsis': pl.docstring_info.get('synopsis'),
-        'warn': str(pl.docstring_info.get('warn')),
-        'doc_link': str(pl.docstring_info['documentation_link']),
+        'info': pl.get_plugin_tools().docstring_info.get('info'),
+        'synopsis': pl.get_plugin_tools().docstring_info.get('synopsis'),
+        'warn': str(pl.get_plugin_tools().docstring_info.get('warn')),
+        'doc_link': str(pl.get_plugin_tools().docstring_info['documentation_link']),
         'parameters': parameters,
         'id': p['id'],
         'active': bool(p['active']),  # Convert from numpy bool
