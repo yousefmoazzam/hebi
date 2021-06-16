@@ -275,7 +275,7 @@ def process_list_list():
 
     # Listing details of a specific process list
     elif const.KEY_FILENAME in request.args:
-        fname = request.args.get(const.KEY_FILENAME)
+        fname = const.ROOT_MOUNT_POINT + request.args.get(const.KEY_FILENAME)
 
         # Ensure file is a valid process list
         if not validate_file(fname, is_file_a_process_list):
@@ -308,7 +308,7 @@ def process_list_list():
 
 @app.route('/check_pl_exists')
 def check_pl_exists():
-    fname = request.args.get(const.KEY_FILENAME)
+    fname = const.ROOT_MOUNT_POINT + request.args.get(const.KEY_FILENAME)
     return jsonify({
         'doesFileExist': validate_file(fname, is_file_a_process_list)
     })
@@ -316,7 +316,7 @@ def check_pl_exists():
 
 @app.route('/process_list', methods=['POST'])
 def process_list_create():
-    fname = request.args.get(const.KEY_FILENAME)
+    fname = const.ROOT_MOUNT_POINT + request.args.get(const.KEY_FILENAME)
 
     # Ensure file does not already exist
     if validate_file(fname, is_file_a_process_list):
@@ -341,7 +341,7 @@ def process_list_create():
 
 @app.route('/process_list', methods=['PUT'])
 def process_list_update():
-    fname = request.args.get(const.KEY_FILENAME)
+    fname = const.ROOT_MOUNT_POINT + request.args.get(const.KEY_FILENAME)
 
     # Get user supplied JSON and validate it
     user_pl_data = request.get_json()
@@ -365,7 +365,7 @@ def process_list_update():
 
 @app.route('/process_list', methods=['DELETE'])
 def process_list_delete():
-    fname = request.args.get(const.KEY_FILENAME)
+    fname = const.ROOT_MOUNT_POINT + request.args.get(const.KEY_FILENAME)
 
     # Ensure file is a valid process list
     if not validate_file(fname, is_file_a_process_list):
@@ -384,7 +384,7 @@ def process_list_delete():
 
 @app.route('/process_list/download')
 def process_list_download():
-    fname = request.args.get(const.KEY_FILENAME)
+    fname = const.ROOT_MOUNT_POINT + request.args.get(const.KEY_FILENAME)
 
     # Ensure file is a valid process list
     if not validate_file(fname, is_file_a_process_list):
