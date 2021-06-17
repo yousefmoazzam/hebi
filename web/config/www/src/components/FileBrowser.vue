@@ -22,6 +22,10 @@
         Save As
       </button>
     </div>
+    <div class="flex mb-1 items-center">
+      <p class="text-sm whitespace-pre">Current process list: </p>
+      <p class="text-sm">{{ lastOpenedProcessList }}</p>
+    </div>
     <notification-modal-box
       :isVisible="showSavingFileNotification"
       notificationText="Saving file..."
@@ -123,7 +127,8 @@ export default {
     ...mapGetters([
       'currentDirPath',
       'isCurrentProcessListModified',
-      'filepathInputFieldText'
+      'filepathInputFieldText',
+      'lastOpenedProcessList'
     ])
   },
   watch: {

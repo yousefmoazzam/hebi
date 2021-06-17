@@ -44,7 +44,8 @@ export const store = new Vuex.Store({
     pluginSearchMatches: [],
     pluginBrowserSearchInputFieldText: '',
     isPluginBrowserDropdownVisible: false,
-    frameworkCitations: []
+    frameworkCitations: [],
+    lastOpenedProcessList: ''
   },
 
   actions: {
@@ -107,6 +108,7 @@ export const store = new Vuex.Store({
           context.commit('updateOpenPl', data)
           context.dispatch('changePlEditorFilepath', filename)
           context.dispatch('changeIsProcessListModified', false)
+          context.dispatch('changeLastOpenedProcessList', filename)
           var newIndex = store.state.plPluginElements.length + 1
           context.dispatch('changeAddPluginIndexInputFieldText', newIndex.toString())
         }    ,
@@ -460,6 +462,10 @@ export const store = new Vuex.Store({
           console.log('Failed to get framework citations')
         }
       )
+    },
+
+    changeLastOpenedProcessList(context, filepath) {
+      context.commit('updateLastOpenedProcessList', filepath)
     }
 
   },
@@ -622,6 +628,10 @@ export const store = new Vuex.Store({
 
     updateFrameworkCitations(state, citations) {
       state.frameworkCitations = citations
+    },
+
+    updateLastOpenedProcessList(state, filepath) {
+      state.lastOpenedProcessList = filepath
     }
 
   },
@@ -644,7 +654,8 @@ export const store = new Vuex.Store({
     pluginSearchMatches: state => state.pluginSearchMatches,
     pluginBrowserSearchInputFieldText: state => state.pluginBrowserSearchInputFieldText,
     isPluginBrowserDropdownVisible: state => state.isPluginBrowserDropdownVisible,
-    frameworkCitations: state => state.frameworkCitations
+    frameworkCitations: state => state.frameworkCitations,
+    lastOpenedProcessList: state => state.lastOpenedProcessList
   }
 })
 
