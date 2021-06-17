@@ -23,7 +23,7 @@
         :labelColour="data.labelColour"
         v-on:change-range-input-value="changeRangeInputValue(idx, $event)" />
       <p v-for="(data, idx) in inputFields"
-        class="text-center text-sm">
+        class="text-center text-sm text-red-500">
         {{ data['isCorrectType'] ? '' : data['errorMessage'] }}
       </p>
     </div>
