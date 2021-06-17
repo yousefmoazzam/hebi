@@ -16,7 +16,7 @@
               v-tooltip="paramTuningDescriptionTooltip"></i>
           </span>
         </div>
-        <p class="text-red-600 font-bold text-center">
+        <p class="text-red-600 font-bold text-center text-sm">
           Warning: increases data size and processing compute time
         </p>
       </div>
