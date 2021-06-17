@@ -23,6 +23,10 @@
       </button>
     </div>
     <div class="flex mb-1 items-center">
+      <button class="bg-indigo-200 hover:bg-indigo-300 py-1 px-1 mr-1 rounded text-xs"
+        v-on:click="reloadPlListener" >
+        Reload
+      </button>
       <p class="text-sm whitespace-pre">Current process list: </p>
       <p class="text-sm">{{ lastOpenedProcessList }}</p>
     </div>
@@ -77,7 +81,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 
 import FileBrowserRootDirs from './FileBrowserRootDirs.vue'
 import FileBrowserMainWindow from './FileBrowserMainWindow.vue'
@@ -129,7 +133,11 @@ export default {
       'isCurrentProcessListModified',
       'filepathInputFieldText',
       'lastOpenedProcessList'
-    ])
+    ]),
+
+    ...mapState({
+      plPluginElements: state => state.plPluginElements
+    })
   },
   watch: {
     inputFieldText: function () {
@@ -312,6 +320,42 @@ export default {
       this.addressBarHeight = 0
       this.tabCompletionMatchHighlightedIndex = 0
       this.tabKeyPressDir = ''
+    },
+
+    reloadPlListener: function () {
+      if (this.lastOpenedProcessList === '') {
+        var promptText = 'Are you sure you want to discard all changes?'
+      } else {
+        var promptText = 'Are you sure you want to discard all unsaved ' +
+          'changes made to ' + this.lastOpenedProcessList + '?'
+      }
+
+      this.promptModalBoxes.push({
+        promptText: promptText,
+        yesResponseListener: this.reloadPlYesResponse,
+        noResponseListener: this.reloadPlNoResponse
+      })
+    },
+
+    reloadPlYesResponse: function () {
+      if (this.lastOpenedProcessList !== '') {
+        this.$store.dispatch('loadPl', this.lastOpenedProcessList)
+        this.promptModalBoxes.pop()
+      } else {
+        // delete all plugins to get rid of all unsaved changes
+        for (var idx = this.plPluginElements.length - 1; idx >= 0; idx--) {
+          this.$store.dispatch('removePluginFromPl',
+            this.plPluginElements[idx]['pos'])
+        }
+        this.promptModalBoxes.pop()
+        // reset the state of the process list to not having any unsaved
+        // changes
+        this.$store.dispatch('changeIsProcessListModified', false)
+      }
+    },
+
+    reloadPlNoResponse: function () {
+      this.promptModalBoxes.pop()
     }
   }
 }
