@@ -1,10 +1,10 @@
 <template>
   <div class="h-full w-full pb-2" v-show="displayModal">
     <div>
-      <div class="justify-between p-3 bg-gray-900 rounded-t flex">
-        <h5 class="text-white uppercase">Important Plugin Notice</h5>
+      <div class="justify-between p-3 bg-gray-400 rounded-t flex">
+        <h5 class="uppercase">Important Plugin Notice</h5>
         <span class="cursor-pointer" v-on:click="timesIconListener">
-          <i class="fas fa-times text-gray-100 hover:text-gray-500"></i>
+          <i class="fas fa-times hover:text-white"></i>
         </span>
       </div>
       <div class="p-3 w-full h-full overflow-y-auto border border-gray-300">
