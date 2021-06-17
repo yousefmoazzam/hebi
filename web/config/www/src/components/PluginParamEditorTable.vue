@@ -1,11 +1,13 @@
 <template>
   <table class="w-full border-collapse border border-gray-300 mb-4">
     <tbody>
-      <plugin-param-editor-table-row v-for="(param, paramIndex) in plugin.parameters"
-        v-if="isVisible(param)"
+      <plugin-param-editor-table-row v-for="(param, paramIndex) in visibleParams"
         :key="param.name"
         :param="param"
         :pluginIndex="pluginIndex" />
+      <p class="p-1" v-show="visibleParams.length === 0">
+        All parameters have been filtered out
+      </p>
     </tbody>
   </table>
 </template>
@@ -26,6 +28,11 @@ export default {
     pluginIndex: String,
     plugin: Object,
     chosenParamVisibility: String
+  },
+  computed: {
+    visibleParams: function () {
+      return this.plugin.parameters.filter(this.isVisible)
+    }
   },
   methods: {
     isVisible: function (param) {
