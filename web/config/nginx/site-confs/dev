@@ -1,0 +1,53 @@
+server {
+  listen 8080 default_server;
+
+  root /var/cache/nginx/config/www;
+  index processing.html;
+
+  server_name _;
+
+  client_max_body_size 0;
+
+  location = / {
+    # match / exactly, and serve processing.html
+    try_files /processing.html =404;
+  }
+
+  location = /processing.html {
+    # match /processing.html exactly, and serve processing.html
+    try_files /processing.html =404;
+  }
+
+  # Static web content
+  location ~ .(html)$ {
+    # don't attempt to serve processing.html if the URI can't be matched in /,
+    # otherwise the redirection causes issues with locating files in the
+    # container (such as CSS files), and thus resulting missing CSS files in
+    # the browser
+    try_files $uri $uri/ =404;
+  }
+
+  # Savu API
+  location /api/ {
+    proxy_pass http://localhost:5000/;
+  }
+
+  # DAWN data server
+  location /data/ {
+    proxy_pass http://localhost:8080/;
+  }
+
+  # socket.io (used in API for job status updates)
+  location /socket.io {
+    proxy_http_version 1.1;
+    proxy_buffering off;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+    proxy_pass http://localhost:5000/socket.io;
+  }
+
+  # file-browser-server
+  location /files/ {
+    proxy_pass http://localhost:8081/;
+  }
+}

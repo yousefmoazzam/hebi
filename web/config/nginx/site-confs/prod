@@ -1,0 +1,63 @@
+server {
+  listen 8080 default_server;
+
+  root /var/cache/nginx/config/www;
+  index processing.html;
+
+  server_name _;
+
+  client_max_body_size 0;
+
+  # CAS authentication
+  location /auth {
+    proxy_pass http://localhost:8090/;
+  }
+
+  location = / {
+    # match / exactly, and serve login.html
+    try_files /login.html =404;
+  }
+
+  location = /login.html {
+    # match /login.html exactly, and serve login.html
+    try_files /login.html =404;
+  }
+
+  # Static web content
+  location ~ .(html)$ {
+    # don't cache HTML pages, to avoid uses of the browser's back button
+    # interfering with login/logout
+    add_header Cache-Control 'no-cache, must-revalidate';
+    # put the request through CAS authentication first to determine if the
+    # requestor should be given access to the desired HTML page
+    auth_request /auth;
+    # don't attempt to serve processing.html if the URI can't be matched in /,
+    # otherwise the redirection causes issues with locating files in the
+    # container when requests are coming via the Ingress
+    try_files $uri $uri/ =404;
+  }
+
+  # Savu API
+  location /api/ {
+    proxy_pass http://localhost:5000/;
+  }
+
+  # DAWN data server
+  location /data/ {
+    proxy_pass http://localhost:8080/;
+  }
+
+  # socket.io (used in API for job status updates)
+  location /socket.io {
+    proxy_http_version 1.1;
+    proxy_buffering off;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "Upgrade";
+    proxy_pass http://localhost:5000/socket.io;
+  }
+
+  # file-browser-server
+  location /files/ {
+    proxy_pass http://localhost:8081/;
+  }
+}
