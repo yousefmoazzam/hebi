@@ -290,7 +290,7 @@ export const store = new Vuex.Store({
         // hardcode for now, based on the dir in the file browser server
         // container in which all the dirs from Diamond filesystems are mounted
         // into
-        baseURL: '/files/',
+        baseURL: 'files/',
         url: endpoints.list.url.replace(new RegExp("{path}", "g"), '/'),
         method: endpoints.list.method || "get"
       }
@@ -304,7 +304,7 @@ export const store = new Vuex.Store({
         // hardcode for now, based on the dir in the file browser server
         // container in which all the dirs from Diamond filesystems are mounted
         // into
-        baseURL: '/files/',
+        baseURL: 'files/',
         url: endpoints.list.url.replace(new RegExp("{path}", "g"), dirPath),
         method: endpoints.list.method || "get"
       }
@@ -329,7 +329,7 @@ export const store = new Vuex.Store({
         // hardcode for now, based on the dir in the file browser server
         // container in which all the dirs from Diamond filesystems are mounted
         // into
-        baseURL: '/files/',
+        baseURL: 'files/',
         url: endpoints.list.url.replace(new RegExp("{path}", "g"), dirPath),
         method: endpoints.list.method || "get"
       }
@@ -395,7 +395,7 @@ export const store = new Vuex.Store({
         // hardcode for now, based on the dir in the file browser server
         // container in which all the dirs from Diamond filesystems are mounted
         // into
-        baseURL: '/files/',
+        baseURL: 'files/',
         url: endpoints.readTextFile.url.replace(new RegExp("{path}", "g"), YAML_CONFIG),
         method: endpoints.readTextFile.method || "get"
       }
@@ -434,7 +434,7 @@ export const store = new Vuex.Store({
         // hardcode for now, based on the dir in the file browser server
         // container in which all the dirs from Diamond filesystems are mounted
         // into
-        baseURL: '/files/',
+        baseURL: 'files/',
         url: endpoints.writeTextFile.url.replace(new RegExp("{path}", "g"), YAML_CONFIG),
         method: endpoints.writeTextFile.method || "post",
         data: {
@@ -787,14 +787,14 @@ var addPluginHelper = function (plugin, plPluginElements) {
 var createConfig = async function () {
   // create dir that will contain the config file
   await axiosInstance.request({
-    baseURL: '/files/',
+    baseURL: 'files/',
     url: endpoints.mkdir.url.replace(new RegExp("{path}", "g"), CONFIG_DIR),
     method: endpoints.mkdir.method || "post"
   })
 
   // create config file
   await axiosInstance.request({
-    baseURL: '/files/',
+    baseURL: 'files/',
     url: endpoints.writeTextFile.url.replace(new RegExp("{path}", "g"), YAML_CONFIG),
     method: endpoints.writeTextFile.method || "post",
     data: {
